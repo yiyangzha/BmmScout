@@ -1,5 +1,5 @@
-#ifndef Bmm5_NanoAOD_ScoutingDataHandling_h
-#define Bmm5_NanoAOD_ScoutingDataHandling_h
+#ifndef BmmScout_NanoAOD_ScoutingDataHandling_h
+#define BmmScout_NanoAOD_ScoutingDataHandling_h
 
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"

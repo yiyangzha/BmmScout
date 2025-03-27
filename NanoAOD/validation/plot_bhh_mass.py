@@ -7,9 +7,9 @@ tdrstyle.setTDRStyle()
 
 version = 516
 
-output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv8-%u/random/" % version
+output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv8-%u/random/" % version
 
-path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/%u/" % version
+path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/%u/" % version
 
 
 

@@ -56,7 +56,7 @@ BmmMuonId = cms.EDProducer(
     prunedGenParticleCollection = cms.InputTag("prunedGenParticles"),
     packedGenParticleCollection = cms.InputTag("packedGenParticles"),
     trigger = cms.InputTag("slimmedPatTrigger"),
-    # models and their feature files are expected to be saved in Bmm5/NanoAOD/data/muon_mva/
+    # models and their feature files are expected to be saved in BmmScout/NanoAOD/data/muon_mva/
     xgboost_models = cms.vstring(),
     xgboost_variable_names = cms.vstring(),
     isMC = cms.bool(False),

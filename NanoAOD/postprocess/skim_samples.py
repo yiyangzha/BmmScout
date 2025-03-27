@@ -14,7 +14,7 @@ import shutil
 
 version = 510
 
-output_eos_dir = "/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD-skims/"
+output_eos_dir = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD-skims/"
 # output_eos_dir = "/user/dmytro/NanoAOD-skims/"
 
 output_tmp_dir = "/tmp/dmytro/NanoAOD-skims/"
@@ -209,13 +209,13 @@ samples = {
     #     'file_with_lfns':'lists/QCD_HT100to200_TuneCP5_13TeV-madgraphMLM-pythia8+RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1+MINIAODSIM.txt'
     # },
     # 'QCD_HT50to100_RunIIAutumn18MiniAOD':{
-    #     'file_with_lfns':'/afs/cern.ch/work/d/dmytro/projects/RunII-NanoAODv6/src/Bmm5/MVA/QCD_HT50to100_TuneCP5_13TeV-madgraphMLM-pythia8+RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1+MINIAODSIM.txt'
+    #     'file_with_lfns':'/afs/cern.ch/work/d/dmytro/projects/RunII-NanoAODv6/src/BmmScout/MVA/QCD_HT50to100_TuneCP5_13TeV-madgraphMLM-pythia8+RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1+MINIAODSIM.txt'
     # },
     # 'QCD_HT100to200_BGenFilter_RunIIAutumn18MiniAOD':{
-    #     'file_with_lfns':'/afs/cern.ch/work/d/dmytro/projects/RunII-NanoAODv6/src/Bmm5/MVA/QCD_HT100to200_BGenFilter_TuneCP5_13TeV-madgraph-pythia8+RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1+MINIAODSIM.txt'
+    #     'file_with_lfns':'/afs/cern.ch/work/d/dmytro/projects/RunII-NanoAODv6/src/BmmScout/MVA/QCD_HT100to200_BGenFilter_TuneCP5_13TeV-madgraph-pythia8+RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1+MINIAODSIM.txt'
     # },
     # 'QCD_HT200to300_RunIIAutumn18MiniAOD':{
-    #     'file_with_lfns':'/afs/cern.ch/work/d/dmytro/projects/RunII-NanoAODv6/src/Bmm5/MVA/QCD_HT200to300_TuneCP5_13TeV-madgraphMLM-pythia8+RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1+MINIAODSIM.txt'
+    #     'file_with_lfns':'/afs/cern.ch/work/d/dmytro/projects/RunII-NanoAODv6/src/BmmScout/MVA/QCD_HT200to300_TuneCP5_13TeV-madgraphMLM-pythia8+RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v1+MINIAODSIM.txt'
     # },
     # 'QCD_Pt-80to120_MuEnrichedPt5_RunIIAutumn18MiniAOD':{
     #     'file_with_lfns':'lists/QCD_Pt-80to120_MuEnrichedPt5_TuneCP5_13TeV_pythia8+RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15_ext1-v2+MINIAODSIM.txt',

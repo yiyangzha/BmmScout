@@ -1,5 +1,5 @@
-#ifndef Bmm5_NanoAOD_Candidate_h
-#define Bmm5_NanoAOD_Candidate_h
+#ifndef BmmScout_NanoAOD_Candidate_h
+#define BmmScout_NanoAOD_Candidate_h
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "DataFormats/PatCandidates/interface/PackedGenParticle.h"
 #include "DataFormats/PatCandidates/interface/Muon.h"

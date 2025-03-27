@@ -14,9 +14,9 @@ tdrstyle.setTDRStyle()
 ROOT.gROOT.SetBatch(True)
 c1 = ROOT.TCanvas("c1","c1", 1200, 1200)
 
-data_path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/518/"
-# skim_path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing/NanoAOD-skims/518/mm/"
-skim_path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing-NEW/NanoAOD-skims/518/mm/"
+data_path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/518/"
+# skim_path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing/NanoAOD-skims/518/mm/"
+skim_path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing-NEW/NanoAOD-skims/518/mm/"
 # output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/Bmm/AN/trigger_info_tmp/";
 output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/Bmm/AN/trigger_info/";
 

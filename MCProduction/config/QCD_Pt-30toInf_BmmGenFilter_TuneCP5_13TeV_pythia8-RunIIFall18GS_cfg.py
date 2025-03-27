@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.19 
 # Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: Bmm5/GenFragments/python/QCD_Pt-30toInf_BmmGenFilter_TuneCP5_13TeV_pythia8.py --fileout file:QCD_Pt-30toInf_BmmGenFilter_TuneCP5_13TeV_pythia8-RunIIFall18GS.root --mc --eventcontent RAWSIM --datatier GEN-SIM --conditions 102X_upgrade2018_realistic_v11 --beamspot Realistic25ns13TeVEarly2018Collision --step GEN,SIM --nThreads 1 --geometry DB:Extended --era Run2_2018 --python_filename QCD_Pt-30toInf_BmmGenFilter_TuneCP5_13TeV_pythia8-RunIIFall18GS_cfg.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n 1000000
+# with command line options: BmmScout/GenFragments/python/QCD_Pt-30toInf_BmmGenFilter_TuneCP5_13TeV_pythia8.py --fileout file:QCD_Pt-30toInf_BmmGenFilter_TuneCP5_13TeV_pythia8-RunIIFall18GS.root --mc --eventcontent RAWSIM --datatier GEN-SIM --conditions 102X_upgrade2018_realistic_v11 --beamspot Realistic25ns13TeVEarly2018Collision --step GEN,SIM --nThreads 1 --geometry DB:Extended --era Run2_2018 --python_filename QCD_Pt-30toInf_BmmGenFilter_TuneCP5_13TeV_pythia8-RunIIFall18GS_cfg.py --no_exec --customise Configuration/DataProcessing/Utils.addMonitoring -n 1000000
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.StandardSequences.Eras import eras

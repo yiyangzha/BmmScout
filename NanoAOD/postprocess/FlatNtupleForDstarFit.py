@@ -10,7 +10,7 @@ import ROOT
 LorentzVector = ROOT.ROOT.Math.LorentzVector('ROOT::Math::PtEtaPhiM4D<double>')
 
 class FlatNtupleForDstarFit(FlatNtupleBase):
-    """Flat ROOT ntuple producer for Bmm5 UML fit"""
+    """Flat ROOT ntuple producer for BmmScout UML fit"""
 
     triggers_to_store = [
         # Run 3

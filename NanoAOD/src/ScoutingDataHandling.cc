@@ -1,4 +1,4 @@
-#include "Bmm5/NanoAOD/interface/ScoutingDataHandling.h"
+#include "BmmScout/NanoAOD/interface/ScoutingDataHandling.h"
 #include "DataFormats/Math/interface/Error.h"
 #include "DataFormats/Math/interface/Point3D.h"
 #include "DataFormats/Math/interface/libminifloat.h"

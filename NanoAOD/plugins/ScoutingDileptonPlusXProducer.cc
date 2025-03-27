@@ -17,7 +17,7 @@
 #include "DataFormats/Scouting/interface/Run3ScoutingTrack.h"
 #include "DataFormats/Scouting/interface/Run3ScoutingVertex.h"
 
-#include "Bmm5/NanoAOD/interface/ScoutingDataHandling.h"
+#include "BmmScout/NanoAOD/interface/ScoutingDataHandling.h"
 
 #include "DataFormats/PatCandidates/interface/Muon.h"
 #include "DataFormats/PatCandidates/interface/Electron.h"
@@ -59,12 +59,12 @@
 #include <algorithm>
 #include <math.h>
 
-#include "Bmm5/NanoAOD/interface/XGBooster.h"
-#include "Bmm5/NanoAOD/interface/KinFitUtils.h"
-#include "Bmm5/NanoAOD/interface/KinematicFitResult.h"
-#include "Bmm5/NanoAOD/interface/Displacement.h"
-#include "Bmm5/NanoAOD/interface/CommonTools.h"
-#include "Bmm5/NanoAOD/interface/Candidate.h"
+#include "BmmScout/NanoAOD/interface/XGBooster.h"
+#include "BmmScout/NanoAOD/interface/KinFitUtils.h"
+#include "BmmScout/NanoAOD/interface/KinematicFitResult.h"
+#include "BmmScout/NanoAOD/interface/Displacement.h"
+#include "BmmScout/NanoAOD/interface/CommonTools.h"
+#include "BmmScout/NanoAOD/interface/Candidate.h"
 
 // 
 // ScoutingDileptonPlusXProducer is designed for Bs/d->mumu analysis

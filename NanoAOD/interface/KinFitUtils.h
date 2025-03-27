@@ -1,5 +1,5 @@
-#ifndef Bmm5_NanoAOD_KinFitUtils_h
-#define Bmm5_NanoAOD_KinFitUtils_h
+#ifndef BmmScout_NanoAOD_KinFitUtils_h
+#define BmmScout_NanoAOD_KinFitUtils_h
 
 // #include "RecoVertex/KinematicFitPrimitives/interface/TrackKinematicStatePropagator.h"
 #include "RecoVertex/KinematicFitPrimitives/interface/KinematicState.h"

@@ -1,14 +1,14 @@
 from PostProcessingBase import FlatNtupleBase
 
 import os, re, sys, time, subprocess, math, json
-from Bmm5.MVA.mtree import MTree
+from BmmScout.MVA.mtree import MTree
 import multiprocessing
 from datetime import datetime
 import hashlib
 from ROOT import TFile, TTree
 
 class FlatNtupleForBmmMva(FlatNtupleBase):
-    """Produce flat ROOT ntuples for Bmm5 MVA training"""
+    """Produce flat ROOT ntuples for BmmScout MVA training"""
 
     def _validate_inputs(self):
         """Task specific input validation"""
@@ -212,7 +212,7 @@ class FlatNtupleForBmmMva(FlatNtupleBase):
         return True
 
 def unit_test():
-    path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/518/"
+    path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/518/"
     job = {
         "input": [
             path + "BsToMuMu_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/F36A84DB-86B1-A84E-9205-C79D2ABE2A9D.root"

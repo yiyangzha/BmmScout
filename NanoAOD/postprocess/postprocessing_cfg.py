@@ -1,7 +1,7 @@
 # Config file for the postprocessor
 from resources_cfg import resources
 
-workdir = "/afs/cern.ch/work/d/dmytro/projects/Run3-Bmm-NanoAODv12/src/Bmm5/NanoAOD/postprocess/"
+workdir = "/afs/cern.ch/work/d/dmytro/projects/Run3-Bmm-NanoAODv12/src/BmmScout/NanoAOD/postprocess/"
 # version = 'crab-140x-mm'
 version = '529'
 
@@ -12,7 +12,7 @@ input_location = "/eos/cms/store/group/phys_bphys/bmm/bmm6/NanoAOD/" + str(versi
 output_location = "/eos/cms/store/group/phys_bphys/bmm/bmm6/PostProcessing"
 
 xrootd_prefix = "root://eoscms.cern.ch:/"
-web_report_path = "/afs/cern.ch/user/d/dmytro/www/public_html/bmm5/postprocessing/"
+web_report_path = "/afs/cern.ch/user/d/dmytro/www/public_html/BmmScout/postprocessing/"
 
 debug = False
 tmp_prefix = "tmpPPNA"

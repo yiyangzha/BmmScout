@@ -18,8 +18,8 @@
 #include <TMatrix.h>
 #include <algorithm>
 
-#include "Bmm5/NanoAOD/interface/XGBooster.h"
-#include "Bmm5/NanoAOD/interface/CommonTools.h"
+#include "BmmScout/NanoAOD/interface/XGBooster.h"
+#include "BmmScout/NanoAOD/interface/CommonTools.h"
 #include "DataFormats/PatCandidates/interface/TriggerObjectStandAlone.h"
 #include "DataFormats/L1Trigger/interface/Muon.h"
 
@@ -89,8 +89,8 @@ xgboost_variable_names_( iConfig.getParameter<vector<string>>( "xgboost_variable
 {
     produces<pat::CompositeCandidateCollection>("muons");
     for (auto model: xgboost_models_)
-      softMuonMva_.push_back(XGBooster(edm::FileInPath("Bmm5/NanoAOD/data/muon_mva/" + model + ".model").fullPath(),
-				       edm::FileInPath("Bmm5/NanoAOD/data/muon_mva/" + model + ".features").fullPath()));
+      softMuonMva_.push_back(XGBooster(edm::FileInPath("BmmScout/NanoAOD/data/muon_mva/" + model + ".model").fullPath(),
+				       edm::FileInPath("BmmScout/NanoAOD/data/muon_mva/" + model + ".features").fullPath()));
 }
 
 void BmmMuonIdProducer::fillSoftMva(pat::CompositeCandidate& mu_cand){

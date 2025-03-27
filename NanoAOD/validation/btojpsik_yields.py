@@ -1,4 +1,4 @@
-"""Bmm5 BtoJpsiK normalization fits
+"""BmmScout BtoJpsiK normalization fits
 
 Unbinned maximum likelihood fit using fit-bkmm flat ntuples. The
 signal shape is a non-parameteric PDF build from the simulated JpsiK
@@ -89,7 +89,7 @@ for var in variables:
 roovars_mc = copy.deepcopy(roovars)
 roovars_mc.append(mc_match)
 
-data_path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing/FlatNtuples/%u/fit-bkmm/" % version
+data_path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing/FlatNtuples/%u/fit-bkmm/" % version
 mc_jpsik_2018    = data_path + "BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/*.root"
 mc_jpsipi_2018   = data_path + "BuToJpsiPi_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/*.root"
 mc_jpsik_2017    = data_path + "BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL17MiniAOD-106X_mc2017_realistic_v6-v2+MINIAODSIM/*.root"

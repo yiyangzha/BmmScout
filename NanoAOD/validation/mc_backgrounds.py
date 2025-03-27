@@ -40,7 +40,7 @@ mva090 = prefit + "&& mm_mva>0.90"
 final  = prefit + "&& mm_mva>0.99"
 noid_mva099 = preselection_noid + "&& mm_mva>0.99"
 
-path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/517/"
+path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/517/"
 
 def get_ngen(files):
     lumis = ROOT.TChain("LuminosityBlocks")

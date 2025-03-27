@@ -4,10 +4,10 @@ from DataFormats.FWLite import Events, Handle
 from ROOT import TFile,TTree,TH1,TROOT,TDirectory,TPad,TCanvas,TColor
 from math import *
 
-# output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv6-508/muon_fake_sources_bhh_medium"
-# output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv6-508/muon_fake_sources_bhh_loose"
-output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv6-508/muon_fake_sources_bhh_mva"
-# output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv6-508/muon_fake_sources_mu_enriched_loose"
+# output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv6-508/muon_fake_sources_bhh_medium"
+# output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv6-508/muon_fake_sources_bhh_loose"
+output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv6-508/muon_fake_sources_bhh_mva"
+# output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv6-508/muon_fake_sources_mu_enriched_loose"
 dump_info = False
 min_pt = 4
 # muon_id = None
@@ -50,10 +50,10 @@ events = Events(files)
 
 # events = Events (
 # 	[
-# 		# '/afs/cern.ch/work/d/dmytro/projects/RunII-NanoAODv6/src/Bmm5/NanoAOD/test/muon_fake_skim.root'
-# 		'/afs/cern.ch/work/d/dmytro/projects/RunII-NanoAODv6/src/Bmm5/NanoAOD/test/BdToKPi_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen_RunIIAutumn18MiniAOD_muon_fake_skim.root',
-# 		'/afs/cern.ch/work/d/dmytro/projects/RunII-NanoAODv6/src/Bmm5/NanoAOD/test/LambdaBToPPi_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2+MINIAODSIM.root'
-# 		# '/afs/cern.ch/work/d/dmytro/projects/RunII-NanoAODv6/src/Bmm5/NanoAOD/test/test.root'
+# 		# '/afs/cern.ch/work/d/dmytro/projects/RunII-NanoAODv6/src/BmmScout/NanoAOD/test/muon_fake_skim.root'
+# 		'/afs/cern.ch/work/d/dmytro/projects/RunII-NanoAODv6/src/BmmScout/NanoAOD/test/BdToKPi_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen_RunIIAutumn18MiniAOD_muon_fake_skim.root',
+# 		'/afs/cern.ch/work/d/dmytro/projects/RunII-NanoAODv6/src/BmmScout/NanoAOD/test/LambdaBToPPi_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2+MINIAODSIM.root'
+# 		# '/afs/cern.ch/work/d/dmytro/projects/RunII-NanoAODv6/src/BmmScout/NanoAOD/test/test.root'
 # 	]
 # )
 

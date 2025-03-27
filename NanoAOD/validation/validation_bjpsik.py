@@ -3,7 +3,7 @@ import os, re, ROOT, sys, time
 from ROOT import TFile,TTree,TH1,TROOT,TDirectory,TPad,TCanvas,TColor
 from array import array
 
-output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv6-507/bjpsik/"
+output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv6-507/bjpsik/"
 
 bkmm_cuts = [
     # skimming requirements

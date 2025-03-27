@@ -108,7 +108,7 @@ for path in directories:
         # if i >= n_max: break
         if f: samples['data_dzmm']['files'].append(f)
         
-# bjpsik_path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/516/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/"
+# bjpsik_path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/516/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/"
 # for i,f in enumerate(subprocess.check_output("find %s/ -type f -name '*.root'" % (bjpsik_path), shell=True).split("\n")):
 #     if i >= n_max: break
 #     if f: samples['BuToJpsiK']['files'].append(f)

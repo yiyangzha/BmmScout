@@ -16,8 +16,8 @@ c1 = ROOT.TCanvas("c1","c1", 1200, 1200)
 ROOT.gPad.SetGrid()
 # ROOT.gPad.SetLogx()
 
-data_path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing-NEW/FlatNtuples/518/trig-eff"
-data_path2 = "/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing-NEW/FlatNtuples/518/trig-info"
+data_path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing-NEW/FlatNtuples/518/trig-eff"
+data_path2 = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing-NEW/FlatNtuples/518/trig-info"
 # output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/Bmm/AN/trigger_object_efficiency_test10/";
 output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/Bmm/AN/trigger_object_efficiency/";
 # output_path = "/eos/user/d/dmytro/www/plots/Bmm/AN/trigger_object_efficiency_test/"

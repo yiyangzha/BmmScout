@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    Bmm5/MuonFakeFilter
+// Package:    BmmScout/MuonFakeFilter
 // Class:      MuonFakeFilter
 // 
-/**\class MuonFakeFilter MuonFakeFilter.cc Bmm5/NanoAOD/plugins/MuonFakeFilter.cc
+/**\class MuonFakeFilter MuonFakeFilter.cc BmmScout/NanoAOD/plugins/MuonFakeFilter.cc
 
  Description: MiniAOD filter to select interesting fake muon events.
 

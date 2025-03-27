@@ -1,5 +1,5 @@
 from PostProcessingBase import Processor
-from Bmm5.NanoAOD.postprocessing.postprocessor import PostProcessor
+from BmmScout.NanoAOD.postprocessing.postprocessor import PostProcessor
 import sys, os, subprocess, json
 
 class Skimmer(Processor):

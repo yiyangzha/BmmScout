@@ -108,9 +108,9 @@ def get_workspace_with_weights_for_jpsik(tree, name, mass_var, other_vars, cuts=
 
 if __name__ == '__main__':
     tree = ROOT.TChain("mva")
-    # tree.Add("/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing/FlatNtuples/512/bmm_mva_jpsik/Charmonium+Run2018D-PromptReco-v2+MINIAOD/*.root")
-    tree.Add("/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing/FlatNtuples/517/bmm_mva_jpsik/Charmonium+Run2018D-12Nov2019_UL2018-v1+MINIAOD/d319f9f04d0d12c731a20b5342d4c9ff.root")
-    # tree.Add("/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing/FlatNtuples/515/bmm_mva_jpsik/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCUEP8M1_13TeV-pythia8-evtgen+RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2+MINIAODSIM/2b4896bfe4572b22d81bc7e25f9666eb.root")
+    # tree.Add("/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing/FlatNtuples/512/bmm_mva_jpsik/Charmonium+Run2018D-PromptReco-v2+MINIAOD/*.root")
+    tree.Add("/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing/FlatNtuples/517/bmm_mva_jpsik/Charmonium+Run2018D-12Nov2019_UL2018-v1+MINIAOD/d319f9f04d0d12c731a20b5342d4c9ff.root")
+    # tree.Add("/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing/FlatNtuples/515/bmm_mva_jpsik/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCUEP8M1_13TeV-pythia8-evtgen+RunIISummer16MiniAODv3-PUMoriond17_94X_mcRun2_asymptotic_v3_ext1-v2+MINIAODSIM/2b4896bfe4572b22d81bc7e25f9666eb.root")
 
     mass = ROOT.RooRealVar("mm_kin_mass", "", 5.15, 5.45)
     vars = [

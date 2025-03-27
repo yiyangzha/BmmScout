@@ -1,7 +1,7 @@
 import ROOT, copy
 
-path1 = "/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing/FlatNtuples/516/fit/"
-path2 = "/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing/FlatNtuples/516/fit-bkmm/"
+path1 = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing/FlatNtuples/516/fit/"
+path2 = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing/FlatNtuples/516/fit-bkmm/"
 
 eras = ['RunIISummer20UL16MiniAODAPV', 'RunIISummer20UL16MiniAOD', 'RunIISummer20UL17MiniAOD', 'RunIISummer20UL18MiniAOD']
 types = ['fs', 'fu']

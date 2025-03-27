@@ -1,5 +1,5 @@
-#ifndef Bmm5_NanoAOD_KinematicFitResult_h
-#define Bmm5_NanoAOD_KinematicFitResult_h
+#ifndef BmmScout_NanoAOD_KinematicFitResult_h
+#define BmmScout_NanoAOD_KinematicFitResult_h
 
 #include "RecoVertex/KinematicFitPrimitives/interface/RefCountedKinematicTree.h"
 

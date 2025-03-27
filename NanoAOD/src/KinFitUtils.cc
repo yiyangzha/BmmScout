@@ -1,4 +1,4 @@
-#include "Bmm5/NanoAOD/interface/KinFitUtils.h"
+#include "BmmScout/NanoAOD/interface/KinFitUtils.h"
 
 using namespace bmm;
 

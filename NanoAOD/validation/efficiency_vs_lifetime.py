@@ -26,11 +26,11 @@ mva_cut_tight = "mm_mva>0.99"
 samples = [
     {
         'lifetime':'1.40',
-        'files':'/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/516/BsToMuMu_SoftQCDnonD_TuneCP5_BsLifetime1p40_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/*.root'
+        'files':'/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/516/BsToMuMu_SoftQCDnonD_TuneCP5_BsLifetime1p40_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/*.root'
     },
     {
         'lifetime':'1.60',
-        'files':'/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/516/BsToMuMu_SoftQCDnonD_TuneCP5_BsLifetime1p60_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/*.root'
+        'files':'/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/516/BsToMuMu_SoftQCDnonD_TuneCP5_BsLifetime1p60_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/*.root'
     },
 ]
 

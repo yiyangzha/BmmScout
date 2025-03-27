@@ -1,5 +1,5 @@
-#ifndef Bmm5_NanoAOD_XGBooster_h
-#define Bmm5_NanoAOD_XGBooster_h
+#ifndef BmmScout_NanoAOD_XGBooster_h
+#define BmmScout_NanoAOD_XGBooster_h
 
 #include <memory>
 #include <string>

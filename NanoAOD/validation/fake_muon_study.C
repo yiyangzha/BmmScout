@@ -20,7 +20,7 @@
 
 using namespace std;
 
-string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv6-508/muon_fakerate_test/";
+string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv6-508/muon_fakerate_test/";
 
 
 // Study parameters
@@ -30,7 +30,7 @@ struct Sample{
   vector<string> files;
 };
 
-string storage_path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/508/";
+string storage_path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/508/";
 
 // Don't use symbols in the name
 vector<Sample> samples = {

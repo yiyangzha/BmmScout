@@ -1,8 +1,8 @@
-# Bmm5 post processing scipts
+# BmmScout post processing scipts
 
 ## Introduction
 
-Bmm5 analysis uses many different samples for a varity of studies and
+BmmScout analysis uses many different samples for a varity of studies and
 measurements. It is more efficient to have samples optimized for a
 specific task than using NanoAOD as universal input. A full set of
 NanoAOD samples is of the order of 1TB in size and processing such

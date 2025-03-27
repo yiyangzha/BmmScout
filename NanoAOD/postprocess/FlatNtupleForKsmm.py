@@ -69,7 +69,7 @@ def expected_missing_hits(vtx_x, vtx_y, vtx_z, pixel_2017=True):
             
 
 class FlatNtupleForKsmm(FlatNtupleBase):
-    """Flat ROOT ntuple producer for Bmm5 UML fit"""
+    """Flat ROOT ntuple producer for BmmScout UML fit"""
 
     final_states = [
         'mm', 'hh'

@@ -192,7 +192,7 @@ class Processor(object):
         self._release_lock()
 
 class FlatNtupleBase(Processor):
-    """Flat ROOT ntuple producer for Bmm5 analysis"""
+    """Flat ROOT ntuple producer for BmmScout analysis"""
 
     def __init__(self, job_filename, take_ownership=False):
         self.n_gen_all = None

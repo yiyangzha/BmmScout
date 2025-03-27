@@ -1,8 +1,8 @@
-#ifndef Bmm5_NanoAOD_Displacement_h
-#define Bmm5_NanoAOD_Displacement_h
+#ifndef BmmScout_NanoAOD_Displacement_h
+#define BmmScout_NanoAOD_Displacement_h
 
-#include "Bmm5/NanoAOD/interface/KinFitUtils.h"
-#include "Bmm5/NanoAOD/interface/KinematicFitResult.h"
+#include "BmmScout/NanoAOD/interface/KinFitUtils.h"
+#include "BmmScout/NanoAOD/interface/KinematicFitResult.h"
 
 /* struct DisplacementInformationIn3D{ */
 /*   double decayLength{-1.0}, decayLengthErr{0.0}, decayLength2{-1.0}, decayLength2Err{0.0},  */

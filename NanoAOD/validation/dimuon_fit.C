@@ -34,7 +34,7 @@
 using namespace RooFit;
 using namespace std;
 
-string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv8-517/dimuon-Bs/";
+string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv8-517/dimuon-Bs/";
 
 const bool remake_input_workspaces = false;
 const bool pre_processing_only = false; // Just produce samples 
@@ -48,7 +48,7 @@ const double mm_mass_err_max = 0.100;
 // Running options
 const bool silent_roofit = true;
 
-string path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing/FlatNtuples/517/fit/";
+string path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing/FlatNtuples/517/fit/";
 
 
 vector<string> files =

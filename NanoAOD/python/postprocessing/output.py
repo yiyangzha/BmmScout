@@ -1,4 +1,4 @@
-from Bmm5.NanoAOD.postprocessing.treeReaderArrayTools import setExtraBranch
+from BmmScout.NanoAOD.postprocessing.treeReaderArrayTools import setExtraBranch
 from array import array
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True

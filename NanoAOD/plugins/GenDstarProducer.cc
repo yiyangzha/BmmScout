@@ -18,7 +18,7 @@
 #include <TMatrix.h>
 
 // 
-// GenDstarProducer gen info extraction for Bmm5 analysis
+// GenDstarProducer gen info extraction for BmmScout analysis
 
 typedef reco::Candidate::LorentzVector LorentzVector;
 namespace {

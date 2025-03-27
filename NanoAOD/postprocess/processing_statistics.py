@@ -1,6 +1,6 @@
 import ROOT, copy, subprocess, re
 
-path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing/FlatNtuples/518"
+path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing/FlatNtuples/518"
 
 datasets = {}
 

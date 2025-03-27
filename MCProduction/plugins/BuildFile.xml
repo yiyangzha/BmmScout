@@ -6,6 +6,6 @@
 <use   name="SimDataFormats/GeneratorProducts"/>
 <use   name="TrackingTools/PatternTools"/>
 <use   name="MagneticField/Records"/>
-<library   file="*.cc" name="Bmm5MCProductionPlugins">
+<library   file="*.cc" name="BmmScoutMCProductionPlugins">
   <flags   EDM_PLUGIN="1"/>
 </library>

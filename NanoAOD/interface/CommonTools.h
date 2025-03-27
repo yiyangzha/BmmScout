@@ -1,5 +1,5 @@
-#ifndef Bmm5_NanoAOD_CommonTools_h
-#define Bmm5_NanoAOD_CommonTools_h
+#ifndef BmmScout_NanoAOD_CommonTools_h
+#define BmmScout_NanoAOD_CommonTools_h
 #include "DataFormats/PatCandidates/interface/PackedCandidate.h"
 #include "DataFormats/PatCandidates/interface/CompositeCandidate.h"
 

@@ -13,7 +13,7 @@ import ROOT
 from math import *
 from tdrstyle import *
 
-path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/516/"
+path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/516/"
 nbins = 60
 
 hlt_studies = json.load(open("results/summary.json"))

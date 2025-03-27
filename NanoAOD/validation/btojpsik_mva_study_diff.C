@@ -7,7 +7,7 @@
 
 using namespace std;
 
-string path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv6-507/bjpsik-fit/";
+string path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv6-507/bjpsik-fit/";
 
 struct Hist{
   string f;

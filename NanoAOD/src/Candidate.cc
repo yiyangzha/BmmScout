@@ -1,5 +1,5 @@
-#include "Bmm5/NanoAOD/interface/Candidate.h"
-#include "Bmm5/NanoAOD/interface/ScoutingDataHandling.h"
+#include "BmmScout/NanoAOD/interface/Candidate.h"
+#include "BmmScout/NanoAOD/interface/ScoutingDataHandling.h"
 
 using namespace bmm;
 

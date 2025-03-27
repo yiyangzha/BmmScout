@@ -6,7 +6,7 @@ from datetime import datetime
 import hashlib
 
 class FlatNtupleForMLFit(FlatNtupleBase):
-    """Flat ROOT ntuple producer for Bmm5 UML fit"""
+    """Flat ROOT ntuple producer for BmmScout UML fit"""
 
     final_states = [
         'mm', 'bkmm', 'bkkmm', 'em', 'hh', 'jpsimm'
@@ -540,7 +540,7 @@ if __name__ == "__main__":
     
     # job = {
     #     "input": [
-    #         "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/517/BdToMuMu_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/06387049-7142-D749-A447-C97E700210BF.root",
+    #         "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/517/BdToMuMu_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/06387049-7142-D749-A447-C97E700210BF.root",
     #         ],
     #     "signal_only" : True,
     #     "tree_name" : "bsmmMc",
@@ -562,7 +562,7 @@ if __name__ == "__main__":
 
     # job = {
     #     "input": [
-    #         "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/517/BTohh_hToMuNu_BsBdMixture_modHadLifetime_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v3+MINIAODSIM/04C35C04-7851-6A4C-A80A-6FC132E25025.root",
+    #         "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/517/BTohh_hToMuNu_BsBdMixture_modHadLifetime_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v3+MINIAODSIM/04C35C04-7851-6A4C-A80A-6FC132E25025.root",
     #         ],
     #     "signal_only" : False,
     #     "tree_name" : "btohhMcBg",
@@ -605,7 +605,7 @@ if __name__ == "__main__":
 
     # job = {
     #     "input": [
-    #         "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/516/BTohh_hToMuNu_BsBdMixture_modHadLifetime_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v3+MINIAODSIM/04C35C04-7851-6A4C-A80A-6FC132E25025.root",
+    #         "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/516/BTohh_hToMuNu_BsBdMixture_modHadLifetime_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v3+MINIAODSIM/04C35C04-7851-6A4C-A80A-6FC132E25025.root",
     #         ],
     #     "signal_only" : False,
     #     "tree_name" : "btohhMcBg",
@@ -625,7 +625,7 @@ if __name__ == "__main__":
 
     # job = {
     #     "input": [
-    #         "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/518/Charmonium+Run2018D-12Nov2019_UL2018-v1+MINIAOD/BD514049-659A-F74F-A799-D485A4531390.root",
+    #         "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/518/Charmonium+Run2018D-12Nov2019_UL2018-v1+MINIAOD/BD514049-659A-F74F-A799-D485A4531390.root",
     #     ],
     #     "signal_only" : False,
     #     "tree_name" : "bupsikData",
@@ -652,7 +652,7 @@ if __name__ == "__main__":
 
     # job = {
     #     "input": [
-    #         "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/515/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2+MINIAODSIM/0440EA45-411F-E04F-92A6-B3DDA0AA9DDD.root",
+    #         "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/515/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIIAutumn18MiniAOD-102X_upgrade2018_realistic_v15-v2+MINIAODSIM/0440EA45-411F-E04F-92A6-B3DDA0AA9DDD.root",
     #     ],
     #     "signal_only" : False,
     #     "tree_name" : "bupsikMC",
@@ -680,7 +680,7 @@ if __name__ == "__main__":
     
     # job = {
     #     "input": [
-    #         "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/518/BsToJPsiPhi_JPsiToMuMu_PhiToKK_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/482F89A1-6DF1-BF49-A7A1-41DAA184DDD7.root"
+    #         "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/518/BsToJPsiPhi_JPsiToMuMu_PhiToKK_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/482F89A1-6DF1-BF49-A7A1-41DAA184DDD7.root"
     #     ],
     #     "signal_only" : True,
     #     "tree_name" : "bspsiphiMc",

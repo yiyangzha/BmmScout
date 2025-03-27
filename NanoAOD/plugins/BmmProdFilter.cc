@@ -1,11 +1,11 @@
 // -*- C++ -*-
 //
-// Package:    Bmm5/BmmProdFilter
+// Package:    BmmScout/BmmProdFilter
 // Class:      BmmProdFilter
 // 
-/**\class BmmProdFilter BmmProdFilter.cc Bmm5/NanoAOD/plugins/BmmProdFilter.cc
+/**\class BmmProdFilter BmmProdFilter.cc BmmScout/NanoAOD/plugins/BmmProdFilter.cc
 
- Description: Bmm5 analysis filter for skimming of AOD and MiniAOD data
+ Description: BmmScout analysis filter for skimming of AOD and MiniAOD data
 
  Implementation:
     - dimuon reco signature requirements

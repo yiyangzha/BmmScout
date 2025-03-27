@@ -3,7 +3,7 @@ import os, re, ROOT, sys, time, subprocess
 from ROOT import TFile,TTree,TH1,TROOT,TDirectory,TPad,TCanvas,TColor
 from array import array
 
-output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv8-516/mc_bjpsik_vs_bsmm-newmva"
+output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv8-516/mc_bjpsik_vs_bsmm-newmva"
 quick_check = False # quick check uses only the first file for each sample
 
 mm_cuts = [
@@ -64,12 +64,12 @@ samples = {
 }
 
 n_max = 100
-bmm_path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/516/BsToMuMu_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/"
+bmm_path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/516/BsToMuMu_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/"
 for i,f in enumerate(subprocess.check_output("find %s/ -type f -name '*.root'" % (bmm_path), shell=True).split("\n")):
     if i >= n_max: break
     if f: samples['BsToMuMu']['files'].append(f)
     
-# bjpsik_path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/516/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/"
+# bjpsik_path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/516/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/"
 # for i,f in enumerate(subprocess.check_output("find %s/ -type f -name '*.root'" % (bjpsik_path), shell=True).split("\n")):
 #     if i >= n_max: break
 #     if f: samples['BuToJpsiK']['files'].append(f)

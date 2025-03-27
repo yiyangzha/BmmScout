@@ -27,7 +27,7 @@ c1 = ROOT.TCanvas("c2","c2", 800, 800)
 # c2_2 = ROOT.TPad("c2_2", "", 0.0, 0.0, 1.0, 0.25)
 
 chain = ROOT.TChain("mva")
-chain.Add("/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing/FlatNtuples/516/bmm_mva_jpsik/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/0beb1bfffb548eeef0bbd03a4eecf864.root")
+chain.Add("/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing/FlatNtuples/516/bmm_mva_jpsik/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/0beb1bfffb548eeef0bbd03a4eecf864.root")
 
 h1 = ROOT.TH1F("h1", ";p_{T}(#mu#mu)", 30, 0, 30)
 h2 = ROOT.TH1F("h2", "", 30, 0, 30)

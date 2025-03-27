@@ -1,10 +1,10 @@
 #!/usr/bin/env python
-from Bmm5.NanoAOD.postprocessing.jobreport import JobReport
-from Bmm5.NanoAOD.postprocessing.preskimming import preSkim
-from Bmm5.NanoAOD.postprocessing.output import FriendOutput, FullOutput
-from Bmm5.NanoAOD.postprocessing.eventloop import eventLoop
-from Bmm5.NanoAOD.postprocessing.datamodel import InputTree
-from Bmm5.NanoAOD.postprocessing.branchselection import BranchSelection
+from BmmScout.NanoAOD.postprocessing.jobreport import JobReport
+from BmmScout.NanoAOD.postprocessing.preskimming import preSkim
+from BmmScout.NanoAOD.postprocessing.output import FriendOutput, FullOutput
+from BmmScout.NanoAOD.postprocessing.eventloop import eventLoop
+from BmmScout.NanoAOD.postprocessing.datamodel import InputTree
+from BmmScout.NanoAOD.postprocessing.branchselection import BranchSelection
 import os
 import time
 import hashlib

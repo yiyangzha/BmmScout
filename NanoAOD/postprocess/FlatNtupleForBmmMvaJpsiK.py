@@ -1,14 +1,14 @@
 from PostProcessingBase import FlatNtupleBase
 
 import os, re, sys, time, subprocess, math, json
-from Bmm5.MVA.mtree import MTree
+from BmmScout.MVA.mtree import MTree
 import multiprocessing
 from datetime import datetime
 import hashlib
 from ROOT import TFile, TTree
 
 class FlatNtupleForBmmMvaJpsiK(FlatNtupleBase):
-    """Produce flat ROOT ntuples for Bmm5 MVA training using JpsiK events reconstructed like Bmm"""
+    """Produce flat ROOT ntuples for BmmScout MVA training using JpsiK events reconstructed like Bmm"""
 
     triggers = [
         'HLT_DoubleMu4_3_Jpsi',
@@ -210,7 +210,7 @@ class FlatNtupleForBmmMvaJpsiK(FlatNtupleBase):
         return True
 
 def unit_test():
-    path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/516/"
+    path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/516/"
     job = {
         "input": [
             path + "BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/3161083A-28F2-244D-AEE2-0DD084D47E23.root"

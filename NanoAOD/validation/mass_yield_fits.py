@@ -7,7 +7,7 @@ from ROOT import RooRealVar
 from fwhm_calculator import compute_fwhm
 
 """
-Bmm5 BstoJpsiPhi fit
+BmmScout BstoJpsiPhi fit
 Unbinned maximum likelihood fit using bkkmm flat ntuples. 
 """
 

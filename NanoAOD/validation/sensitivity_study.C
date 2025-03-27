@@ -34,14 +34,14 @@
 using namespace RooFit;
 using namespace std;
 
-// string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv6-508/sensitivity_test/";
-// string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv6-508/sensitivity_kpi_trigger_0.75/";
-// string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv6-508/sensitivity_softMvaId_bhh/";
-// string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv6-508/sensitivity_softMvaId_bhh_data/";
-// string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv6-508/sensitivity_softMvaId_bhh_data_mva0.99/";
-// string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv6-508/sensitivity_softMvaId_bhh_data_mva0.998/";
-string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv6-508/sensitivity_softMvaId_data_mva0.996/";
-// string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv6-508/sensitivity_mediumId_bhh/";
+// string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv6-508/sensitivity_test/";
+// string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv6-508/sensitivity_kpi_trigger_0.75/";
+// string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv6-508/sensitivity_softMvaId_bhh/";
+// string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv6-508/sensitivity_softMvaId_bhh_data/";
+// string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv6-508/sensitivity_softMvaId_bhh_data_mva0.99/";
+// string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv6-508/sensitivity_softMvaId_bhh_data_mva0.998/";
+string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv6-508/sensitivity_softMvaId_data_mva0.996/";
+// string output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv6-508/sensitivity_mediumId_bhh/";
 
 // Study parameters
 const bool exclude_bhh = true;
@@ -104,8 +104,8 @@ struct Sample{
 const float luminosity = 140e3; // [1/pb]
 
 // string storage_path = "/eos/cms/store/group/phys_muon/dmytro/tmp/NanoAOD/508/";
-string storage_path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/508/";
-string skim_path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD-skims/mm/508/";
+string storage_path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/508/";
+string skim_path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD-skims/mm/508/";
     
 // Don't use symbols in the name
 vector<Sample> samples;

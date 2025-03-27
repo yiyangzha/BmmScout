@@ -1,7 +1,7 @@
 #!/bin/env python
 from ROOT import TFile,TTree
 
-f = TFile("/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/516/BsToMuMu_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/0C239543-D4D7-C948-8F0B-8DFB8ADF369B.root")
+f = TFile("/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/516/BsToMuMu_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/0C239543-D4D7-C948-8F0B-8DFB8ADF369B.root")
 t = f.Get("Events")
 
 print "Number of events:", t.GetEntries()

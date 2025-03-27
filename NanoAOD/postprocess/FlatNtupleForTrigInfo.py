@@ -218,10 +218,10 @@ if __name__ == "__main__":
 
     job = {
         "input": [
-            # "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/518/BsToMuMu_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/006D33F8-E3CB-C74D-A623-7BF9D2695526.root"
-            # "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/518/EGamma+Run2018D-12Nov2019_UL2018-v4+MINIAOD/8012D764-1747-4D44-9212-1D68EDBED646.root"
-            # "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/518/SingleMuon+Run2018D-12Nov2019_UL2018-v8+MINIAOD/7B0C6A4B-3B98-2342-9925-85DD641A1D6F.root"
-            "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/518/DoubleMuon+Run2016F-21Feb2020_UL2016_HIPM-v1+MINIAOD/8B8F2D5F-097D-4B49-BC79-12B3A1523B64.root"
+            # "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/518/BsToMuMu_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/006D33F8-E3CB-C74D-A623-7BF9D2695526.root"
+            # "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/518/EGamma+Run2018D-12Nov2019_UL2018-v4+MINIAOD/8012D764-1747-4D44-9212-1D68EDBED646.root"
+            # "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/518/SingleMuon+Run2018D-12Nov2019_UL2018-v8+MINIAOD/7B0C6A4B-3B98-2342-9925-85DD641A1D6F.root"
+            "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/518/DoubleMuon+Run2016F-21Feb2020_UL2016_HIPM-v1+MINIAOD/8B8F2D5F-097D-4B49-BC79-12B3A1523B64.root"
             ],
         "tree_name" : "mm",
       }  

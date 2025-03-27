@@ -3,8 +3,8 @@ import FWCore.ParameterSet.Config as cms
 from PhysicsTools.NanoAOD.nano_cff import *
 
 def nanoAOD_customizeDileptonPlusX(process):
-    process.load('Bmm5.NanoAOD.DileptonPlusX_cff')
-    process.load('Bmm5.NanoAOD.UpdateSlimmedMuons_cff')
+    process.load('BmmScout.NanoAOD.DileptonPlusX_cff')
+    process.load('BmmScout.NanoAOD.UpdateSlimmedMuons_cff')
     process.load('PhysicsTools.NanoAOD.muons_cff')
     # Data 
     process.nanoSequence   = cms.Sequence(process.slimmedMuons + process.nanoSequence + process.DileptonPlusXSequence + process.DileptonPlusXTables)
@@ -29,9 +29,16 @@ def nanoAOD_customizeDileptonPlusX(process):
     
     return process
 
+def nanoAOD_customizeScoutingDileptonPlusX(process):
+    process.load('BmmScout.NanoAOD.ScoutingDileptonPlusX_cff')
+    # Data 
+    process.nanoSequence   = cms.Sequence(process.ScoutingDileptonPlusXSequence + process.ScoutingDileptonPlusXTables)
+    
+    return process
+
 def nanoAOD_customizeV0ForMuonFake(process):
-    process.load('Bmm5.NanoAOD.BmmV0ForMuonFake_cff')
-    process.load('Bmm5.NanoAOD.UpdateSlimmedMuons_cff')
+    process.load('BmmScout.NanoAOD.BmmV0ForMuonFake_cff')
+    process.load('BmmScout.NanoAOD.UpdateSlimmedMuons_cff')
     # Data 
     process.nanoSequence   = cms.Sequence(process.slimmedMuons + process.nanoSequence + process.V0ForMuonFakeSequence + process.V0ForMuonFakeTables)
     # MC
@@ -40,7 +47,7 @@ def nanoAOD_customizeV0ForMuonFake(process):
     return process
 
 def nanoAOD_customizeBmmMuonId(process):
-    process.load('Bmm5.NanoAOD.BmmMuonId_cff')
+    process.load('BmmScout.NanoAOD.BmmMuonId_cff')
     # Data 
     process.nanoSequence   = cms.Sequence(process.nanoSequence + process.BmmMuonIdSequence + process.BmmMuonIdTables)
     # MC

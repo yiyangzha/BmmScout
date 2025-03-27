@@ -1,5 +1,5 @@
-from Bmm5.NanoAOD.postprocessing.datamodel import Event
-from Bmm5.NanoAOD.postprocessing.treeReaderArrayTools import clearExtraBranches
+from BmmScout.NanoAOD.postprocessing.datamodel import Event
+from BmmScout.NanoAOD.postprocessing.treeReaderArrayTools import clearExtraBranches
 import sys
 import time
 import ROOT

@@ -11,7 +11,7 @@ tdrstyle.setTDRStyle()
 
 version = 517
 
-# output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv8-%u/bjpsik-splots_binned/" % version;
+# output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv8-%u/bjpsik-splots_binned/" % version;
 output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/AN/bjpsik-splots_binned_loose_vtx/";
 
 
@@ -65,8 +65,8 @@ roovars = []
 for var in variables:
     roovars.append(var[0])
 
-# data_path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing/FlatNtuples/%u/bmm_mva_jpsik/" % version
-data_path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing/FlatNtuples/%u/bmm_mva_jpsik_loose_vtx/" % version
+# data_path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing/FlatNtuples/%u/bmm_mva_jpsik/" % version
+data_path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing/FlatNtuples/%u/bmm_mva_jpsik_loose_vtx/" % version
 mc_2018 = data_path + "BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/*.root"
 mc_2017 = data_path + "BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL17MiniAOD-106X_mc2017_realistic_v6-v2+MINIAODSIM/*.root"
 mc_2016BF = data_path + "BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL16MiniAODAPV-106X_mcRun2_asymptotic_preVFP_v8-v1+MINIAODSIM/*.root"

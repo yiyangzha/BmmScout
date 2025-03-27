@@ -1,5 +1,5 @@
-#include "Bmm5/NanoAOD/interface/KinematicFitResult.h"
-#include "Bmm5/NanoAOD/interface/KinFitUtils.h"
+#include "BmmScout/NanoAOD/interface/KinematicFitResult.h"
+#include "BmmScout/NanoAOD/interface/KinFitUtils.h"
 #include <TVector.h>
 #include <TMatrix.h>
 #include <TMath.h>

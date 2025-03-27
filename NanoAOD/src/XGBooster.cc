@@ -1,4 +1,4 @@
-#include "Bmm5/NanoAOD/interface/XGBooster.h"
+#include "BmmScout/NanoAOD/interface/XGBooster.h"
 #include <assert.h>
 #include <math.h>
 #include <stdexcept>

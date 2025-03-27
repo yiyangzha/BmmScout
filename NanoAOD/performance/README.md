@@ -2,7 +2,7 @@
 This folder contains a set of tools and instructions to measure 
 peformance of NanoAOD production in various configurations
 
-Use Bmm5/NanoAOD/performance/make_report.py to extract results.
+Use BmmScout/NanoAOD/performance/make_report.py to extract results.
 
 ## Results
 Reference machine: vocms0118 (CentOS7), vocms118 (Alma9)
@@ -92,12 +92,12 @@ cmsDriver and processing commands
 * Monte Carlo
    * BsToMuMu_BMuonFilter
       * Standard NanoAOD + all Bmm customization using Run3Summer22EEMiniAODv3 as input
-         * ```cmsDriver.py RECO --conditions auto:phase1_2022_realistic_postEE --customise Configuration/DataProcessing/Utils.addMonitoring --datatier NANOAOD --era Run3,run3_nanoAOD_124 --eventcontent NANOAODSIM --filein /store/user/dmytro/tmp/store+mc+Run3Summer22EEMiniAODv3+BsToMuMu_BMuonFilter_SoftQCDnonD_TuneCP5_13p6TeV_pythia8-evtgen+MINIAODSIM+124X_mcRun3_2022_realistic_postEE_v1-v2+2820000+0096d5dd-88d3-46a0-a8cc-255a3090c71e.root --fileout file:BsToMuMu_BMuonFilter_NanoAOD.root --nThreads 1 -n 10000 --no_exec --python_filename BsToMuMu_BMuonFilter_NanoAOD.py --scenario pp --step NANO --mc --customise=Bmm5/NanoAOD/nano_cff.nanoAOD_customizeDileptonPlusX --customise=Bmm5/NanoAOD/nano_cff.nanoAOD_customizeV0ForMuonFake --customise=Bmm5/NanoAOD/nano_cff.nanoAOD_customizeBmmMuonId --customise_commands="process.add_(cms.Service('InitRootHandlers', EnableIMT = cms.untracked.bool(False)))" --customise Validation/Performance/TimeMemoryInfo.py --customise_commands="process.Timing.summaryOnly = cms.untracked.bool(True)"```
+         * ```cmsDriver.py RECO --conditions auto:phase1_2022_realistic_postEE --customise Configuration/DataProcessing/Utils.addMonitoring --datatier NANOAOD --era Run3,run3_nanoAOD_124 --eventcontent NANOAODSIM --filein /store/user/dmytro/tmp/store+mc+Run3Summer22EEMiniAODv3+BsToMuMu_BMuonFilter_SoftQCDnonD_TuneCP5_13p6TeV_pythia8-evtgen+MINIAODSIM+124X_mcRun3_2022_realistic_postEE_v1-v2+2820000+0096d5dd-88d3-46a0-a8cc-255a3090c71e.root --fileout file:BsToMuMu_BMuonFilter_NanoAOD.root --nThreads 1 -n 10000 --no_exec --python_filename BsToMuMu_BMuonFilter_NanoAOD.py --scenario pp --step NANO --mc --customise=BmmScout/NanoAOD/nano_cff.nanoAOD_customizeDileptonPlusX --customise=BmmScout/NanoAOD/nano_cff.nanoAOD_customizeV0ForMuonFake --customise=BmmScout/NanoAOD/nano_cff.nanoAOD_customizeBmmMuonId --customise_commands="process.add_(cms.Service('InitRootHandlers', EnableIMT = cms.untracked.bool(False)))" --customise Validation/Performance/TimeMemoryInfo.py --customise_commands="process.Timing.summaryOnly = cms.untracked.bool(True)"```
          * ```cmsRun BsToMuMu_BMuonFilter_NanoAOD.py > & BsToMuMu_BMuonFilter_NanoAOD.log```
-         * ```python3 Bmm5/NanoAOD/performance/make_report.py BsToMuMu_BMuonFilter_NanoAOD.log```
+         * ```python3 BmmScout/NanoAOD/performance/make_report.py BsToMuMu_BMuonFilter_NanoAOD.log```
 * Data:
    * Charmonium Run2018D
       * Standard NanoAODv9 + all Bmm customization
-         * ```cmsDriver.py step1 --filein /store/user/dmytro/tmp/store+data+Run2018D+Charmonium+MINIAOD+UL2018_MiniAODv2-v1+240000+D9C795D0-EAC3-2A47-A631-E314B7AA9883.root --fileout file:Run2018D_NanoAOD_bmm.root --data --eventcontent NANOAOD --datatier NANOAOD --conditions 106X_dataRun2_v35 --step NANO --nThreads 1 --era Run2_2018,run2_nanoAOD_106Xv2 --python_filename Run2018D_NanoAOD_bmm.py --no_exec -n 10000 --customise=Bmm5/NanoAOD/nano_cff.nanoAOD_customizeDileptonPlusX --customise=Bmm5/NanoAOD/nano_cff.nanoAOD_customizeV0ForMuonFake --customise=Bmm5/NanoAOD/nano_cff.nanoAOD_customizeBmmMuonId --customise_commands="process.add_(cms.Service('InitRootHandlers', EnableIMT = cms.untracked.bool(False)))" --customise Validation/Performance/TimeMemoryInfo.py --customise_commands="process.Timing.summaryOnly = cms.untracked.bool(True)"```
+         * ```cmsDriver.py step1 --filein /store/user/dmytro/tmp/store+data+Run2018D+Charmonium+MINIAOD+UL2018_MiniAODv2-v1+240000+D9C795D0-EAC3-2A47-A631-E314B7AA9883.root --fileout file:Run2018D_NanoAOD_bmm.root --data --eventcontent NANOAOD --datatier NANOAOD --conditions 106X_dataRun2_v35 --step NANO --nThreads 1 --era Run2_2018,run2_nanoAOD_106Xv2 --python_filename Run2018D_NanoAOD_bmm.py --no_exec -n 10000 --customise=BmmScout/NanoAOD/nano_cff.nanoAOD_customizeDileptonPlusX --customise=BmmScout/NanoAOD/nano_cff.nanoAOD_customizeV0ForMuonFake --customise=BmmScout/NanoAOD/nano_cff.nanoAOD_customizeBmmMuonId --customise_commands="process.add_(cms.Service('InitRootHandlers', EnableIMT = cms.untracked.bool(False)))" --customise Validation/Performance/TimeMemoryInfo.py --customise_commands="process.Timing.summaryOnly = cms.untracked.bool(True)"```
          * ```cmsRun Run2018D_NanoAOD_bmm.py >& Run2018D_NanoAOD_bmm.log &```
-         * ```python3 Bmm5/NanoAOD/performance/make_report.py Run2018D_NanoAOD_bmm.log```
+         * ```python3 BmmScout/NanoAOD/performance/make_report.py Run2018D_NanoAOD_bmm.log```

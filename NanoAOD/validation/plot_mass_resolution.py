@@ -21,7 +21,7 @@ selection = "mm_mu1_index>=0 && mm_mu2_index>=0 && "\
 # selection += " && mm_mva>0.99"
 # selection += " && mm_gen_pdgId!=0"
 
-input_path = "/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/517/"
+input_path = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/517/"
 output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/Bmm/AN/tmp/"
 
 def print_canvas(output_name_without_extention, path, canvas=ROOT.gPad):
@@ -62,13 +62,13 @@ for sample in samples:
 
 
 #     jpi_bf = 3.92e-5
-# # jpi_f = ROOT.TFile.Open("/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/516/BuToJpsiPi_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/00956A81-A197-6A4A-AF29-701466920A11.root")
+# # jpi_f = ROOT.TFile.Open("/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/516/BuToJpsiPi_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/00956A81-A197-6A4A-AF29-701466920A11.root")
 # # jpi_lumis = jpi_f.Get("LuminosityBlocks")
 # # jpi_events = jpi_f.Get("Events")
 # jpi_lumis = ROOT.TChain("LuminosityBlocks")
-# jpi_lumis.Add("/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/516/BuToJpsiPi_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/*.root")
+# jpi_lumis.Add("/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/516/BuToJpsiPi_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/*.root")
 # jpi_events = ROOT.TChain("Events")
-# jpi_events.Add("/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/516/BuToJpsiPi_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/*.root")
+# jpi_events.Add("/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/516/BuToJpsiPi_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v1+MINIAODSIM/*.root")
 
 # n_jpi = 0
 # for lumi in jpi_lumis:
@@ -90,13 +90,13 @@ for sample in samples:
 # print_canvas("hist_bjpsipi_mva", output_path)
 
 # jk_bf = 1.02e-3
-# # jk_f = ROOT.TFile.Open("/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/516/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/01033CC8-1059-E54A-AE50-913E0E9BBF45.root")
+# # jk_f = ROOT.TFile.Open("/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/516/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/01033CC8-1059-E54A-AE50-913E0E9BBF45.root")
 # # jk_lumis = jk_f.Get("LuminosityBlocks")
 # # jk_events = jk_f.Get("Events")
 # jk_lumis = ROOT.TChain("LuminosityBlocks")
-# jk_lumis.Add("/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/516/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/*.root")
+# jk_lumis.Add("/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/516/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/*.root")
 # jk_events = ROOT.TChain("Events")
-# jk_events.Add("/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/516/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/*.root")
+# jk_events.Add("/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/516/BuToJpsiK_BMuonFilter_SoftQCDnonD_TuneCP5_13TeV-pythia8-evtgen+RunIISummer20UL18MiniAOD-106X_upgrade2018_realistic_v11_L1v1-v2+MINIAODSIM/*.root")
 
 # n_jk = 0
 # for lumi in jk_lumis:

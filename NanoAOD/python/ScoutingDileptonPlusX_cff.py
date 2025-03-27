@@ -122,12 +122,12 @@ Dileptons = cms.EDProducer(
     minBKKllMass = cms.double(4.5),
     maxBKKllMass = cms.double(6.0),
     maxTwoTrackDOCA = cms.double(0.1),
-    bdtEvent0 = cms.FileInPath('Bmm5/NanoAOD/data/TMVA-100-Events0_BDT.weights.xml'),
-    bdtEvent1 = cms.FileInPath('Bmm5/NanoAOD/data/TMVA-100-Events1_BDT.weights.xml'),
-    bdtEvent2 = cms.FileInPath('Bmm5/NanoAOD/data/TMVA-100-Events2_BDT.weights.xml'),
-    xgbEvent0 = cms.FileInPath('Bmm5/NanoAOD/data/Run2017-2018-20200515-1144-Event0.model'),
-    xgbEvent1 = cms.FileInPath('Bmm5/NanoAOD/data/Run2017-2018-20200515-1143-Event1.model'),
-    xgbEvent2 = cms.FileInPath('Bmm5/NanoAOD/data/Run2017-2018-20200515-1143-Event2.model'),
+    bdtEvent0 = cms.FileInPath('BmmScout/NanoAOD/data/TMVA-100-Events0_BDT.weights.xml'),
+    bdtEvent1 = cms.FileInPath('BmmScout/NanoAOD/data/TMVA-100-Events1_BDT.weights.xml'),
+    bdtEvent2 = cms.FileInPath('BmmScout/NanoAOD/data/TMVA-100-Events2_BDT.weights.xml'),
+    xgbEvent0 = cms.FileInPath('BmmScout/NanoAOD/data/Run2017-2018-20200515-1144-Event0.model'),
+    xgbEvent1 = cms.FileInPath('BmmScout/NanoAOD/data/Run2017-2018-20200515-1143-Event1.model'),
+    xgbEvent2 = cms.FileInPath('BmmScout/NanoAOD/data/Run2017-2018-20200515-1143-Event2.model'),
     isMC = cms.bool(False),
     # injectMatchedBtohh = cms.bool(True),
     injectMatchedBtohh = cms.bool(False),
@@ -260,7 +260,7 @@ DileptonsDiMuonTableVariables = merge_psets(
         mass         = Var("mass",                         float, doc = "Unfit invariant mass"),
         doca         = Var("userFloat('doca')",            float, doc = "Distance of closest approach of muons"),
         # bdt          = Var("userFloat('bdt')",             float, doc = "Bmm4 BDT"),
-        # mva          = Var("userFloat('mva')",             float, doc = "XGBoost based Bmm5 MVA"),
+        # mva          = Var("userFloat('mva')",             float, doc = "XGBoost based BmmScout MVA"),
         # Kinematic Fit daugter info
         kin_mu1_pt    = Var("userFloat('kin_mu1pt')",       float, doc = "Kinematic fit: refitted muon 1 pt"),
         kin_mu1_eta   = Var("userFloat('kin_mu1eta')",      float, doc = "Kinematic fit: refitted muon 1 eta"),
@@ -983,7 +983,7 @@ BxToMuMuGenTable = cms.EDProducer("SimpleCompositeCandidateFlatTableProducer",
     src=cms.InputTag("BxToMuMuGen","genbmm"),
     cut=cms.string(""),
     name=cms.string("genbmm"),
-    doc=cms.string("GenInfo Variables for Bmm5"),
+    doc=cms.string("GenInfo Variables for BmmScout"),
     singleton=cms.bool(False),
     extension=cms.bool(False),
     variables = BxToMuMuGenVars
@@ -999,7 +999,7 @@ BxToMuMuGenSummaryTable = cms.EDProducer("SimpleCompositeCandidateFlatTableProdu
     src=cms.InputTag("BxToMuMuGen","gensummary"),
     cut=cms.string(""),
     name=cms.string("gensummary"),
-    doc=cms.string("GenInfo Variables for Bmm5"),
+    doc=cms.string("GenInfo Variables for BmmScout"),
     singleton=cms.bool(False),
     extension=cms.bool(False),
     variables = BxToMuMuGenSummaryVars
@@ -1152,19 +1152,19 @@ prescaleTable = cms.EDProducer("TriggerPrescaleProducer",
                                   'HLT_DoubleMu4_LowMass_Displaced')
 )
 
-# DileptonPlusXSequence   = cms.Sequence(Dileptons * PrimaryVertexInfo)
-# DileptonPlusXMcSequence = cms.Sequence(DileptonsMc * PrimaryVertexInfoMc * BxToMuMuGen * DstarGen )
+ScoutingDileptonPlusXSequence   = cms.Sequence(Dileptons)
+ScoutingDileptonPlusXMcSequence = cms.Sequence(DileptonsMc * BxToMuMuGen * DstarGen )
 
-# DileptonPlusXMcSequence = cms.Sequence(DileptonsMc)
+ScoutingDileptonPlusXMcSequence = cms.Sequence(DileptonsMc)
 
-# DileptonPlusXTables     = cms.Sequence(DileptonsDiMuonTable   * DileptonsHHTable    * DileptonsElElTable     *
-#                                        DileptonsElMuTable     * DileptonsKmumuTable * DileptonsKeeTable      *
-#                                        DileptonsKKmumuTable   * DileptonsKKeeTable  * DileptonsDstarTable    *
-#                                        Dileptons3MuTable      * DileptonsKstarTable *
-#                                        DileptonsMuMuGammaTable * PrimaryVertexInfoTable * prescaleTable)
-# DileptonPlusXMcTables   = cms.Sequence(DileptonsDiMuonMcTable * DileptonsHHMcTable     * DileptonsElElMcTable *
-#                                        DileptonsElMuMcTable   * DileptonsKmumuMcTable  * DileptonsKeeMcTable  *
-#                                        DileptonsKKmumuMcTable * DileptonsKKeeMcTable   * DileptonsDstarMcTable *
-#                                        PrimaryVertexInfoMcTable * DileptonsMuMuGammaMcTable * BxToMuMuGenTable *
-#                                        Dileptons3MuMcTable    * DileptonsKstarMcTable  *
-#                                        BxToMuMuGenSummaryTable * DstarGenTable * prescaleTable)
+ScoutingDileptonPlusXTables     = cms.Sequence(DileptonsDiMuonTable   * DileptonsHHTable    * DileptonsElElTable     *
+                                        DileptonsElMuTable     * DileptonsKmumuTable * DileptonsKeeTable      *
+                                        DileptonsKKmumuTable   * DileptonsKKeeTable  * DileptonsDstarTable    *
+                                        Dileptons3MuTable      * DileptonsKstarTable *
+                                        DileptonsMuMuGammaTable)
+ScoutingDileptonPlusXMcTables   = cms.Sequence(DileptonsDiMuonMcTable * DileptonsHHMcTable     * DileptonsElElMcTable *
+                                        DileptonsElMuMcTable   * DileptonsKmumuMcTable  * DileptonsKeeMcTable  *
+                                        DileptonsKKmumuMcTable * DileptonsKKeeMcTable   * DileptonsDstarMcTable *
+                                        DileptonsMuMuGammaMcTable * BxToMuMuGenTable *
+                                        Dileptons3MuMcTable    * DileptonsKstarMcTable  *
+                                        BxToMuMuGenSummaryTable * DstarGenTable)

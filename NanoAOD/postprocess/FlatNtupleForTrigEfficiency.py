@@ -226,9 +226,9 @@ if __name__ == "__main__":
 
     ### create a test job
 
-    # prefix = "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/518/SingleMuon+Run2018D-12Nov2019_UL2018-v8+MINIAOD/"
-    # prefix = "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/518/SingleMuon+Run2017F-09Aug2019_UL2017-v1+MINIAOD//"
-    prefix = "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/518/EGamma+Run2018D-12Nov2019_UL2018-v4+MINIAOD/"
+    # prefix = "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/518/SingleMuon+Run2018D-12Nov2019_UL2018-v8+MINIAOD/"
+    # prefix = "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/518/SingleMuon+Run2017F-09Aug2019_UL2017-v1+MINIAOD//"
+    prefix = "root://eoscms.cern.ch://eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/518/EGamma+Run2018D-12Nov2019_UL2018-v4+MINIAOD/"
     job = {
         "input": [
             # SingleMuon+Run2018D

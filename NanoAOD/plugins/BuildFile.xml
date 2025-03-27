@@ -24,7 +24,7 @@
 <use   name="CommonTools/CandUtils"/>
 <use   name="TrackingTools/IPTools"/>
 <use   name="PhysicsTools/PatAlgos"/>
-<use   name="Bmm5/NanoAOD"/>
-<library   file="*.cc" name="Bmm5NanoAODPlugins">
+<use   name="BmmScout/NanoAOD"/>
+<library   file="*.cc" name="BmmScoutNanoAODPlugins">
   <flags   EDM_PLUGIN="1"/>
 </library>

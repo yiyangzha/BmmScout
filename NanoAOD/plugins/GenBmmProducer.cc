@@ -18,7 +18,7 @@
 #include <TMatrix.h>
 
 // 
-// GenBmmProducer gen info extraction for Bmm5 analysis
+// GenBmmProducer gen info extraction for BmmScout analysis
 
 typedef reco::Candidate::LorentzVector LorentzVector;
 namespace {

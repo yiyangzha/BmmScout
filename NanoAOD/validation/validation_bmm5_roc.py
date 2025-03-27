@@ -3,7 +3,7 @@ import os, re, ROOT, sys, time
 from ROOT import TFile,TTree,TH1,TROOT,TDirectory,TPad,TCanvas,TColor
 from array import array
 
-output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/validation-bmm5-roc/"
+output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/validation-BmmScout-roc/"
 
 # preselection = "mm_gen_mass>0&&abs(Muon_eta[mm_mu1_index])<1.4 && abs(Muon_eta[mm_mu2_index])<1.4&&Muon_pt[mm_mu1_index]>4 && Muon_pt[mm_mu2_index]>4&&mm_kin_valid&&Muon_softMva[mm_mu1_index]>0.45 && Muon_softMva[mm_mu2_index]>0.45&&mm_kin_sl3d>3"
 preselection = "abs(Muon_eta[mm_mu1_index])<1.4 && abs(Muon_eta[mm_mu2_index])<1.4&&Muon_pt[mm_mu1_index]>4 && Muon_pt[mm_mu2_index]>4&&mm_kin_valid&&Muon_softMva[mm_mu1_index]>0.45 && Muon_softMva[mm_mu2_index]>0.45&&mm_kin_sl3d>4&&mm_kin_mass<30&&abs(mm_kin_pvip/mm_kin_pvipErr)<5&&mm_kin_vtx_chi2dof<5"
@@ -18,7 +18,7 @@ samples = [
     {
         'name':'QCD_Pt-50to80_MuEnrichedPt5',
         'type':'bkg',
-        'path':'/eos/cms/store/user/dmytro/QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8/crab_NanoAOD_QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8_Bmm5-01/191014_051624/0000/*.root',
+        'path':'/eos/cms/store/user/dmytro/QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8/crab_NanoAOD_QCD_Pt-50to80_MuEnrichedPt5_TuneCP5_13TeV_pythia8_BmmScout-01/191014_051624/0000/*.root',
         'extra_cuts':''
         
     },
@@ -37,14 +37,14 @@ samples = [
     {
         'name':'QCD_Pt-15to20_MuEnrichedPt5',
         'type':'bkg',
-        'path':'/eos/cms/store/user/dmytro/QCD_Pt-15to20_MuEnrichedPt5_TuneCP5_13TeV_pythia8/crab_NanoAOD_QCD_Pt-15to20_MuEnrichedPt5_TuneCP5_13TeV_pythia8_Bmm5-01/191014_050926/0000/*.root',
+        'path':'/eos/cms/store/user/dmytro/QCD_Pt-15to20_MuEnrichedPt5_TuneCP5_13TeV_pythia8/crab_NanoAOD_QCD_Pt-15to20_MuEnrichedPt5_TuneCP5_13TeV_pythia8_BmmScout-01/191014_050926/0000/*.root',
         'extra_cuts':''
         
     },
     {
         'name':'QCD_Pt-120to170_MuEnrichedPt5',
         'type':'bkg',
-        'path':'/eos/cms/store/user/dmytro/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/crab_NanoAOD_QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8_Bmm5-01/191014_050337/0000/*.root',
+        'path':'/eos/cms/store/user/dmytro/QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8/crab_NanoAOD_QCD_Pt-120to170_MuEnrichedPt5_TuneCP5_13TeV_pythia8_BmmScout-01/191014_050337/0000/*.root',
         'extra_cuts':''
         
     },

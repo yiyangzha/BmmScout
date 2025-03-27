@@ -1,4 +1,4 @@
-#include "Bmm5/NanoAOD/interface/CommonTools.h"
+#include "BmmScout/NanoAOD/interface/CommonTools.h"
 #include "DataFormats/Math/interface/deltaR.h"
 
 using namespace bmm;

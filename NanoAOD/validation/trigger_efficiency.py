@@ -4,7 +4,7 @@ The script measures the absolute trigger efficiency of dimuon
 B-physics triggers in MC and Data. For Data only datasets selected by
 non-muon triggers can be used.
 
-The input data should be in Bmm5 NanoAOD format.
+The input data should be in BmmScout NanoAOD format.
 
 The script is fairly slow especially for large MC samples. For testing
 you may want to run on just a few files.
@@ -24,7 +24,7 @@ import sys, os, subprocess, re, json
 import ROOT
 from math import *
 from tdrstyle import *
-from Bmm5.NanoAOD.selection import *
+from BmmScout.NanoAOD.selection import *
 from collections import Counter
 import numpy
 
@@ -36,10 +36,10 @@ import numpy
 mode = "nano"
 recompute_results = False
 
-path_skim1 = "/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing/NanoAOD-skims/516/mm/"
-path_skim2 = "/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing-NEW/NanoAOD-skims/518/trig/"
-path_flat  = "/eos/cms/store/group/phys_bphys/bmm/bmm5/PostProcessing-NEW/FlatNtuples/518/trig-info/"
-path_nano  = "/eos/cms/store/group/phys_bphys/bmm/bmm5/NanoAOD/518/"
+path_skim1 = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing/NanoAOD-skims/516/mm/"
+path_skim2 = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing-NEW/NanoAOD-skims/518/trig/"
+path_flat  = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/PostProcessing-NEW/FlatNtuples/518/trig-info/"
+path_nano  = "/eos/cms/store/group/phys_bphys/bmm/BmmScout/NanoAOD/518/"
 
 split_channels = True
 # split_channels = False
@@ -609,7 +609,7 @@ studies = {
 
 
 
-output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/bmm5_NanoAODv8-516/trigger_efficiency"
+output_path = "/afs/cern.ch/user/d/dmytro/www/public_html/plots/BmmScout_NanoAODv8-516/trigger_efficiency"
 
 ROOT.gROOT.SetBatch(True)
 c1 = ROOT.TCanvas("c1","c1", 800,600)

@@ -1,11 +1,11 @@
 // -*- C++ -*-
 //
-// Package:    Bmm5/GenBmmFilter
+// Package:    BmmScout/GenBmmFilter
 // Class:      GenBmmFilter
 // 
-/**\class GenBmmFilter GenBmmFilter.cc Bmm5/NanoAOD/plugins/GenBmmFilter.cc
+/**\class GenBmmFilter GenBmmFilter.cc BmmScout/NanoAOD/plugins/GenBmmFilter.cc
 
- Description: Bmm5 analysis gen filter for selecting two near by muons in QCD events
+ Description: BmmScout analysis gen filter for selecting two near by muons in QCD events
 
  Implementation:
     - muon kinematic cuts (pt, eta)

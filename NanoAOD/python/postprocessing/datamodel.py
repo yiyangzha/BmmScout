@@ -1,4 +1,4 @@
-from Bmm5.NanoAOD.postprocessing.treeReaderArrayTools import InputTree
+from BmmScout.NanoAOD.postprocessing.treeReaderArrayTools import InputTree
 import ROOT
 import math
 ROOT.PyConfig.IgnoreCommandLineOptions = True
