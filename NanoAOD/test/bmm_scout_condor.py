@@ -35,8 +35,18 @@ process.source = cms.Source("PoolSource",
     secondaryFileNames = cms.untracked.vstring()
 )
 
-process.MessageLogger.cerr.FwkSummary.reportEvery = 10000
-process.MessageLogger.cerr.FwkReport.reportEvery = 10000
+process.MessageLogger = cms.Service("MessageLogger",
+    cerr = cms.untracked.PSet(
+        FwkSummary = cms.untracked.PSet(reportEvery = cms.untracked.int32(10000)),
+        FwkReport = cms.untracked.PSet(reportEvery = cms.untracked.int32(10000)),
+        KalmanVertexUpdator = cms.untracked.PSet(
+            limit = cms.untracked.int32(0)  # 完全禁止该模块的警告输出
+        ),
+    ),
+    suppressWarning = cms.untracked.vstring(
+        'KalmanVertexUpdator'
+    )
+)
 
 process.options = cms.untracked.PSet(
     IgnoreCompletely = cms.untracked.vstring(),
@@ -108,10 +118,6 @@ process.schedule = cms.Schedule(
     process.endjob_step,
     process.NANOAODoutput_step
 )
-
-#Setup FWK for multithreaded
-process.options.numberOfThreads = 4
-process.options.numberOfStreams = 4
 
 # customisation of the process.
 

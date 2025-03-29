@@ -1161,10 +1161,10 @@ ScoutingDileptonPlusXTables     = cms.Sequence(DileptonsDiMuonTable   * Dilepton
                                         DileptonsElMuTable     * DileptonsKmumuTable * DileptonsKeeTable      *
                                         DileptonsKKmumuTable   * DileptonsKKeeTable  * DileptonsDstarTable    *
                                         Dileptons3MuTable      * DileptonsKstarTable *
-                                        DileptonsMuMuGammaTable)
+                                        DileptonsMuMuGammaTable * BsToPhiPhiTable)
 ScoutingDileptonPlusXMcTables   = cms.Sequence(DileptonsDiMuonMcTable * DileptonsHHMcTable     * DileptonsElElMcTable *
                                         DileptonsElMuMcTable   * DileptonsKmumuMcTable  * DileptonsKeeMcTable  *
                                         DileptonsKKmumuMcTable * DileptonsKKeeMcTable   * DileptonsDstarMcTable *
                                         DileptonsMuMuGammaMcTable * BxToMuMuGenTable *
                                         Dileptons3MuMcTable    * DileptonsKstarMcTable  *
-                                        BxToMuMuGenSummaryTable * DstarGenTable)
+                                        BxToMuMuGenSummaryTable * DstarGenTable * BsToPhiPhiMcTable)
