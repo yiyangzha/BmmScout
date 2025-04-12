@@ -1,9 +1,5 @@
-# Auto generated configuration file
-# using: 
-# Revision: 1.19 
-# Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
-# with command line options: RECO --conditions 140X_dataRun3_Prompt_v4 --datatier NANOAOD --era Run3 --eventcontent NANOAOD --filein /store/data/Run2024G/ParkingDoubleMuonLowMass0/MINIAOD/PromptReco-v1/000/385/764/00000/9ef5445a-ee2b-4c0a-b02d-88f43dbedf1d.root --fileout file:/tmp/dmytro/test_data.root --nThreads 4 -n 10000 --no_exec --python_filename test_data.py --scenario pp --step NANO --customise=BmmScout/NanoAOD/nano_cff.nanoAOD_customizeDileptonPlusX --customise=BmmScout/NanoAOD/nano_cff.nanoAOD_customizeV0ForMuonFake --customise=BmmScout/NanoAOD/nano_cff.nanoAOD_customizeBmmMuonId --customise_commands=process.add_(cms.Service('InitRootHandlers', EnableIMT = cms.untracked.bool(False)))
 import FWCore.ParameterSet.Config as cms
+from FWCore.ParameterSet.VarParsing import VarParsing
 
 from Configuration.Eras.Era_Run3_cff import Run3
 
