@@ -119,7 +119,7 @@ Dileptons = cms.EDProducer(
     ElectronMinPt = cms.double(2.),
     ElectronMaxEta = cms.double(2.4),
     KaonMinDCASig=cms.double(-1.),
-    DiLeptonChargeCheck=cms.bool(False),
+    DiLeptonChargeCheck=cms.bool(True),
     minBKllMass = cms.double(4.0),
     maxBKllMass = cms.double(6.0),
     minLLGammaMass = cms.double(3.0),
@@ -139,20 +139,20 @@ Dileptons = cms.EDProducer(
     injectMatchedBtohh = cms.bool(False),
     injectBtohh = cms.bool(False),
     injectJpsiTracks = cms.bool(False),
-    recoMuMuGamma = cms.bool(True),
-    recoMuMuGammaConv = cms.bool(True),
+    recoMuMuGamma = cms.bool(False),
+    recoMuMuGammaConv = cms.bool(False),
     recoElElX = cms.bool(False),
-    recoElMu = cms.bool(True),
+    recoElMu = cms.bool(False),
     recoDstar = cms.bool(True),
     recoD0pipi = cms.bool(True),
     recoD0Kpi = cms.bool(True),
-    recoKspipi = cms.bool(True),
-    recoKstar = cms.bool(True),
-    minBhhHadronPt = cms.double(4.0),
-    maxBhhHadronEta = cms.double(1.4),
-    minDhhHadronPt = cms.double(3.0),
+    recoKspipi = cms.bool(False),
+    recoKstar = cms.bool(False),
+    minBhhHadronPt = cms.double(0.5),
+    maxBhhHadronEta = cms.double(2.4),
+    minDhhHadronPt = cms.double(1.0),
     maxDhhHadronEta = cms.double(2.4),
-    minKsHadronPt = cms.double(3.0),
+    minKsHadronPt = cms.double(0.5),
     maxKsHadronEta = cms.double(2.4),
     minJpsiHadronPt = cms.double(2.0),
     minBhhMass   = cms.double(4.9),
@@ -687,6 +687,7 @@ DileptonsKeeMcTable = cms.EDProducer("SimpleCompositeCandidateFlatTableProducer"
 
 DileptonsDstarTableVariables =  merge_psets(
     cms.PSet(
+        fromKpi        = Var("userInt('fromKpi')",          bool,  doc = "D0 from K pi"),
         mm_index       = Var("userInt('mm_index')",          int,   doc = "Index of muon pair"),
         hh_index       = Var("userInt('hh_index')",          int,   doc = "Index of hadron pair"),
         pion_charge    = Var("userInt('pion_charge')",       int,   doc = "Pion charge"),
@@ -1229,6 +1230,62 @@ DstarGenTable = cms.EDProducer("SimpleCompositeCandidateFlatTableProducer",
 
 ##################################################################################
 ###
+###                              Bs to Phi Phi
+###
+##################################################################################
+
+BsToPhiPhiTableVariables = merge_psets(
+    copy_pset(kinematic_pset,{"kin_":"vtx_"}),
+    copy_pset(kinematic_pset,{"kin_":"mc_"}),
+    cms.PSet(
+        mass             = Var("userFloat('mass')",              float,   doc = "raw mass"),
+        pt               = Var("userFloat('pt')",                float,   doc = "raw pt"),
+        eta              = Var("userFloat('eta')",               float,   doc = "raw eta"),
+        kaon1_pt         = Var("userFloat('kaon1_pt')",          float,   doc = "kaon1 pt"),
+        kaon1_eta        = Var("userFloat('kaon1_eta')",         float,   doc = "kaon1 eta"),
+        kaon1_phi        = Var("userFloat('kaon1_phi')",         float,   doc = "kaon1 phi"),
+        kaon2_pt         = Var("userFloat('kaon2_pt')",          float,   doc = "kaon2 pt"),
+        kaon2_eta        = Var("userFloat('kaon2_eta')",         float,   doc = "kaon2 eta"),
+        kaon2_phi        = Var("userFloat('kaon2_phi')",         float,   doc = "kaon2 phi"),
+        kaon3_pt         = Var("userFloat('kaon3_pt')",          float,   doc = "kaon3 pt"),
+        kaon3_eta        = Var("userFloat('kaon3_eta')",         float,   doc = "kaon3 eta"),
+        kaon3_phi        = Var("userFloat('kaon3_phi')",         float,   doc = "kaon3 phi"),
+        kaon4_pt         = Var("userFloat('kaon4_pt')",          float,   doc = "kaon4 pt"),
+        kaon4_eta        = Var("userFloat('kaon4_eta')",         float,   doc = "kaon4 eta"),
+        kaon4_phi        = Var("userFloat('kaon4_phi')",         float,   doc = "kaon4 phi"),
+        phi1_mass        = Var("userFloat('phi1_mass')",         float,   doc = "phi1 raw mass"),
+        phi2_mass        = Var("userFloat('phi2_mass')",         float,   doc = "phi2 raw mass")
+    )
+)
+
+BsToPhiPhiMcTableVariables = merge_psets(
+    DileptonsMuMuGammaTableVariables,
+    cms.PSet(
+    )
+)
+
+BsToPhiPhiTable = cms.EDProducer("SimpleCompositeCandidateFlatTableProducer", 
+    src=cms.InputTag("Dileptons","BsToPhiPhi"),
+    cut=cms.string(""),
+    name=cms.string("bs4k"),
+    doc=cms.string("BsToPhiPhi Variables"),
+    singleton=cms.bool(False),
+    extension=cms.bool(False),
+    variables = BsToPhiPhiTableVariables
+)
+
+BsToPhiPhiMcTable = cms.EDProducer("SimpleCompositeCandidateFlatTableProducer", 
+    src=cms.InputTag("DileptonsMc","BsToPhiPhi"),
+    cut=cms.string(""),
+    name=cms.string("bs4k"),
+    doc=cms.string("BsToPhiPhi Variables"),
+    singleton=cms.bool(False),
+    extension=cms.bool(False),
+    variables = BsToPhiPhiMcTableVariables
+)
+
+##################################################################################
+###
 ###                             Prescale Info
 ###
 ##################################################################################
@@ -1249,7 +1306,7 @@ DileptonPlusXTables     = cms.Sequence(DileptonsDiMuonTable   * DileptonsHHTable
                                        DileptonsElMuTable     * DileptonsKmumuTable * DileptonsKeeTable      *
                                        DileptonsKKmumuTable   * DileptonsKKeeTable  * DileptonsDstarTable    *
                                        Dileptons3MuTable      * DileptonsKstarTable * DileptonTrackTable     *
-                                       DileptonIsoTable       * 
+                                       DileptonIsoTable       * BsToPhiPhiTable *
                                        DileptonsMuMuGammaTable * PrimaryVertexInfoTable * prescaleTable)
 
 DileptonPlusXMcTables   = cms.Sequence(DileptonsDiMuonMcTable * DileptonsHHMcTable     * DileptonsElElMcTable *

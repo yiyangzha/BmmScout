@@ -1,8 +1,20 @@
+# Auto generated configuration file
+# using: 
+# Revision: 1.19 
+# Source: /local/reps/CMSSW/CMSSW/Configuration/Applications/python/ConfigBuilder.py,v 
+# with command line options: RECO --conditions 140X_dataRun3_Prompt_v4 --datatier NANOAOD --era Run3 --eventcontent NANOAOD --filein /store/data/Run2024G/ParkingDoubleMuonLowMass0/MINIAOD/PromptReco-v1/000/385/764/00000/9ef5445a-ee2b-4c0a-b02d-88f43dbedf1d.root --fileout file:/tmp/dmytro/test_data.root --nThreads 4 -n 10000 --no_exec --python_filename test_data.py --scenario pp --step NANO --customise=BmmScout/NanoAOD/nano_cff.nanoAOD_customizeDileptonPlusX --customise=BmmScout/NanoAOD/nano_cff.nanoAOD_customizeV0ForMuonFake --customise=BmmScout/NanoAOD/nano_cff.nanoAOD_customizeBmmMuonId --customise_commands=process.add_(cms.Service('InitRootHandlers', EnableIMT = cms.untracked.bool(False)))
 import FWCore.ParameterSet.Config as cms
 
 from Configuration.Eras.Era_Run3_cff import Run3
 
 process = cms.Process('NANO',Run3)
+
+options = VarParsing('analysis')
+options.parseArguments()
+options.outputFile = 'BmmPark.root'
+assert len(options.inputFiles) == 1, 'Only run interactively with file len=1'
+print("Running    ", options.inputFiles)
+print("Output file", options.outputFile)
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -11,7 +23,6 @@ process.load('FWCore.MessageService.MessageLogger_cfi')
 process.load('Configuration.EventContent.EventContent_cff')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
-process.load('Configuration.StandardSequences.Reconstruction_cff')
 process.load('PhysicsTools.NanoAOD.nano_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
@@ -23,7 +34,7 @@ process.maxEvents = cms.untracked.PSet(
 
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('root://cms-xrd-global.cern.ch//store/data/Run2024F/ScoutingPFRun3/HLTSCOUT/v1/000/382/299/00000/4f516e00-43f7-4b65-ade1-490a3590faac.root'),
+    fileNames = cms.untracked.vstring(options.inputFiles),
     secondaryFileNames = cms.untracked.vstring()
 )
 
@@ -34,9 +45,16 @@ process.MessageLogger = cms.Service("MessageLogger",
         KalmanVertexUpdator = cms.untracked.PSet(
             limit = cms.untracked.int32(0)  # 完全禁止该模块的警告输出
         ),
+        TriggerOutputBranches = cms.untracked.PSet(
+            limit = cms.untracked.int32(0)
+        ),
+        default = cms.untracked.PSet(
+            limit = cms.untracked.int32(100)
+        )
     ),
     suppressWarning = cms.untracked.vstring(
-        'KalmanVertexUpdator'
+        'KalmanVertexUpdator',
+        'TriggerOutputBranches'
     )
 )
 
@@ -64,8 +82,8 @@ process.options = cms.untracked.PSet(
     modulesToIgnoreForDeleteEarly = cms.untracked.vstring(),
     numberOfConcurrentLuminosityBlocks = cms.untracked.uint32(0),
     numberOfConcurrentRuns = cms.untracked.uint32(1),
-    numberOfStreams = cms.untracked.uint32(1),
-    numberOfThreads = cms.untracked.uint32(1),
+    numberOfStreams = cms.untracked.uint32(4),
+    numberOfThreads = cms.untracked.uint32(4),
     printDependencies = cms.untracked.bool(False),
     sizeOfStackForThreadsInKB = cms.optional.untracked.uint32,
     throwIfIllegalParameter = cms.untracked.bool(True),
@@ -74,13 +92,12 @@ process.options = cms.untracked.PSet(
 
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
-    annotation = cms.untracked.string('RECO nevts:1000'),
+    annotation = cms.untracked.string('RECO nevts:10000'),
     name = cms.untracked.string('Applications'),
     version = cms.untracked.string('$Revision: 1.19 $')
 )
 
 # Output definition
-
 
 process.NANOAODoutput = cms.OutputModule("NanoAODOutputModule",
     compressionAlgorithm = cms.untracked.string('LZMA'),
@@ -89,7 +106,7 @@ process.NANOAODoutput = cms.OutputModule("NanoAODOutputModule",
         dataTier = cms.untracked.string('NANOAOD'),
         filterName = cms.untracked.string('')
     ),
-    fileName = cms.untracked.string('file:test_data.root'),
+    fileName = cms.untracked.string(options.outputFile),
     outputCommands = process.NANOAODEventContent.outputCommands
 )
 
@@ -99,25 +116,35 @@ process.NANOAODoutput = cms.OutputModule("NanoAODOutputModule",
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, '140X_dataRun3_Prompt_v4', '')
 
-process.bemaspot_step = cms.Path(process.offlineBeamSpot)
+# Path and EndPath definitions
 process.nanoAOD_step = cms.Path(process.nanoSequence)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.NANOAODoutput_step = cms.EndPath(process.NANOAODoutput)
 
-process.schedule = cms.Schedule(
-    process.bemaspot_step,
-    process.nanoAOD_step,
-    process.endjob_step,
-    process.NANOAODoutput_step
-)
+# Schedule definition
+process.schedule = cms.Schedule(process.nanoAOD_step,process.endjob_step,process.NANOAODoutput_step)
+from PhysicsTools.PatAlgos.tools.helpers import associatePatAlgosToolsTask
+associatePatAlgosToolsTask(process)
 
 # customisation of the process.
 
 # Automatic addition of the customisation function from BmmScout.NanoAOD.nano_cff
-from BmmScout.NanoAOD.nano_cff import nanoAOD_customizeScoutingDileptonPlusX 
+from BmmScout.NanoAOD.nano_cff import nanoAOD_customizeDileptonPlusX,nanoAOD_customizeV0ForMuonFake,nanoAOD_customizeBmmMuonId 
 
 #call to customisation function nanoAOD_customizeDileptonPlusX imported from BmmScout.NanoAOD.nano_cff
-process = nanoAOD_customizeScoutingDileptonPlusX(process)
+process = nanoAOD_customizeDileptonPlusX(process)
+
+#call to customisation function nanoAOD_customizeV0ForMuonFake imported from BmmScout.NanoAOD.nano_cff
+process = nanoAOD_customizeV0ForMuonFake(process)
+
+#call to customisation function nanoAOD_customizeBmmMuonId imported from BmmScout.NanoAOD.nano_cff
+process = nanoAOD_customizeBmmMuonId(process)
+
+# Automatic addition of the customisation function from PhysicsTools.NanoAOD.nano_cff
+from PhysicsTools.NanoAOD.nano_cff import nanoAOD_customizeCommon 
+
+#call to customisation function nanoAOD_customizeCommon imported from PhysicsTools.NanoAOD.nano_cff
+process = nanoAOD_customizeCommon(process)
 
 # End of customisation functions
 
