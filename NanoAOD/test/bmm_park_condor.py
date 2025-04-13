@@ -36,8 +36,8 @@ process.source = cms.Source("PoolSource",
 
 process.MessageLogger = cms.Service("MessageLogger",
     cerr = cms.untracked.PSet(
-        FwkSummary = cms.untracked.PSet(reportEvery = cms.untracked.int32(1)),
-        FwkReport = cms.untracked.PSet(reportEvery = cms.untracked.int32(1)),
+        FwkSummary = cms.untracked.PSet(reportEvery = cms.untracked.int32(100000)),
+        FwkReport = cms.untracked.PSet(reportEvery = cms.untracked.int32(100000)),
         KalmanVertexUpdator = cms.untracked.PSet(
             limit = cms.untracked.int32(0)  # 完全禁止该模块的警告输出
         ),
@@ -45,7 +45,7 @@ process.MessageLogger = cms.Service("MessageLogger",
             limit = cms.untracked.int32(0)
         ),
         default = cms.untracked.PSet(
-            limit = cms.untracked.int32(100)
+            limit = cms.untracked.int32(10)
         )
     ),
     suppressWarning = cms.untracked.vstring(
@@ -78,8 +78,8 @@ process.options = cms.untracked.PSet(
     modulesToIgnoreForDeleteEarly = cms.untracked.vstring(),
     numberOfConcurrentLuminosityBlocks = cms.untracked.uint32(0),
     numberOfConcurrentRuns = cms.untracked.uint32(1),
-    numberOfStreams = cms.untracked.uint32(4),
-    numberOfThreads = cms.untracked.uint32(4),
+    numberOfStreams = cms.untracked.uint32(16),
+    numberOfThreads = cms.untracked.uint32(16),
     printDependencies = cms.untracked.bool(False),
     sizeOfStackForThreadsInKB = cms.optional.untracked.uint32,
     throwIfIllegalParameter = cms.untracked.bool(True),

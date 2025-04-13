@@ -3412,7 +3412,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
 
               // got second phi->KK
 
-              if (fabs((had1.p4() + had2.p4() + had3.p4() + had4.p4()).mass() - 5.4) > 0.5)
+              if (fabs((had1.p4() + had2.p4() + had3.p4() + had4.p4()).mass() - 5.4) > 0.3)
                 continue;
 
               buildBsToPhiPhiCandidates(*phiphi_collection, iEvent, pfCandHandle_, {ihad1, ihad2, ihad3, ihad4});
