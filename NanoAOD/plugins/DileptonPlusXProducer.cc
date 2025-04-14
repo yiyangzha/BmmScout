@@ -209,8 +209,20 @@ private:
   void
   buildBsToPhiPhiCandidates(pat::CompositeCandidateCollection &bs_collection,
                             const edm::Event &iEvent,
-                            const edm::Handle<edm::View<pat::PackedCandidate>> &pfCandHandle,
+                            const std::vector<bmm::Candidate> &good_hadron_candidates,
                             const std::vector<unsigned int> &track_ids);
+
+  void buildDstarTokpipiCandidates(pat::CompositeCandidateCollection &dstar_collection,
+                                   const edm::Event &iEvent,
+                                   const bmm::Candidate &kaon,
+                                   const bmm::Candidate &d0pion,
+                                   const bmm::Candidate &softPion);
+
+  void buildDstarTopipipiCandidates(pat::CompositeCandidateCollection &dstar_collection,
+                                    const edm::Event &iEvent,
+                                    const bmm::Candidate &pion1,
+                                    const bmm::Candidate &pion2,
+                                    const bmm::Candidate &softPion);
 
   const pat::CompositeCandidate *buildKsCandidates(pat::CompositeCandidateCollection &hh_collection,
                                                    pat::CompositeCandidateCollection &iso_collection,
@@ -649,6 +661,8 @@ DileptonPlusXProducer::DileptonPlusXProducer(const edm::ParameterSet &iConfig) :
   produces<pat::CompositeCandidateCollection>("Dstar");
   produces<pat::CompositeCandidateCollection>("Kstar");
   produces<pat::CompositeCandidateCollection>("BsToPhiPhi");
+  produces<pat::CompositeCandidateCollection>("DstarToKpipi");
+  produces<pat::CompositeCandidateCollection>("DstarTopipipi");
 
   setupTmvaReader(bdtReader0_, (iConfig.getParameter<edm::FileInPath>("bdtEvent0")).fullPath());
   setupTmvaReader(bdtReader1_, (iConfig.getParameter<edm::FileInPath>("bdtEvent1")).fullPath());
@@ -2751,80 +2765,62 @@ void DileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollecti
 
 void DileptonPlusXProducer::buildBsToPhiPhiCandidates(pat::CompositeCandidateCollection &bs_collection,
                                                       const edm::Event &iEvent,
-                                                      const edm::Handle<edm::View<pat::PackedCandidate>> &pfCandHandle,
+                                                      const std::vector<bmm::Candidate> &good_hadron_candidates,
                                                       const std::vector<unsigned int> &track_ids)
 {
-  // 本函数仅在track_ids大小为4时构造Bs->phi phi候选子
   if (track_ids.size() == 4)
   {
-    // （1）用pfCandHandle中的候选构造bmm::Candidate，并计算Bs候选子的四动量
     bmm::LorentzVector bs_p4;
-    std::vector<bmm::Candidate> candList;
-    for (auto id : track_ids)
-    {
-      // 将pat::PackedCandidate转换为bmm::Candidate，第二个参数传入索引
-      bmm::Candidate cand(pfCandHandle->at(id));
-      cand.setMass(KaonMass_);
-      candList.push_back(cand);
-      bs_p4 += cand.p4();
-    }
+    for (auto &id : track_ids)
+      bs_p4 += good_hadron_candidates[id].p4();
 
-    // （2）为了进行顶点拟合，需要将每个候选的reco::Track取出
     std::vector<reco::Track> kaon_tracks;
     std::vector<const reco::Track *> trks;
     std::vector<float> masses;
     pat::CompositeCandidate bsToPhiPhiCand;
-    for (unsigned int i = 0; i < candList.size(); ++i)
+    for (unsigned int i = 0; i < track_ids.size(); ++i)
     {
-      // 这里利用bmm::Candidate内部保存的track指针，注意必须取得对象内容
-      // 假设bmm::Candidate::track()返回reco::Track*（或通过其它方式获得对应Track）
-      // 这里我们直接将*track()构造成一个reco::Track
-      kaon_tracks.emplace_back(*candList[i].track());
+      kaon_tracks.emplace_back(*good_hadron_candidates[track_ids[i]].track());
       trks.push_back(&kaon_tracks.back());
+      std::string name("kaon" + std::to_string(i + 1));
       masses.push_back(KaonMass_);
 
-      std::string name = "kaon" + std::to_string(i + 1);
       bsToPhiPhiCand.addUserFloat(name + "_pt", kaon_tracks.back().pt());
       bsToPhiPhiCand.addUserFloat(name + "_eta", kaon_tracks.back().eta());
       bsToPhiPhiCand.addUserFloat(name + "_phi", kaon_tracks.back().phi());
     }
-
     bsToPhiPhiCand.addUserFloat("mass", bs_p4.mass());
     bsToPhiPhiCand.addUserFloat("pt", bs_p4.pt());
     bsToPhiPhiCand.addUserFloat("eta", bs_p4.eta());
+    bsToPhiPhiCand.addUserFloat("phi1_mass", (good_hadron_candidates[track_ids[0]].p4() + good_hadron_candidates[track_ids[1]].p4()).mass());
+    bsToPhiPhiCand.addUserFloat("phi2_mass", (good_hadron_candidates[track_ids[2]].p4() + good_hadron_candidates[track_ids[3]].p4()).mass());
 
-    // （3）计算两个phi候选子的质量
-    {
-      bmm::LorentzVector phi1 = candList[0].p4() + candList[1].p4();
-      bsToPhiPhiCand.addUserFloat("phi1_mass", phi1.mass());
-    }
-    {
-      bmm::LorentzVector phi2 = candList[2].p4() + candList[3].p4();
-      bsToPhiPhiCand.addUserFloat("phi2_mass", phi2.mass());
-    }
-
-    // （4）计算三个两两DOCA
     double doca12 = distanceOfClosestApproach(trks[0], trks[1]);
     double doca34 = distanceOfClosestApproach(trks[2], trks[3]);
     double doca13 = distanceOfClosestApproach(trks[0], trks[2]);
 
-    if (doca12 < 0.05 && doca34 < 0.05 && doca13 < 0.05)
+    if (doca12 < 0.05 and doca34 < 0.05 and doca13 < 0.05)
     {
-      // 4-轨道顶点拟合
+      // 4h vertex fit
       KinematicFitResult vtx_fit = vertexWithKinematicFitter(trks, masses);
-      if (vtx_fit.valid() && vtx_fit.vtxProb() > 0.01)
+      if (vtx_fit.valid() and vtx_fit.vtxProb() > 0.01)
       {
         vtx_fit.postprocess(*beamSpot_);
         auto displacements = compute3dDisplacement(vtx_fit);
         addFitInfo(bsToPhiPhiCand, vtx_fit, "vtx", displacements);
 
-        // 对phi候选子分别进行质量约束拟合，再组合成Bs候选子
+        // // add muon tag info
+
+        //     IPTools::absoluteImpactParameter3D(candTransientTrack, vertex);
+
         KinematicFitResult bs_fit_result;
+
+        // // Doesn't work
         try
         {
           KinematicFitResult phi1_fit = vertexWithKinematicFitter({trks[0], trks[1]}, {KaonMass_, KaonMass_});
           KinematicFitResult phi2_fit = vertexWithKinematicFitter({trks[2], trks[3]}, {KaonMass_, KaonMass_});
-          if (phi1_fit.valid() && phi2_fit.valid())
+          if (phi1_fit.valid() and phi2_fit.valid())
           {
             auto phi1_tree = phi1_fit.tree();
             auto phi2_tree = phi2_fit.tree();
@@ -2842,7 +2838,7 @@ void DileptonPlusXProducer::buildBsToPhiPhiCandidates(pat::CompositeCandidateCol
             phi2_tree->movePointerToTheTop();
             phi2_tree = csFitter.fit(mc2.get(), phi2_tree);
 
-            if (phi1_tree->isValid() && phi2_tree->isValid())
+            if (phi1_tree->isValid() and phi2_tree->isValid())
             {
               std::vector<RefCountedKinematicParticle> phis;
               phi1_tree->movePointerToTheTop();
@@ -2854,7 +2850,7 @@ void DileptonPlusXProducer::buildBsToPhiPhiCandidates(pat::CompositeCandidateCol
               auto bs_fit = fitter.fit(phis);
               bs_fit_result.set_tree(bs_fit);
 
-              if (bs_fit_result.valid() && bs_fit_result.vtxProb() > 0.01)
+              if (bs_fit_result.valid() and bs_fit_result.vtxProb() > 0.01)
               {
                 bs_fit_result.postprocess(*beamSpot_);
                 auto displacements_bs = compute3dDisplacement(bs_fit_result);
@@ -2868,9 +2864,242 @@ void DileptonPlusXProducer::buildBsToPhiPhiCandidates(pat::CompositeCandidateCol
         {
           return;
         }
+
+        // bsToPhiPhiCand.addUserInt("mc_valid", bs_fit_result.valid());
+        // bsToPhiPhiCand.addUserFloat("mc_prob", bs_fit_result.vtxProb());
+        // bsToPhiPhiCand.addUserFloat("mc_mass", bs_fit_result.mass());
       }
     }
   }
+}
+
+void DileptonPlusXProducer::buildDstarTokpipiCandidates(pat::CompositeCandidateCollection &dstar_collection,
+                                                        const edm::Event &iEvent,
+                                                        const bmm::Candidate &kaon,
+                                                        const bmm::Candidate &d0pion,
+                                                        const bmm::Candidate &softPion)
+{
+  AddFourMomenta addP4;
+
+  // 计算所有两两轨迹的DOCA（假定distanceOfClosestApproach接口接受reco::Track*）
+  double doca_K_d0pi = distanceOfClosestApproach(kaon.track(), d0pion.track());
+  double doca_K_soft = distanceOfClosestApproach(kaon.track(), softPion.track());
+  double doca_d0pi_soft = distanceOfClosestApproach(d0pion.track(), softPion.track());
+  if (!(doca_K_d0pi < 0.05 && doca_K_soft < 0.05 && doca_d0pi_soft < 0.05))
+    return; // 不满足DOCA要求，不构造该候选子
+
+  // ========= (1) 对D0候选子进行质量限制的拟合 =========
+  std::vector<const reco::Track *> d0_tracks;
+  d0_tracks.push_back(kaon.track());
+  d0_tracks.push_back(d0pion.track());
+  std::vector<float> d0_masses = {KaonMass_, PionMass_};
+  KinematicFitResult d0Fit_mc;
+  try
+  {
+    // 先进行无约束拟合
+    KinematicFitResult tempFit = vertexWithKinematicFitter(d0_tracks, d0_masses);
+    if (!tempFit.valid() || tempFit.vtxProb() < 0.01)
+      return; // 如果拟合结果无效则不构造D*候选
+    KinematicParticleFitter csFitter;
+    float mass_sigma = 1e-3;       // 质量误差设为一个很小的值
+    ParticleMass D0Mass = 1.86484; // D0质量
+    // 用D0Mass_作为质量约束（单位需与拟合一致）
+    KinematicConstraint *d0_constraint = new MassKinematicConstraint(D0Mass, mass_sigma);
+    tempFit.set_tree(csFitter.fit(d0_constraint, tempFit.tree()));
+    if (!tempFit.valid() || tempFit.vtxProb() < 0.01)
+      return; // 如果拟合结果无效则不构造D*候选
+    tempFit.postprocess(*beamSpot_);
+    d0Fit_mc = tempFit;
+  }
+  catch (const std::exception &e)
+  {
+    return;
+  }
+  if (!(d0Fit_mc.valid() && d0Fit_mc.vtxProb() > 0.01))
+    return; // 如果D0拟合结果无效或概率太低则不构造D*候选
+
+  // 获取经过质量约束后的D0母粒子
+  RefCountedKinematicParticle fittedD0 = d0Fit_mc.tree()->currentParticle();
+
+  // ========= (2) 将软π候选构造为KinematicParticle =========
+  // 通过TransientTrack构造软π候选的KinematicParticle（质量固定取PionMass_，误差取PionMassErr_）
+  reco::TransientTrack softPionTT = (*theTTBuilder_).build(softPion.track());
+  KinematicParticleFactoryFromTransientTrack particleFactory;
+  double chi = 0., ndf = 0.;
+  float pionMassErr(PionMassErr_);
+  RefCountedKinematicParticle kpSoftPion = particleFactory.particle(softPionTT, PionMass_, chi, ndf, pionMassErr);
+
+  // ========= (3) 利用拟合得到的D0母粒子与软π进行二粒子顶点拟合构造D* =========
+  std::vector<RefCountedKinematicParticle> daughterParticles;
+  daughterParticles.push_back(fittedD0);
+  daughterParticles.push_back(kpSoftPion);
+  KinematicParticleVertexFitter vertexFitter;
+  RefCountedKinematicTree dstarTree;
+  try
+  {
+    dstarTree = vertexFitter.fit(daughterParticles);
+  }
+  catch (const std::exception &e)
+  {
+    return;
+  }
+  if (!dstarTree || !dstarTree->isValid())
+    return;
+  // 构造D*的顶点拟合结果
+  KinematicFitResult dstarFit;
+  dstarFit.set_tree(dstarTree);
+  if (!dstarFit.valid() || dstarFit.vtxProb() < 0.01)
+    return;
+  dstarFit.postprocess(*beamSpot_);
+
+  // ========= (4) 构造最终D*候选对象，并存储拟合信息 =========
+  pat::CompositeCandidate dstarCand;
+  // 保存软π的基本信息
+  dstarCand.addUserFloat("softPion_pt", softPion.pt());
+  dstarCand.addUserFloat("softPion_eta", softPion.eta());
+  dstarCand.addUserFloat("softPion_phi", softPion.phi());
+  dstarCand.addUserInt("softPion_charge", softPion.charge());
+  dstarCand.addUserFloat("mass", (kaon.p4() + d0pion.p4() + softPion.p4()).mass());
+  dstarCand.addUserFloat("pt", (kaon.p4() + d0pion.p4() + softPion.p4()).pt());
+  dstarCand.addUserFloat("eta", (kaon.p4() + d0pion.p4() + softPion.p4()).eta());
+  dstarCand.addUserFloat("phi", (kaon.p4() + d0pion.p4() + softPion.p4()).phi());
+  dstarCand.addUserFloat("d0_mass", (kaon.p4() + d0pion.p4()).mass());
+  dstarCand.addUserFloat("d0_pt", (kaon.p4() + d0pion.p4()).pt());
+  dstarCand.addUserFloat("d0_eta", (kaon.p4() + d0pion.p4()).eta());
+  dstarCand.addUserFloat("d0_phi", (kaon.p4() + d0pion.p4()).phi());
+  dstarCand.addUserFloat("kaon_pt", kaon.pt());
+  dstarCand.addUserFloat("kaon_eta", kaon.eta());
+  dstarCand.addUserFloat("kaon_phi", kaon.phi());
+  dstarCand.addUserInt("kaon_charge", kaon.charge());
+  dstarCand.addUserFloat("d0pion_pt", d0pion.pt());
+  dstarCand.addUserFloat("d0pion_eta", d0pion.eta());
+  dstarCand.addUserFloat("d0pion_phi", d0pion.phi());
+  dstarCand.addUserInt("d0pion_charge", d0pion.charge());
+  // 将D*顶点拟合结果存入候选子，使用前缀 "mc"
+  auto displacements = compute3dDisplacement(dstarFit);
+  addFitInfo(dstarCand, dstarFit, "mc", displacements);
+  dstar_collection.push_back(dstarCand);
+}
+
+void DileptonPlusXProducer::buildDstarTopipipiCandidates(pat::CompositeCandidateCollection &dstar_collection,
+                                                         const edm::Event &iEvent,
+                                                         const bmm::Candidate &pion1,
+                                                         const bmm::Candidate &pion2,
+                                                         const bmm::Candidate &softPion)
+{
+  AddFourMomenta addP4;
+
+  // 计算三个轨迹两两的DOCA
+  double doca_1_2 = distanceOfClosestApproach(pion1.track(), pion2.track());
+  double doca_1_soft = distanceOfClosestApproach(pion1.track(), softPion.track());
+  double doca_2_soft = distanceOfClosestApproach(pion2.track(), softPion.track());
+  if (!(doca_1_2 < 0.05 && doca_1_soft < 0.05 && doca_2_soft < 0.05))
+    return; // DOCA条件不满足，不构造候选子
+
+  // ========= (1) 对 D0 候选子（由 pion1 和 pion2 构成）进行无质量限制的顶点拟合 =========
+  std::vector<const reco::Track *> d0_tracks;
+  d0_tracks.push_back(pion1.track());
+  d0_tracks.push_back(pion2.track());
+  // 两个daughter均赋予 PionMass_
+  std::vector<float> d0_masses = {PionMass_, PionMass_};
+  KinematicFitResult d0Fit_vtx;
+  try
+  {
+    d0Fit_vtx = vertexWithKinematicFitter(d0_tracks, d0_masses);
+    if (!d0Fit_vtx.valid() || d0Fit_vtx.vtxProb() < 0.01)
+      return; // 如果拟合结果无效则不构造D*候选
+    d0Fit_vtx.postprocess(*beamSpot_);
+  }
+  catch (const std::exception &e)
+  {
+    return;
+  }
+  if (!(d0Fit_vtx.valid() && d0Fit_vtx.vtxProb() > 0.01))
+    return;
+  // ========= (2) 对 D0 候选子进行带质量限制的拟合 =========
+  KinematicFitResult d0Fit_mc;
+  try
+  {
+    // 以无质量拟合结果为起点进行质量约束拟合
+    KinematicFitResult tempFit = d0Fit_vtx;
+    KinematicParticleFitter csFitter;
+    float mass_sigma = 1e-3;
+    ParticleMass D0Mass = 1.86484; // D0 质量
+    KinematicConstraint *d0_constraint = new MassKinematicConstraint(D0Mass, mass_sigma);
+    tempFit.set_tree(csFitter.fit(d0_constraint, tempFit.tree()));
+    if (!tempFit.valid() || tempFit.vtxProb() < 0.01)
+      return; // 如果拟合结果无效则不构造D*候选
+    tempFit.postprocess(*beamSpot_);
+    d0Fit_mc = tempFit;
+  }
+  catch (const std::exception &e)
+  {
+    return;
+  }
+  if (!(d0Fit_mc.valid() && d0Fit_mc.vtxProb() > 0.01))
+    return;
+
+  // 获取经过质量约束后的 D0 母粒子
+  RefCountedKinematicParticle fittedD0 = d0Fit_mc.tree()->currentParticle();
+
+  // ========= (3) 将软 π 候选构造为 KinematicParticle =========
+  reco::TransientTrack softPionTT = (*theTTBuilder_).build(softPion.track());
+  KinematicParticleFactoryFromTransientTrack particleFactory;
+  double chi = 0., ndf = 0.;
+  float pionMassErr(PionMassErr_);
+  RefCountedKinematicParticle kpSoftPion =
+      particleFactory.particle(softPionTT, PionMass_, chi, ndf, pionMassErr);
+
+  // ========= (4) 利用经过质量限制的 D0 母粒子与软 π 进行二粒子顶点拟合，构造 D* =========
+  std::vector<RefCountedKinematicParticle> daughterParticles;
+  daughterParticles.push_back(fittedD0);
+  daughterParticles.push_back(kpSoftPion);
+  KinematicParticleVertexFitter vertexFitter;
+  RefCountedKinematicTree dstarTree;
+  try
+  {
+    dstarTree = vertexFitter.fit(daughterParticles);
+  }
+  catch (const std::exception &e)
+  {
+    return;
+  }
+  if (!dstarTree || !dstarTree->isValid())
+    return;
+  KinematicFitResult dstarFit;
+  dstarFit.set_tree(dstarTree);
+  if (!dstarFit.valid() || dstarFit.vtxProb() < 0.01)
+    return;
+  dstarFit.postprocess(*beamSpot_);
+  if (!(dstarFit.valid() && dstarFit.vtxProb() > 0.01))
+    return;
+
+  // ========= (5) 构造最终 D* 候选对象，并存储 D* 的拟合信息 =========
+  pat::CompositeCandidate dstarCand;
+  dstarCand.addUserFloat("softPion_pt", softPion.pt());
+  dstarCand.addUserFloat("softPion_eta", softPion.eta());
+  dstarCand.addUserFloat("softPion_phi", softPion.phi());
+  dstarCand.addUserInt("softPion_charge", softPion.charge());
+  dstarCand.addUserFloat("mass", (pion1.p4() + pion2.p4() + softPion.p4()).mass());
+  dstarCand.addUserFloat("pt", (pion1.p4() + pion2.p4() + softPion.p4()).pt());
+  dstarCand.addUserFloat("eta", (pion1.p4() + pion2.p4() + softPion.p4()).eta());
+  dstarCand.addUserFloat("phi", (pion1.p4() + pion2.p4() + softPion.p4()).phi());
+  dstarCand.addUserFloat("d0_mass", (pion1.p4() + pion2.p4()).mass());
+  dstarCand.addUserFloat("d0_pt", (pion1.p4() + pion2.p4()).pt());
+  dstarCand.addUserFloat("d0_eta", (pion1.p4() + pion2.p4()).eta());
+  dstarCand.addUserFloat("d0_phi", (pion1.p4() + pion2.p4()).phi());
+  dstarCand.addUserFloat("pion1_pt", pion1.pt());
+  dstarCand.addUserFloat("pion1_eta", pion1.eta());
+  dstarCand.addUserFloat("pion1_phi", pion1.phi());
+  dstarCand.addUserInt("pion1_charge", pion1.charge());
+  dstarCand.addUserFloat("pion2_pt", pion2.pt());
+  dstarCand.addUserFloat("pion2_eta", pion2.eta());
+  dstarCand.addUserFloat("pion2_phi", pion2.phi());
+  dstarCand.addUserInt("pion2_charge", pion2.charge());
+  // 同时存储 D0 候选（d0Cand）信息及 D* 顶点拟合结果（前缀 "mc"）
+  auto displacements = compute3dDisplacement(d0Fit_mc);
+  addFitInfo(dstarCand, dstarFit, "mc", displacements);
+  dstar_collection.push_back(dstarCand);
 }
 
 const pat::CompositeCandidate *
@@ -3010,6 +3239,8 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
   auto kstar_collection = std::make_unique<pat::CompositeCandidateCollection>();
   auto mmm_collection = std::make_unique<pat::CompositeCandidateCollection>();
   auto phiphi_collection = std::make_unique<pat::CompositeCandidateCollection>();
+  auto dstartokpipi_collection = std::make_unique<pat::CompositeCandidateCollection>();
+  auto dstartopipipi_collection = std::make_unique<pat::CompositeCandidateCollection>();
   AddFourMomenta addP4;
 
   // Build input lists
@@ -3040,7 +3271,20 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
   // Collection of relevant tracks for candidates
   std::vector<const reco::Track *> interestingTracks;
 
-  // std::vector<bmm::Candidate> good_hadron_candidates;
+  std::vector<bmm::Candidate> good_hadron_candidates;
+  // Good hadrons
+  for (unsigned int i = 0; i < nPFCands; ++i)
+  {
+    pat::PackedCandidate hadron((*pfCandHandle_)[i]);
+    if (not isGoodHadron(hadron))
+      continue;
+    if (hadron.pt() < 0.5 || fabs(hadron.eta()) > 2.4)
+      continue;
+    if (hadron.charge() == 0)
+      continue;
+    good_hadron_candidates.push_back(bmm::Candidate(hadron));
+  }
+  nPFCands = good_hadron_candidates.size();
   // // Inject B to hh candidates where hadrons are explicitely matched
   // // to gen level decays
   // if ( injectMatchedBtohh_ and isMC_ ) {
@@ -3299,7 +3543,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
   // - loop over all hh combinations
   // - let individual studies fill hh_collection
   // - no check for duplicate entries
-  if (nPFCands > 1)
+  /* if (nPFCands > 2)
   {
     for (unsigned int i = 0; i < nPFCands - 1; ++i)
     {
@@ -3315,13 +3559,12 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
         if (had1.charge() * had2.charge() > 0)
           continue;
 
-        buildDstarCandidates(*dstar_collection, *hh_collection, iEvent, had1, had2);
+        // buildDstarCandidates(*dstar_collection, *hh_collection, iEvent, had1, had2);
 
-        const auto *ksCand = buildKsCandidates(*hh_collection, *iso_collection, interestingTracks,
-                                               iEvent, had1, had2);
+        //const auto *ksCand = buildKsCandidates(*hh_collection, *iso_collection, interestingTracks, iEvent, had1, had2);
 
         // Kstar->Kspi->mmpi
-        if (recoKstar_ && ksCand)
+        if (recoKstar_)
         {
           for (unsigned int k = 0; k < nPFCands; ++k)
           {
@@ -3355,6 +3598,92 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
         //     }
       }
     }
+  }*/
+  if (nPFCands > 2)
+  {
+    // 循环从 good_hadron_candidates 选取候选（使用 good_hadron_candidates ptMinKaon_、etaMaxKaon_）
+    for (unsigned int i = 0; i < good_hadron_candidates.size(); ++i)
+    {
+
+      // 使用 trackHandle_ 的 i 号轨迹构造 K 候选
+      bmm::Candidate candidateKaon = good_hadron_candidates.at(i);
+      candidateKaon.setMass(KaonMass_);
+      if (candidateKaon.pt() < 3 || fabs(candidateKaon.eta()) > etaMaxKaon_)
+        continue;
+
+      // 循环从 pion_p4s中选取 D0 中用作 π 的候选（注意排除同一条轨迹）
+      for (unsigned int j = 0; j < good_hadron_candidates.size(); ++j)
+      {
+        if (j == i)
+          continue;
+        bmm::Candidate candidatePion = good_hadron_candidates.at(j);
+        candidatePion.setMass(PionMass_);
+        if (candidatePion.pt() < 3 || fabs(candidatePion.eta()) > etaMaxKaon_)
+          continue;
+        // 要求 D0 的 K 和 π 电荷相反
+        if (candidateKaon.charge() * candidatePion.charge() >= 0)
+          continue;
+        if (fabs((candidateKaon.p4() + candidatePion.p4()).mass() - 1.864) > 0.3)
+          continue;
+
+        // 循环从 pion_p4s中选取额外的软 π 候选（必须与 π 电荷相同）
+        for (unsigned int k = 0; k < good_hadron_candidates.size(); ++k)
+        {
+          if (k == i || k == j)
+            continue;
+          bmm::Candidate candidateSoft = good_hadron_candidates.at(k);
+          candidateSoft.setMass(PionMass_);
+          if (fabs(candidateSoft.pt()) < 0.5 || fabs(candidateSoft.eta()) > etaMaxKaon_)
+            continue;
+          // 要求软 π 的电荷与 π 相同
+          if (candidateSoft.charge() != candidatePion.charge())
+            continue;
+          if (fabs((candidateKaon.p4() + candidatePion.p4() + candidateSoft.p4()).mass() - 2.01) > 0.3)
+            continue;
+          // 调用新函数构造 D* 候选子
+          buildDstarTokpipiCandidates(*dstartokpipi_collection, iEvent, candidateKaon, candidatePion, candidateSoft);
+        }
+      }
+    }
+  }
+
+  // Build D* -> D0 pi -> pi pi pi
+  if (nPFCands > 2)
+  {
+    // 循环选取构成 D0的两个候选：candidatePion1 和 candidatePion2（要求电荷相反）
+    for (unsigned int i = 0; i < good_hadron_candidates.size() - 1; ++i)
+    {
+      bmm::Candidate candidatePion1 = good_hadron_candidates.at(i);
+      candidatePion1.setMass(PionMass_);
+      if (candidatePion1.pt() < 3 || fabs(candidatePion1.eta()) > etaMaxKaon_)
+        continue;
+      for (unsigned int j = i + 1; j < good_hadron_candidates.size(); ++j)
+      {
+        bmm::Candidate candidatePion2 = good_hadron_candidates.at(j);
+        candidatePion2.setMass(PionMass_);
+        if (candidatePion2.pt() < 3 || fabs(candidatePion2.eta()) > etaMaxKaon_)
+          continue;
+        // 要求构成 D⁰ 的两个 daughter 电荷必须相反
+        if (candidatePion1.charge() * candidatePion2.charge() >= 0)
+          continue;
+        if (fabs((candidatePion1.p4() + candidatePion2.p4()).mass() - 1.864) > 0.3)
+          continue;
+        // 循环选取额外软 pion 候选，要求其电荷与 candidatePion1 相同
+        for (unsigned int k = 0; k < good_hadron_candidates.size(); ++k)
+        {
+          if (k == i || k == j)
+            continue;
+          bmm::Candidate candidateSoft = good_hadron_candidates.at(k);
+          candidateSoft.setMass(PionMass_);
+          if (fabs(candidateSoft.pt()) < 0.5 || fabs(candidateSoft.eta()) > etaMaxKaon_)
+                        continue;
+          if (fabs((candidatePion1.p4() + candidatePion2.p4() + candidateSoft.p4()).mass() - 2.01) > 0.3)
+            continue;
+          // 调用新函数构造 D*→D⁰π (D⁰→π⁺π⁻) 候选子
+          buildDstarTopipipiCandidates(*dstartopipipi_collection, iEvent, candidatePion1, candidatePion2, candidateSoft);
+        }
+      }
+    }
   }
 
   // Buile BsToPhiPhi candidates
@@ -3362,22 +3691,16 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
   {
     for (unsigned int ihad1 = 0; ihad1 < nPFCands - 1; ++ihad1)
     {
-      const auto &had1 = pfCandHandle_->at(ihad1);
-      if (not isGoodTrack(had1))
-        continue;
+      bmm::Candidate had1 = good_hadron_candidates.at(ihad1);
       if (had1.pt() < ptMinKaon_ or abs(had1.eta()) > etaMaxKaon_)
         continue;
       for (unsigned int ihad2 = ihad1 + 1; ihad2 < nPFCands; ++ihad2)
       {
-        const auto &had2 = pfCandHandle_->at(ihad2);
-        if (not isGoodTrack(had2))
-          continue;
+        bmm::Candidate had2 = good_hadron_candidates.at(ihad2);
         if (had2.pt() < ptMinKaon_ or abs(had2.eta()) > etaMaxKaon_)
           continue;
-
         if (had1.charge() == had2.charge())
           continue;
-
         if (fabs((had1.p4() + had2.p4()).mass() - 1.02) > 0.01)
           continue;
 
@@ -3389,18 +3712,14 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
           {
             if (ihad3 == ihad1 or ihad3 == ihad2)
               continue;
-            const auto &had3 = pfCandHandle_->at(ihad3);
-            if (not isGoodTrack(had3))
-              continue;
+            bmm::Candidate had3 = good_hadron_candidates.at(ihad3);
             if (had3.pt() < ptMinKaon_ or abs(had3.eta()) > etaMaxKaon_)
               continue;
             for (unsigned int ihad4 = ihad3 + 1; ihad4 < nPFCands; ++ihad4)
             {
               if (ihad4 == ihad1 or ihad4 == ihad2)
                 continue;
-              const auto &had4 = pfCandHandle_->at(ihad4);
-              if (not isGoodTrack(had4))
-                continue;
+              bmm::Candidate had4 = good_hadron_candidates.at(ihad4);
               if (had4.pt() < ptMinKaon_ or abs(had4.eta()) > etaMaxKaon_)
                 continue;
 
@@ -3415,7 +3734,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
               if (fabs((had1.p4() + had2.p4() + had3.p4() + had4.p4()).mass() - 5.4) > 0.3)
                 continue;
 
-              buildBsToPhiPhiCandidates(*phiphi_collection, iEvent, pfCandHandle_, {ihad1, ihad2, ihad3, ihad4});
+              buildBsToPhiPhiCandidates(*phiphi_collection, iEvent, good_hadron_candidates, {ihad1, ihad2, ihad3, ihad4});
             }
           }
         }
@@ -3437,6 +3756,8 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
   iEvent.put(std::move(dstar_collection), "Dstar");
   iEvent.put(std::move(kstar_collection), "Kstar");
   iEvent.put(std::move(phiphi_collection), "BsToPhiPhi");
+  iEvent.put(std::move(dstartokpipi_collection), "DstarToKpipi");
+  iEvent.put(std::move(dstartopipipi_collection), "DstarTopipipi");
 
   fillTrackInfo(*trk_collection, interestingTracks, iEvent);
   iEvent.put(std::move(trk_collection), "InterestingTracks");
