@@ -704,6 +704,7 @@ DileptonsDstarTableVariables =  merge_psets(
         pv_sum_pt2     = Var("userFloat('pv_sum_pt2')",      float, doc = "PV sum pt^2"),
         pv_ntrks       = Var("userInt('pv_ntrks')",          int,   doc = "PV number of tracks"),
         pv_with_pion_prob = Var("userFloat('pv_with_pion_prob')", float, doc = "PV refit probability with soft pion"),
+        fromKpi           = Var("userInt('fromKpi')",         int, doc = "Dstar from Kpi"),
         # pion_l1_doca   = Var("userFloat('pion_l1_doca')",    float, doc = "Pion distance of closest approach to lepton1"),
         # pion_l2_doca   = Var("userFloat('pion_l2_doca')",    float, doc = "Pion distance of closest approach to lepton2"),
         # Kinematic Fit daugter info

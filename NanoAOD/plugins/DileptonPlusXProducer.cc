@@ -3557,7 +3557,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
         if (not isGoodHadron(had2))
           continue;
 
-        if (had1.charge() * had2.charge() > 0)
+        if (had1.charge() * had2.charge() >= 0)
           continue;
 
         buildDstarCandidates(*dstar_collection, *hh_collection, iEvent, had1, had2);
