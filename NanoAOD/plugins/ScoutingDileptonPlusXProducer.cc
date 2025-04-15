@@ -205,7 +205,8 @@ private:
                   int mm_index,
                   int hh_index,
                   const bmm::Candidate &daughter1,
-                  const bmm::Candidate &daughter2);
+                  const bmm::Candidate &daughter2,
+                  int fromKpi);
 
     void
     fillKstarInfo(pat::CompositeCandidateCollection &kstar_collection,
@@ -221,8 +222,8 @@ private:
     buildDstarCandidates(pat::CompositeCandidateCollection &dstar_collection,
                          pat::CompositeCandidateCollection &hh_collection,
                          const edm::Event &iEvent,
-                         const pat::PackedCandidate &had1,
-                         const pat::PackedCandidate &had2);
+                         const bmm::Candidate &had1,
+                         const bmm::Candidate &had2);
 
     const pat::CompositeCandidate *
     buildKsCandidates(pat::CompositeCandidateCollection &hh_collection,
@@ -1353,76 +1354,6 @@ void ScoutingDileptonPlusXProducer::fillBtoKllInfo(pat::CompositeCandidate &btok
     // addFitInfo(btokllCand, bToKJPsiLL_MC_PC, "mcpc");
 }
 
-void ScoutingDileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollection &dstar_collection,
-                                                  const edm::Event &iEvent,
-                                                  const KinematicFitResult &d0VertexFit,
-                                                  const pat::CompositeCandidate &d0Cand,
-                                                  const bmm::Candidate &soft_pion,
-                                                  int mm_index,
-                                                  int hh_index,
-                                                  const bmm::Candidate &daughter1,
-                                                  const bmm::Candidate &daughter2)
-{
-    pat::CompositeCandidate dstarCand;
-    dstarCand.addUserInt("mm_index", mm_index);
-    dstarCand.addUserInt("hh_index", hh_index);
-
-    // Dstar preselection is performed using original tracks. The best
-    // estimate of D0 parameters is achieved by vertexing its decay
-    // products. Dstar can be prompt and non-prompt. Therefore we can
-    // have the following dm estimates
-    // * dm_raw - dm computed without kinematic fits
-    // * dm_prompt - D0 vertexed and soft_pion is restricted to PV
-    // * dm_prompt2 - same as dm_prompt, but using second best PV
-    // * dm_free - D0 vertexed and soft_pion is not refit
-    //
-    // Dstar mass may have similiar to dm definitions, but since it's no
-    // expected to be used directly, we store only one mass varian: raw
-
-    // soft pion raw information
-    dstarCand.addUserFloat("pion_pt", soft_pion.pt());
-    dstarCand.addUserFloat("pion_eta", soft_pion.eta());
-    dstarCand.addUserFloat("pion_phi", soft_pion.phi());
-    // dstarCand.addUserFloat("pion_dxy_bs", soft_pion.bestTrack()->dxy(*beamSpot_));
-    auto pion_sdxy_bs = 0;
-    // if (soft_pion.bestTrack()->dxyError() > 0)
-    //  pion_sdxy_bs = fabs(soft_pion.bestTrack()->dxy(*beamSpot_))/soft_pion.bestTrack()->dxyError();
-    dstarCand.addUserFloat("pion_sdxy_bs", pion_sdxy_bs);
-    dstarCand.addUserInt("pion_charge", soft_pion.charge());
-
-    // gen info
-    // FIXME
-    // if (isMC_){
-    //   auto gen_info = getGenMatchInfo(daughter1, daughter2, &soft_pion);
-    //   dstarCand.addUserInt(  "gen_pion_pdgId",  gen_info.kaon1_pdgId);
-    //   dstarCand.addUserInt(  "gen_pion_mpdgId", gen_info.kaon1_motherPdgId);
-    //   dstarCand.addUserFloat("gen_pion_pt",     gen_info.kaon1_pt);
-    //   dstarCand.addUserFloat("gen_mass",        gen_info.kll_mass);
-    //   dstarCand.addUserFloat("gen_pt",          gen_info.kll_pt);
-    //   dstarCand.addUserInt(  "gen_pdgId",       gen_info.kll_pdgId);
-    //   dstarCand.addUserInt(  "gen_mpdgId",      gen_info.kll_motherPdgId);
-    //   dstarCand.addUserFloat("gen_prod_x",      gen_info.kll_prod_vtx.x());
-    //   dstarCand.addUserFloat("gen_prod_y",      gen_info.kll_prod_vtx.y());
-    //   dstarCand.addUserFloat("gen_prod_z",      gen_info.kll_prod_vtx.z());
-    //   dstarCand.addUserFloat("gen_l3d",         (gen_info.kll_prod_vtx - gen_info.ll_vtx).r());
-    //   dstarCand.addUserFloat("gen_lxy",         (gen_info.kll_prod_vtx - gen_info.ll_vtx).rho());
-    //   dstarCand.addUserFloat("gen_tau",         computeDecayTime(gen_info));
-    //   dstarCand.addUserInt(  "gen_cpdgId",      gen_info.common_mother ? gen_info.common_mother->pdgId() : 0);
-    // }
-
-    // store mass information
-    auto d0_p4(makeLorentzVectorFromPxPyPzM(d0VertexFit.p3().x(),
-                                            d0VertexFit.p3().y(),
-                                            d0VertexFit.p3().z(),
-                                            d0VertexFit.mass()));
-    float dstar_mass_raw = (soft_pion.p4() + daughter1.p4() + daughter2.p4()).mass();
-    dstarCand.addUserFloat("mass", dstar_mass_raw);
-    dstarCand.addUserFloat("dm_raw", dstar_mass_raw - (daughter1.p4() + daughter2.p4()).mass());
-    dstarCand.addUserFloat("dm_free", (soft_pion.p4() + d0_p4).mass() - d0_p4.mass());
-
-    dstar_collection.push_back(dstarCand);
-}
-
 /* void ScoutingDileptonPlusXProducer::fillKstarInfo(pat::CompositeCandidateCollection &kstar_collection,
                                                   const edm::Event &iEvent,
                                                   const bmm::Candidate &ksCand,
@@ -2289,6 +2220,108 @@ void ScoutingDileptonPlusXProducer::buildLLXCandidates(pat::CompositeCandidateCo
     }
 }
 
+/*void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollection &dstar_collection,
+                                                         pat::CompositeCandidateCollection &hh_collection,
+                                                         const edm::Event &iEvent,
+                                                         const bmm::Candidate &had1,
+                                                         const bmm::Candidate &had2)
+{
+    if (had1.pt() < minDhhTrkPt_ || fabs(had1.eta()) > maxDhhTrkEta_)
+        return;
+    if (had2.pt() < minDhhTrkPt_ || fabs(had2.eta()) > maxDhhTrkEta_)
+        return;
+    AddFourMomenta addP4;
+    auto nPFCands = pion_p4s.size();
+    for (unsigned int k = 0; k < nPFCands; ++k)
+    {
+        bmm::Candidate soft_pion(tracks().at(k), k);
+
+        if (overlap(had1, soft_pion) || overlap(had2, soft_pion))
+            continue;
+
+        soft_pion.setMass(PionMass_);
+
+        bmm::Candidate pion1 = had1;
+        pion1.setType(PionMass_, "had", 211 * had1.charge());
+        bmm::Candidate pion2 = had2;
+        pion2.setType(PionMass_, "had", 211 * had2.charge());
+
+        bmm::Candidate kaon1 = had1;
+        kaon1.setType(KaonMass_, "had", 321 * had1.charge());
+        bmm::Candidate kaon2 = had2;
+        kaon2.setType(KaonMass_, "had", 321 * had2.charge());
+
+        // D0->pipi
+        if (recoD0pipi_)
+        {
+            double d0_mass = (pion1.p4() + pion2.p4()).mass();
+            double dstar_mass = (pion1.p4() + pion2.p4() + soft_pion.p4()).mass();
+
+            if (d0_mass > minD0Mass_ && d0_mass < maxD0Mass_ &&
+                (dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)
+            {
+
+                pat::CompositeCandidate d0Cand(std::string("hh"));
+                d0Cand.addDaughter(pion1, "pion1");
+                d0Cand.addDaughter(pion2, "pion2");
+                addP4.set(d0Cand);
+
+                if (preprocess(d0Cand, iEvent, pion1, pion2))
+                {
+                    // Kinematic Fits
+                    auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, pion1, pion2);
+                    int hh_index = hh_collection.size();
+                    hh_collection.push_back(d0Cand);
+                    fillDstarInfo(dstar_collection, iEvent, d0VertexFit, d0Cand, soft_pion,
+                                  -1, hh_index, pion1, pion2, 0);
+                }
+            }
+        }
+
+        // D0->Kpi
+        if (recoD0Kpi_)
+        {
+            const bmm::Candidate *daughter1(nullptr), *daughter2(nullptr);
+
+            if (pion2.charge() == soft_pion.charge())
+            {
+                // Kpi case
+                daughter1 = &kaon1;
+                daughter2 = &pion2;
+            }
+            else
+            {
+                // piK case
+                daughter1 = &pion1;
+                daughter2 = &kaon2;
+            }
+
+            double d0_mass = (daughter1->p4() + daughter2->p4()).mass();
+            double dstar_mass = (daughter1->p4() + daughter2->p4() + soft_pion.p4()).mass();
+
+            if (d0_mass > minD0Mass_ && d0_mass < maxD0Mass_ &&
+                (dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)
+            {
+
+                pat::CompositeCandidate d0Cand(std::string("hh"));
+                d0Cand.addDaughter(*daughter1, "had1");
+                d0Cand.addDaughter(*daughter2, "had2");
+                addP4.set(d0Cand);
+
+                if (preprocess(d0Cand, iEvent, *daughter1, *daughter2))
+                {
+                    // Kinematic Fits
+                    auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, *daughter1, *daughter2);
+                    int hh_index = hh_collection.size();
+                    hh_collection.push_back(d0Cand);
+                    fillDstarInfo(dstar_collection, iEvent, d0VertexFit, d0Cand, soft_pion,
+                                  -1, hh_index, *daughter1, *daughter2, 1);
+                }
+            }
+        }
+    }
+}*/
+
 // void
 // ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollection& dstar_collection,
 // 					    pat::CompositeCandidateCollection& hh_collection,
@@ -2505,6 +2538,9 @@ void ScoutingDileptonPlusXProducer::buildDstarTokpipiCandidates(pat::CompositeCa
     double doca_d0pi_soft = distanceOfClosestApproach(d0pion.track(), softPion.track());
     if (!(doca_K_d0pi < 0.05 && doca_K_soft < 0.05 && doca_d0pi_soft < 0.05))
         return; // 不满足DOCA要求，不构造该候选子
+    
+    float raw_d0_mass = 0;
+    
 
     // ========= (1) 对D0候选子进行质量限制的拟合 =========
     std::vector<const reco::Track *> d0_tracks;
@@ -2518,6 +2554,7 @@ void ScoutingDileptonPlusXProducer::buildDstarTokpipiCandidates(pat::CompositeCa
         KinematicFitResult tempFit = vertexWithKinematicFitter(d0_tracks, d0_masses);
         if (!tempFit.valid() || tempFit.vtxProb() < 0.01)
             return; // 如果拟合结果无效则不构造D*候选
+        raw_d0_mass = tempFit.mass();
         KinematicParticleFitter csFitter;
         float mass_sigma = 1e-3;       // 质量误差设为一个很小的值
         ParticleMass D0Mass = 1.86484; // D0质量
@@ -2570,12 +2607,26 @@ void ScoutingDileptonPlusXProducer::buildDstarTokpipiCandidates(pat::CompositeCa
         return;
     dstarFit.postprocess(*beamSpot_);
 
+    // Get softPion, d0 info from vertex fit
+    // 通过D*拟合树获取D*的三个子粒子
+    dstarTree->movePointerToTheTop();
+    dstarTree->movePointerToTheFirstChild();
+    RefCountedKinematicParticle d0 = dstarTree->currentParticle();
+    dstarTree->movePointerToTheNextChild();
+    RefCountedKinematicParticle softPionFit = dstarTree->currentParticle();
+
+    // Get softPion, d0 p4 from RefCountedKinematicParticle d0 and softPionFit
+    GlobalVector d0P3 = d0->currentState().kinematicParameters().momentum();
+    GlobalVector softPionP3 = softPionFit->currentState().kinematicParameters().momentum();
+    TLorentzVector d0P4(d0P3.x(), d0P3.y(), d0P3.z(), d0->currentState().mass());
+    TLorentzVector softPionP4(softPionP3.x(), softPionP3.y(), softPionP3.z(), softPionFit->currentState().mass());
+
     // ========= (4) 构造最终D*候选对象，并存储拟合信息 =========
     pat::CompositeCandidate dstarCand;
-    // 保存软π的基本信息
-    dstarCand.addUserFloat("softPion_pt", softPion.pt());
-    dstarCand.addUserFloat("softPion_eta", softPion.eta());
-    dstarCand.addUserFloat("softPion_phi", softPion.phi());
+    // 保存软π的基本信息 使用来自拟合的新信息
+    dstarCand.addUserFloat("softPion_pt", softPionP4.Pt());
+    dstarCand.addUserFloat("softPion_eta", softPionP4.Eta());
+    dstarCand.addUserFloat("softPion_phi", softPionP4.Phi());
     dstarCand.addUserInt("softPion_charge", softPion.charge());
     dstarCand.addUserFloat("mass", (kaon.p4() + d0pion.p4() + softPion.p4()).mass());
     dstarCand.addUserFloat("pt", (kaon.p4() + d0pion.p4() + softPion.p4()).pt());
@@ -2593,6 +2644,7 @@ void ScoutingDileptonPlusXProducer::buildDstarTokpipiCandidates(pat::CompositeCa
     dstarCand.addUserFloat("d0pion_eta", d0pion.eta());
     dstarCand.addUserFloat("d0pion_phi", d0pion.phi());
     dstarCand.addUserInt("d0pion_charge", d0pion.charge());
+    dstarCand.addUserFloat("dm_free", dstarFit.mass() - raw_d0_mass);
     // 将D*顶点拟合结果存入候选子，使用前缀 "mc"
     auto displacements = compute3dDisplacement(dstarFit);
     addFitInfo(dstarCand, dstarFit, "mc", displacements);
@@ -2614,6 +2666,8 @@ void ScoutingDileptonPlusXProducer::buildDstarTopipipiCandidates(pat::CompositeC
     if (!(doca_1_2 < 0.05 && doca_1_soft < 0.05 && doca_2_soft < 0.05))
         return; // DOCA条件不满足，不构造候选子
 
+    float raw_d0_mass = 0;
+
     // ========= (1) 对 D0 候选子（由 pion1 和 pion2 构成）进行无质量限制的顶点拟合 =========
     std::vector<const reco::Track *> d0_tracks;
     d0_tracks.push_back(pion1.track());
@@ -2626,6 +2680,7 @@ void ScoutingDileptonPlusXProducer::buildDstarTopipipiCandidates(pat::CompositeC
         d0Fit_vtx = vertexWithKinematicFitter(d0_tracks, d0_masses);
         if (!d0Fit_vtx.valid() || d0Fit_vtx.vtxProb() < 0.01)
             return; // 如果拟合结果无效则不构造D*候选
+        raw_d0_mass = d0Fit_vtx.mass();
         d0Fit_vtx.postprocess(*beamSpot_);
     }
     catch (const std::exception &e)
@@ -2691,12 +2746,26 @@ void ScoutingDileptonPlusXProducer::buildDstarTopipipiCandidates(pat::CompositeC
     dstarFit.postprocess(*beamSpot_);
     if (!(dstarFit.valid() && dstarFit.vtxProb() > 0.01))
         return;
+    
+    // Get softPion, kaon, d0pion info from vertex fit
+    // 通过D*拟合树获取D*的三个子粒子
+    dstarTree->movePointerToTheTop();
+    dstarTree->movePointerToTheFirstChild();
+    RefCountedKinematicParticle d0 = dstarTree->currentParticle();
+    dstarTree->movePointerToTheNextChild();
+    RefCountedKinematicParticle softPionFit = dstarTree->currentParticle();
+
+    // Get softPion, d0 p4 from RefCountedKinematicParticle d0 and softPionFit
+    GlobalVector d0P3 = d0->currentState().kinematicParameters().momentum();
+    GlobalVector softPionP3 = softPionFit->currentState().kinematicParameters().momentum();
+    TLorentzVector d0P4(d0P3.x(), d0P3.y(), d0P3.z(), d0->currentState().mass());
+    TLorentzVector softPionP4(softPionP3.x(), softPionP3.y(), softPionP3.z(), softPionFit->currentState().mass());
 
     // ========= (5) 构造最终 D* 候选对象，并存储 D* 的拟合信息 =========
     pat::CompositeCandidate dstarCand;
-    dstarCand.addUserFloat("softPion_pt", softPion.pt());
-    dstarCand.addUserFloat("softPion_eta", softPion.eta());
-    dstarCand.addUserFloat("softPion_phi", softPion.phi());
+    dstarCand.addUserFloat("softPion_pt", softPionP4.Pt());
+    dstarCand.addUserFloat("softPion_eta", softPionP4.Eta());
+    dstarCand.addUserFloat("softPion_phi", softPionP4.Phi());
     dstarCand.addUserInt("softPion_charge", softPion.charge());
     dstarCand.addUserFloat("mass", (pion1.p4() + pion2.p4() + softPion.p4()).mass());
     dstarCand.addUserFloat("pt", (pion1.p4() + pion2.p4() + softPion.p4()).pt());
@@ -2714,6 +2783,7 @@ void ScoutingDileptonPlusXProducer::buildDstarTopipipiCandidates(pat::CompositeC
     dstarCand.addUserFloat("pion2_eta", pion2.eta());
     dstarCand.addUserFloat("pion2_phi", pion2.phi());
     dstarCand.addUserInt("pion2_charge", pion2.charge());
+    dstarCand.addUserFloat("dm_free", dstarFit.mass() - raw_d0_mass);
     // 同时存储 D0 候选（d0Cand）信息及 D* 顶点拟合结果（前缀 "mc"）
     auto displacements = compute3dDisplacement(d0Fit_mc);
     addFitInfo(dstarCand, dstarFit, "mc", displacements);
@@ -2907,7 +2977,7 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
     // }
 
     // Build dimuon candidates
-    if (good_muon_candidates.size() > 1)
+    if (false) //good_muon_candidates.size() > 1
     {
         for (unsigned int i = 0; i < good_muon_candidates.size(); ++i)
         {
@@ -3133,7 +3203,7 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
     {
         kaon_p4s.emplace_back(makePolarLorentzVector(track, KaonMass_));
     }
-
+    /*
     if (nTracks > 3)
     {
         for (unsigned int ihad1 = 0; ihad1 < nTracks - 1; ++ihad1)
@@ -3197,7 +3267,7 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
                 }
             }
         }
-    }
+    }*/
 
     // Buile D* -> D0 pi -> K+- pi-+ pi
     std::vector<bmm::PolarLorentzVector> pion_p4s;
@@ -3247,7 +3317,10 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
                     // 要求软 π 的电荷与 π 相同
                     if (candidateSoft.charge() != candidatePion.charge())
                         continue;
-                    if (fabs((kaon_p4s[i] + pion_p4s[j] + pion_p4s[k]).mass() - 2.01) > 0.5)
+                    
+                    double d0_mass = (candidateKaon.p4() + candidatePion.p4()).mass();
+                    double dstar_mass = (candidateKaon.p4() + candidatePion.p4() + candidateSoft.p4()).mass();
+                    if (d0_mass <= minD0Mass_ || d0_mass >= maxD0Mass_ || (dstar_mass - d0_mass) <= min_dm_ || (dstar_mass - d0_mass) >= max_dm_)
                         continue;
                     // 调用新函数构造 D* 候选子
                     buildDstarTokpipiCandidates(*dstartokpipi_collection, iEvent, candidateKaon, candidatePion, candidateSoft);
@@ -3289,7 +3362,10 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
                         continue;
                     bmm::Candidate candidateSoft(tracks().at(k), k);
                     candidateSoft.setMass(PionMass_);
-                    if (fabs((pion_p4s[i] + pion_p4s[j] + pion_p4s[k]).mass() - 2.01) > 0.5)
+                    
+                    double d0_mass = (candidatePion1.p4() + candidatePion2.p4()).mass();
+                    double dstar_mass = (candidatePion1.p4() + candidatePion2.p4() + candidateSoft.p4()).mass();
+                    if (d0_mass <= minD0Mass_ || d0_mass >= maxD0Mass_ || (dstar_mass - d0_mass) <= min_dm_ || (dstar_mass - d0_mass) >= max_dm_)
                         continue;
                     // 调用新函数构造 D*→D⁰π (D⁰→π⁺π⁻) 候选子
                     buildDstarTopipipiCandidates(*dstartopipipi_collection, iEvent, candidatePion1, candidatePion2, candidateSoft);

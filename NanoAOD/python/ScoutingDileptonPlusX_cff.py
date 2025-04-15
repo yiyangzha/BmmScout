@@ -114,12 +114,12 @@ Dileptons = cms.EDProducer(
     ElectronMaxEta = cms.double(2.4),
     KaonMinDCASig=cms.double(-1.),
     DiLeptonChargeCheck=cms.bool(True),
-    minBKllMass = cms.double(4.5),
+    minBKllMass = cms.double(1),
     maxBKllMass = cms.double(6.0),
     minLLGammaMass = cms.double(3.0),
     maxLLGammaMass = cms.double(6.0),
     minGammaPt = cms.double(1.0),
-    minBKKllMass = cms.double(4.5),
+    minBKKllMass = cms.double(1),
     maxBKKllMass = cms.double(6.0),
     maxTwoTrackDOCA = cms.double(0.1),
     bdtEvent0 = cms.FileInPath('BmmScout/NanoAOD/data/TMVA-100-Events0_BDT.weights.xml'),
@@ -144,7 +144,7 @@ Dileptons = cms.EDProducer(
     recoKstar = cms.bool(False),
     minBhhHadronPt = cms.double(0.5),
     maxBhhHadronEta = cms.double(2.4),
-    minDhhHadronPt = cms.double(2.0),
+    minDhhHadronPt = cms.double(1.0),
     maxDhhHadronEta = cms.double(2.4),
     minKsHadronPt = cms.double(0.5),
     maxKsHadronEta = cms.double(2.4),
@@ -162,8 +162,8 @@ Dileptons = cms.EDProducer(
     maxKsMass = cms.double(0.55),
     minKstarMass  = cms.double(0.7),
     maxKstarMass  = cms.double(1.1),
-    minDm = cms.double(0.135),
-    maxDm = cms.double(0.160),
+    minDm = cms.double(0.12),
+    maxDm = cms.double(0.175),
 )
 
 DileptonsMc = Dileptons.clone( isMC = cms.bool(True) ) 
@@ -534,6 +534,7 @@ DileptonsDstarTableVariables =  merge_psets(
     copy_pset(kinematic_pset,{"kin_":"mc_"}),
     cms.PSet(
         mass               = Var("userFloat('mass')",                float, doc = "Raw dstar mass"),
+        dm_free            = Var("userFloat('dm_free')",             float, doc = "dm with vertexed d0 and raw soft pion"),
         pt                 = Var("userFloat('pt')",                  float, doc = "Raw dstar pt"),
         eta                = Var("userFloat('eta')",                 float, doc = "Raw dstar eta"),
         phi                = Var("userFloat('phi')",                 float, doc = "Raw dstar phi"),

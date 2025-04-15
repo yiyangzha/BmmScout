@@ -3271,7 +3271,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
   // Collection of relevant tracks for candidates
   std::vector<const reco::Track *> interestingTracks;
 
-  std::vector<bmm::Candidate> good_hadron_candidates;
+  /*std::vector<bmm::Candidate> good_hadron_candidates;
   // Good hadrons
   for (unsigned int i = 0; i < nPFCands; ++i)
   {
@@ -3283,8 +3283,8 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
     if (hadron.charge() == 0)
       continue;
     good_hadron_candidates.push_back(bmm::Candidate(hadron));
-  }
-  nPFCands = good_hadron_candidates.size();
+  }*/
+  // nPFCands = good_hadron_candidates.size();
   // // Inject B to hh candidates where hadrons are explicitely matched
   // // to gen level decays
   // if ( injectMatchedBtohh_ and isMC_ ) {
@@ -3300,7 +3300,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
   // }
 
   // Build dimuon candidates
-  if (good_muon_candidates.size() > 1)
+  if (false) //good_muon_candidates.size() > 1
   {
     for (unsigned int i = 0; i < good_muon_candidates.size(); ++i)
     {
@@ -3444,6 +3444,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
         }
 
         // mmm
+        /*
         for (unsigned int imu3 = 0; imu3 < good_muon_candidates.size(); ++imu3)
         {
           if (i == imu3)
@@ -3461,7 +3462,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
           fill3muInfo(mmmCand, iEvent, muon1, muon2, muon3);
 
           mmm_collection->push_back(mmmCand);
-        }
+        }*/
 
         // fill isolation information for dimuon candidate
         fillIsolationInfo(dimuonCand, kinematicLLVertexFit, mm_index, -1,
@@ -3543,7 +3544,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
   // - loop over all hh combinations
   // - let individual studies fill hh_collection
   // - no check for duplicate entries
-  /* if (nPFCands > 2)
+  if (nPFCands > 1)
   {
     for (unsigned int i = 0; i < nPFCands - 1; ++i)
     {
@@ -3559,12 +3560,13 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
         if (had1.charge() * had2.charge() > 0)
           continue;
 
-        // buildDstarCandidates(*dstar_collection, *hh_collection, iEvent, had1, had2);
+        buildDstarCandidates(*dstar_collection, *hh_collection, iEvent, had1, had2);
 
-        //const auto *ksCand = buildKsCandidates(*hh_collection, *iso_collection, interestingTracks, iEvent, had1, had2);
+        //const auto *ksCand = buildKsCandidates(*hh_collection, *iso_collection, interestingTracks,
+        //                                       iEvent, had1, had2);
 
         // Kstar->Kspi->mmpi
-        if (recoKstar_)
+        /*if (recoKstar_)
         {
           for (unsigned int k = 0; k < nPFCands; ++k)
           {
@@ -3586,7 +3588,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
               kstar_collection->back().addUserFloat("mass", kstar_mass);
             }
           }
-        }
+        }*/
 
         // // reco Btohh
         // if (dileptonCand.name() == "hh")
@@ -3598,7 +3600,8 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
         //     }
       }
     }
-  }*/
+  }
+  /*
   if (nPFCands > 2)
   {
     // 循环从 good_hadron_candidates 选取候选（使用 good_hadron_candidates ptMinKaon_、etaMaxKaon_）
@@ -3740,7 +3743,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
         }
       }
     }
-  }
+  }*/
 
   iEvent.put(std::move(mm_collection), "MuMu");
   iEvent.put(std::move(iso_collection), "Iso");
