@@ -690,6 +690,10 @@ bool ScoutingDileptonPlusXProducer::isGoodMuon(const Run3ScoutingMuon &muon)
     // if ( muon.normalizedChi2() > 10 ) return false;
     // if ( muon.nRecoMuonMatchedStations() < 1 ) return false;
     // if ( muon.pt() < ptMinMu_ || fabs(muon.eta()) > etaMaxMu_ ) return false;
+    if (muon.pt() < 0.5 || fabs(muon.eta()) > 2.4)
+        return false;
+    if (muon.charge() == 0)
+        return false;
     return true;
 }
 
@@ -699,6 +703,10 @@ bool ScoutingDileptonPlusXProducer::isGoodTrack(const Run3ScoutingTrack &track)
     // if (not cand.hasTrackDetails()) return false;
     // if (not cand.bestTrack()->quality(reco::Track::highPurity)) return false;
     // if (isnan(cand.pt())) return false;
+    if (track.tk_pt() < 0.5 || fabs(track.tk_eta()) > 2.4)
+        return false;
+    if (track.tk_charge() == 0)
+        return false;
     return true;
 }
 
@@ -3328,6 +3336,8 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
     std::vector<bmm::PolarLorentzVector> kaon_p4s;
     for (const auto &track : *trackHandle_.product())
     {
+        if (not isGoodTrack(track))
+            continue;
         kaon_p4s.emplace_back(makePolarLorentzVector(track, KaonMass_));
     }
     /*
@@ -3400,6 +3410,8 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
     std::vector<bmm::PolarLorentzVector> pion_p4s;
     for (const auto &track : *trackHandle_.product())
     {
+        if ( not isGoodTrack(track) )
+            continue;
         pion_p4s.emplace_back(makePolarLorentzVector(track, PionMass_));
     }
 
