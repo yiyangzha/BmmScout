@@ -3559,6 +3559,9 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
 
         if (had1.charge() * had2.charge() >= 0)
           continue;
+        // Check mass of the two hadrons
+        if (fabs((had1.p4() + had2.p4()).mass() - 1.864) > 0.2)
+          continue;
 
         buildDstarCandidates(*dstar_collection, *hh_collection, iEvent, had1, had2);
 

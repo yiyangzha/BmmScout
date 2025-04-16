@@ -1084,125 +1084,132 @@ ScoutingDileptonPlusXProducer::fillDileptonInfo(pat::CompositeCandidate &dilepto
                                                 const bmm::Candidate &lepton1,
                                                 const bmm::Candidate &lepton2)
 {
-    auto kinematicLLVertexFit = vertexLeptonsWithKinematicFitter(lepton1, lepton2);
-    kinematicLLVertexFit.postprocess(*beamSpot_);
+    KinematicFitResult kinematicLLVertexFit;
+    try
+    {
+        kinematicLLVertexFit = vertexLeptonsWithKinematicFitter(lepton1, lepton2);
+        kinematicLLVertexFit.postprocess(*beamSpot_);
 
-    auto displacements = compute3dDisplacement(kinematicLLVertexFit);
-    addFitInfo(dileptonCand, kinematicLLVertexFit, "kin", displacements, 0, 1);
+        auto displacements = compute3dDisplacement(kinematicLLVertexFit);
+        addFitInfo(dileptonCand, kinematicLLVertexFit, "kin", displacements, 0, 1);
 
-    // if (isMC_){
-    //   auto gen_ll = getGenMatchInfo(lepton1, lepton2);
-    //   dileptonCand.addUserInt(  "gen_" + lepton1.name() + "1_pdgId",   gen_ll.l1_pdgId);
-    //   dileptonCand.addUserInt(  "gen_" + lepton1.name() + "1_index",   gen_ll.l1_index);
-    //   dileptonCand.addUserInt(  "gen_" + lepton1.name() + "1_mpdgId",  gen_ll.l1_motherPdgId);
-    //   dileptonCand.addUserFloat("gen_" + lepton1.name() + "1_pt",      gen_ll.l1_pt);
-    //   dileptonCand.addUserInt(  "gen_" + lepton2.name() + "2_pdgId",   gen_ll.l2_pdgId);
-    //   dileptonCand.addUserInt(  "gen_" + lepton2.name() + "2_index",   gen_ll.l2_index);
-    //   dileptonCand.addUserInt(  "gen_" + lepton2.name() + "2_mpdgId",  gen_ll.l2_motherPdgId);
-    //   dileptonCand.addUserFloat("gen_" + lepton2.name() + "2_pt",      gen_ll.l2_pt);
-    //   dileptonCand.addUserFloat("gen_mass",       gen_ll.ll_mass);
-    //   dileptonCand.addUserFloat("gen_pt",         gen_ll.ll_pt);
-    //   dileptonCand.addUserInt(  "gen_pdgId",      gen_ll.ll_pdgId);
-    //   dileptonCand.addUserInt(  "gen_index",      gen_ll.ll_index);
-    //   dileptonCand.addUserInt(  "gen_mpdgId",     gen_ll.ll_motherPdgId);
-    //   dileptonCand.addUserInt(  "gen_cpdgId",     gen_ll.common_mother?gen_ll.common_mother->pdgId():0);
-    //   dileptonCand.addUserInt(  "gen_cindex",     gen_ll.common_mother_index);
-    //   dileptonCand.addUserFloat("gen_prod_x",     gen_ll.ll_prod_vtx.x());
-    //   dileptonCand.addUserFloat("gen_prod_y",     gen_ll.ll_prod_vtx.y());
-    //   dileptonCand.addUserFloat("gen_prod_z",     gen_ll.ll_prod_vtx.z());
-    //   dileptonCand.addUserFloat("gen_vtx_x",      gen_ll.ll_vtx.x());
-    //   dileptonCand.addUserFloat("gen_vtx_y",      gen_ll.ll_vtx.y());
-    //   dileptonCand.addUserFloat("gen_vtx_z",      gen_ll.ll_vtx.z());
-    //   dileptonCand.addUserFloat("gen_l3d",        (gen_ll.ll_prod_vtx-gen_ll.ll_vtx).r());
-    //   dileptonCand.addUserFloat("gen_lxy",        (gen_ll.ll_prod_vtx-gen_ll.ll_vtx).rho());
-    //   dileptonCand.addUserFloat("gen_tau",        computeDecayTime(gen_ll));
-    //   if (gen_ll.match and kinematicLLVertexFit.valid()){
-    //     dileptonCand.addUserFloat("gen_alpha_p_phi", kinematicLLVertexFit.p3().phi() - gen_ll.match->phi());
-    //     dileptonCand.addUserFloat("gen_alpha_p_theta", kinematicLLVertexFit.p3().theta() - gen_ll.match->theta());
-    //     TVector3 p_gen(gen_ll.match->px(),
-    // 		     gen_ll.match->py(),
-    // 		     gen_ll.match->pz());
-    //     TVector3 ip_reco(displacements.get("pv").prodVertex().x(),
-    // 		       displacements.get("pv").prodVertex().y(),
-    // 		       displacements.get("pv").prodVertex().z());
-    //     TVector3 ip_gen(gen_ll.ll_prod_vtx.x(),
-    // 		      gen_ll.ll_prod_vtx.y(),
-    // 		      gen_ll.ll_prod_vtx.z());
-    //     TVector3 vtx_reco(kinematicLLVertexFit.vtx_position().x(),
-    // 			kinematicLLVertexFit.vtx_position().y(),
-    // 			kinematicLLVertexFit.vtx_position().z());
-    //     TVector3 vtx_gen(gen_ll.ll_vtx.x(),
-    // 		       gen_ll.ll_vtx.y(),
-    // 		       gen_ll.ll_vtx.z());
-    //     float cosAlpha_ip  = p_gen.Dot(vtx_gen - ip_reco) / (p_gen.Mag() * (vtx_gen - ip_reco).Mag());
-    //     float cosAlpha_vtx = p_gen.Dot(vtx_reco - ip_gen) / (p_gen.Mag() * (vtx_reco - ip_gen).Mag());
+        // if (isMC_){
+        //   auto gen_ll = getGenMatchInfo(lepton1, lepton2);
+        //   dileptonCand.addUserInt(  "gen_" + lepton1.name() + "1_pdgId",   gen_ll.l1_pdgId);
+        //   dileptonCand.addUserInt(  "gen_" + lepton1.name() + "1_index",   gen_ll.l1_index);
+        //   dileptonCand.addUserInt(  "gen_" + lepton1.name() + "1_mpdgId",  gen_ll.l1_motherPdgId);
+        //   dileptonCand.addUserFloat("gen_" + lepton1.name() + "1_pt",      gen_ll.l1_pt);
+        //   dileptonCand.addUserInt(  "gen_" + lepton2.name() + "2_pdgId",   gen_ll.l2_pdgId);
+        //   dileptonCand.addUserInt(  "gen_" + lepton2.name() + "2_index",   gen_ll.l2_index);
+        //   dileptonCand.addUserInt(  "gen_" + lepton2.name() + "2_mpdgId",  gen_ll.l2_motherPdgId);
+        //   dileptonCand.addUserFloat("gen_" + lepton2.name() + "2_pt",      gen_ll.l2_pt);
+        //   dileptonCand.addUserFloat("gen_mass",       gen_ll.ll_mass);
+        //   dileptonCand.addUserFloat("gen_pt",         gen_ll.ll_pt);
+        //   dileptonCand.addUserInt(  "gen_pdgId",      gen_ll.ll_pdgId);
+        //   dileptonCand.addUserInt(  "gen_index",      gen_ll.ll_index);
+        //   dileptonCand.addUserInt(  "gen_mpdgId",     gen_ll.ll_motherPdgId);
+        //   dileptonCand.addUserInt(  "gen_cpdgId",     gen_ll.common_mother?gen_ll.common_mother->pdgId():0);
+        //   dileptonCand.addUserInt(  "gen_cindex",     gen_ll.common_mother_index);
+        //   dileptonCand.addUserFloat("gen_prod_x",     gen_ll.ll_prod_vtx.x());
+        //   dileptonCand.addUserFloat("gen_prod_y",     gen_ll.ll_prod_vtx.y());
+        //   dileptonCand.addUserFloat("gen_prod_z",     gen_ll.ll_prod_vtx.z());
+        //   dileptonCand.addUserFloat("gen_vtx_x",      gen_ll.ll_vtx.x());
+        //   dileptonCand.addUserFloat("gen_vtx_y",      gen_ll.ll_vtx.y());
+        //   dileptonCand.addUserFloat("gen_vtx_z",      gen_ll.ll_vtx.z());
+        //   dileptonCand.addUserFloat("gen_l3d",        (gen_ll.ll_prod_vtx-gen_ll.ll_vtx).r());
+        //   dileptonCand.addUserFloat("gen_lxy",        (gen_ll.ll_prod_vtx-gen_ll.ll_vtx).rho());
+        //   dileptonCand.addUserFloat("gen_tau",        computeDecayTime(gen_ll));
+        //   if (gen_ll.match and kinematicLLVertexFit.valid()){
+        //     dileptonCand.addUserFloat("gen_alpha_p_phi", kinematicLLVertexFit.p3().phi() - gen_ll.match->phi());
+        //     dileptonCand.addUserFloat("gen_alpha_p_theta", kinematicLLVertexFit.p3().theta() - gen_ll.match->theta());
+        //     TVector3 p_gen(gen_ll.match->px(),
+        // 		     gen_ll.match->py(),
+        // 		     gen_ll.match->pz());
+        //     TVector3 ip_reco(displacements.get("pv").prodVertex().x(),
+        // 		       displacements.get("pv").prodVertex().y(),
+        // 		       displacements.get("pv").prodVertex().z());
+        //     TVector3 ip_gen(gen_ll.ll_prod_vtx.x(),
+        // 		      gen_ll.ll_prod_vtx.y(),
+        // 		      gen_ll.ll_prod_vtx.z());
+        //     TVector3 vtx_reco(kinematicLLVertexFit.vtx_position().x(),
+        // 			kinematicLLVertexFit.vtx_position().y(),
+        // 			kinematicLLVertexFit.vtx_position().z());
+        //     TVector3 vtx_gen(gen_ll.ll_vtx.x(),
+        // 		       gen_ll.ll_vtx.y(),
+        // 		       gen_ll.ll_vtx.z());
+        //     float cosAlpha_ip  = p_gen.Dot(vtx_gen - ip_reco) / (p_gen.Mag() * (vtx_gen - ip_reco).Mag());
+        //     float cosAlpha_vtx = p_gen.Dot(vtx_reco - ip_gen) / (p_gen.Mag() * (vtx_reco - ip_gen).Mag());
 
-    //     dileptonCand.addUserFloat("gen_alpha_ip", acos(cosAlpha_ip));
-    //     dileptonCand.addUserFloat("gen_alpha_vtx", acos(cosAlpha_vtx));
-    //   } else {
-    //     dileptonCand.addUserFloat("gen_alpha_p_phi", 999);
-    //     dileptonCand.addUserFloat("gen_alpha_p_theta", 999);
-    //     dileptonCand.addUserFloat("gen_alpha_ip", 999);
-    //     dileptonCand.addUserFloat("gen_alpha_vtx", 999);
-    //   }
+        //     dileptonCand.addUserFloat("gen_alpha_ip", acos(cosAlpha_ip));
+        //     dileptonCand.addUserFloat("gen_alpha_vtx", acos(cosAlpha_vtx));
+        //   } else {
+        //     dileptonCand.addUserFloat("gen_alpha_p_phi", 999);
+        //     dileptonCand.addUserFloat("gen_alpha_p_theta", 999);
+        //     dileptonCand.addUserFloat("gen_alpha_ip", 999);
+        //     dileptonCand.addUserFloat("gen_alpha_vtx", 999);
+        //   }
 
-    //   double ll_doca = -1;
+        //   double ll_doca = -1;
 
-    //   if (gen_ll.gen_l1() and gen_ll.gen_l2())
-    //     ll_doca = distanceOfClosestApproach(gen_ll.gen_l1(), gen_ll.gen_l2());
-    //   dileptonCand.addUserFloat("gen_doca",        ll_doca);
+        //   if (gen_ll.gen_l1() and gen_ll.gen_l2())
+        //     ll_doca = distanceOfClosestApproach(gen_ll.gen_l1(), gen_ll.gen_l2());
+        //   dileptonCand.addUserFloat("gen_doca",        ll_doca);
 
-    // }
+        // }
 
-    // int pvIndex = displacements.get("pv").pvIndex();
+        // int pvIndex = displacements.get("pv").pvIndex();
 
-    // Look for additional tracks compatible with the dilepton vertex
-    // auto closeTracks = findTracksCompatibleWithTheVertex(lepton1,lepton2,kinematicLLVertexFit);
-    // closeTracks.fillCandInfo(dileptonCand, pvIndex, "");
+        // Look for additional tracks compatible with the dilepton vertex
+        // auto closeTracks = findTracksCompatibleWithTheVertex(lepton1,lepton2,kinematicLLVertexFit);
+        // closeTracks.fillCandInfo(dileptonCand, pvIndex, "");
 
-    // dileptonCand.addUserFloat( "m1iso",     computeTrkLeptonIsolation(lepton1,lepton2,pvIndex,0.5,0.5));
-    // dileptonCand.addUserFloat( "m2iso",     computeTrkLeptonIsolation(lepton2,lepton1,pvIndex,0.5,0.5));
-    // dileptonCand.addUserFloat( "iso",       computeTrkDileptonIsolation(lepton2,lepton1,pvIndex,0.9,0.7));
-    // dileptonCand.addUserFloat( "otherVtxMaxProb", otherVertexMaxProb(lepton1,lepton2,0.5));
-    // dileptonCand.addUserFloat( "otherVtxMaxProb1", otherVertexMaxProb(lepton1,lepton2,1.0));
-    // dileptonCand.addUserFloat( "otherVtxMaxProb2", otherVertexMaxProb(lepton1,lepton2,2.0));
+        // dileptonCand.addUserFloat( "m1iso",     computeTrkLeptonIsolation(lepton1,lepton2,pvIndex,0.5,0.5));
+        // dileptonCand.addUserFloat( "m2iso",     computeTrkLeptonIsolation(lepton2,lepton1,pvIndex,0.5,0.5));
+        // dileptonCand.addUserFloat( "iso",       computeTrkDileptonIsolation(lepton2,lepton1,pvIndex,0.9,0.7));
+        // dileptonCand.addUserFloat( "otherVtxMaxProb", otherVertexMaxProb(lepton1,lepton2,0.5));
+        // dileptonCand.addUserFloat( "otherVtxMaxProb1", otherVertexMaxProb(lepton1,lepton2,1.0));
+        // dileptonCand.addUserFloat( "otherVtxMaxProb2", otherVertexMaxProb(lepton1,lepton2,2.0));
 
-    // // BDT
-    // bdtData_.fls3d    = dileptonCand.userFloat("kin_sl3d");
-    // bdtData_.alpha    = dileptonCand.userFloat("kin_alpha");
-    // bdtData_.pvips    = dileptonCand.userFloat("kin_pvipErr")>0?dileptonCand.userFloat("kin_pvip")/dileptonCand.userFloat("kin_pvipErr"):999.;
-    // bdtData_.iso      = dileptonCand.userFloat("iso");
-    // bdtData_.chi2dof  = dileptonCand.userFloat("kin_vtx_chi2dof");
-    // bdtData_.docatrk  = dileptonCand.userFloat("docatrk");
-    // bdtData_.closetrk = dileptonCand.userInt(  "closetrk");
-    // bdtData_.m1iso    = dileptonCand.userFloat("m1iso");
-    // bdtData_.m2iso    = dileptonCand.userFloat("m2iso");
-    // bdtData_.eta      = dileptonCand.userFloat("kin_eta");
-    // bdtData_.m        = dileptonCand.userFloat("kin_mass");
+        // // BDT
+        // bdtData_.fls3d    = dileptonCand.userFloat("kin_sl3d");
+        // bdtData_.alpha    = dileptonCand.userFloat("kin_alpha");
+        // bdtData_.pvips    = dileptonCand.userFloat("kin_pvipErr")>0?dileptonCand.userFloat("kin_pvip")/dileptonCand.userFloat("kin_pvipErr"):999.;
+        // bdtData_.iso      = dileptonCand.userFloat("iso");
+        // bdtData_.chi2dof  = dileptonCand.userFloat("kin_vtx_chi2dof");
+        // bdtData_.docatrk  = dileptonCand.userFloat("docatrk");
+        // bdtData_.closetrk = dileptonCand.userInt(  "closetrk");
+        // bdtData_.m1iso    = dileptonCand.userFloat("m1iso");
+        // bdtData_.m2iso    = dileptonCand.userFloat("m2iso");
+        // bdtData_.eta      = dileptonCand.userFloat("kin_eta");
+        // bdtData_.m        = dileptonCand.userFloat("kin_mass");
 
-    // dileptonCand.addUserFloat("bdt",computeAnalysisBDT(iEvent.eventAuxiliary().event()%3));
+        // dileptonCand.addUserFloat("bdt",computeAnalysisBDT(iEvent.eventAuxiliary().event()%3));
 
-    // // XGBoost
-    // unsigned int xg_index = iEvent.eventAuxiliary().event()%3;
+        // // XGBoost
+        // unsigned int xg_index = iEvent.eventAuxiliary().event()%3;
 
-    // xgBoosters_.at(xg_index).set("mm_kin_alpha",       dileptonCand.userFloat("kin_alpha"));
-    // xgBoosters_.at(xg_index).set("mm_kin_alphaXY",     cos(dileptonCand.userFloat("kin_alphaBS"))); // FIXME - need new training
-    // xgBoosters_.at(xg_index).set("mm_kin_spvip",       dileptonCand.userFloat("kin_spvip"));
-    // xgBoosters_.at(xg_index).set("mm_kin_pvip",        dileptonCand.userFloat("kin_pvip"));
-    // xgBoosters_.at(xg_index).set("mm_iso",             dileptonCand.userFloat("iso"));
-    // xgBoosters_.at(xg_index).set("mm_m1iso",           dileptonCand.userFloat("m1iso"));
-    // xgBoosters_.at(xg_index).set("mm_m2iso",           dileptonCand.userFloat("m2iso"));
-    // xgBoosters_.at(xg_index).set("mm_kin_sl3d",        dileptonCand.userFloat("kin_sl3d"));
-    // xgBoosters_.at(xg_index).set("mm_kin_vtx_chi2dof", dileptonCand.userFloat("kin_vtx_chi2dof"));
-    // xgBoosters_.at(xg_index).set("mm_nBMTrks",         dileptonCand.userInt(  "nBMTrks"));
-    // xgBoosters_.at(xg_index).set("mm_otherVtxMaxProb1", dileptonCand.userFloat(  "otherVtxMaxProb1"));
-    // xgBoosters_.at(xg_index).set("mm_otherVtxMaxProb2", dileptonCand.userFloat(  "otherVtxMaxProb2"));
+        // xgBoosters_.at(xg_index).set("mm_kin_alpha",       dileptonCand.userFloat("kin_alpha"));
+        // xgBoosters_.at(xg_index).set("mm_kin_alphaXY",     cos(dileptonCand.userFloat("kin_alphaBS"))); // FIXME - need new training
+        // xgBoosters_.at(xg_index).set("mm_kin_spvip",       dileptonCand.userFloat("kin_spvip"));
+        // xgBoosters_.at(xg_index).set("mm_kin_pvip",        dileptonCand.userFloat("kin_pvip"));
+        // xgBoosters_.at(xg_index).set("mm_iso",             dileptonCand.userFloat("iso"));
+        // xgBoosters_.at(xg_index).set("mm_m1iso",           dileptonCand.userFloat("m1iso"));
+        // xgBoosters_.at(xg_index).set("mm_m2iso",           dileptonCand.userFloat("m2iso"));
+        // xgBoosters_.at(xg_index).set("mm_kin_sl3d",        dileptonCand.userFloat("kin_sl3d"));
+        // xgBoosters_.at(xg_index).set("mm_kin_vtx_chi2dof", dileptonCand.userFloat("kin_vtx_chi2dof"));
+        // xgBoosters_.at(xg_index).set("mm_nBMTrks",         dileptonCand.userInt(  "nBMTrks"));
+        // xgBoosters_.at(xg_index).set("mm_otherVtxMaxProb1", dileptonCand.userFloat(  "otherVtxMaxProb1"));
+        // xgBoosters_.at(xg_index).set("mm_otherVtxMaxProb2", dileptonCand.userFloat(  "otherVtxMaxProb2"));
 
-    // dileptonCand.addUserFloat("mva", xgBoosters_.at(xg_index).predict());
+        // dileptonCand.addUserFloat("mva", xgBoosters_.at(xg_index).predict());
 
-    // Refit with pointing constraint
-    auto bToLL_PC = vertexLeptonsWithPointingConstraint(lepton1, lepton2, displacements.get("pv").prodVertex());
-    addFitInfo(dileptonCand, bToLL_PC, "kinpc");
+        // Refit with pointing constraint
+        auto bToLL_PC = vertexLeptonsWithPointingConstraint(lepton1, lepton2, displacements.get("pv").prodVertex());
+        addFitInfo(dileptonCand, bToLL_PC, "kinpc");
+    }
+    catch (const std::exception &e)
+    {
+    }
 
     return kinematicLLVertexFit;
 }
@@ -2276,12 +2283,13 @@ void ScoutingDileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollect
     dstarCand.addUserFloat("dm_free", (soft_pion.p4() + d0_p4).mass() - d0_p4.mass());
     float dm_prompt = 0;
 
-    //const reco::Vertex *bestVertex(0);
-    int bestVertexIndex(-1);
+    // const reco::Vertex *bestVertex(0);
+    //int bestVertexIndex(-1);
     // 得到与D0轨迹最接近的primary vertex
-    auto candTransientTrack = d0VertexFit.particle()->refittedTransientTrack();
+    // auto candTransientTrack = d0VertexFit.particle()->refittedTransientTrack();
 
     // find best matching primary vertex
+    /*
     double minDistance(999.);
     bool closestIn3D = true;
     for (unsigned int i = 0; i < vertices().size(); ++i)
@@ -2293,7 +2301,7 @@ void ScoutingDileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollect
             if (impactParameter3D.first and impactParameter3D.second.value() < minDistance)
             {
                 minDistance = impactParameter3D.second.value();
-                //bestVertex = &vertex;
+                // bestVertex = &vertex;
                 bestVertexIndex = i;
             }
         }
@@ -2304,44 +2312,54 @@ void ScoutingDileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollect
             if (impactParameterZ.first and distance < minDistance)
             {
                 minDistance = distance;
-                //bestVertex = &vertex;
+                // bestVertex = &vertex;
                 bestVertexIndex = i;
             }
         }
-    }
+    }*/
 
     // refit soft_pion with PV constraint
-    int pvIndex = bestVertexIndex;
-    //cout << "ScoutingDileptonPlusXProducer::fillDstarInfo: pvIndex = " << pvIndex << endl;
+    auto displacements = compute3dDisplacement(d0VertexFit);
+    int pvIndex = displacements.get("pv").pvIndex(); // d0Cand.userInt("kin_pvIndex");
+    // cout << "bestVertexIndex = " << bestVertexIndex << endl;
+    // cout << "pvIndex = " << pvIndex << endl;
+    // cout << "ScoutingDileptonPlusXProducer::fillDstarInfo: pvIndex = " << pvIndex << endl;
 
     bmm::Candidate soft_pion_refit = soft_pion;
     double pv_prob(0), pv_with_pion_prob(0), pv_sum_pt(0), pv_sum_pt2(0);
     int pv_ntrks(0);
     if (pvIndex >= 0)
     {
-        auto fit_results = refitWithVertexConstraint(*soft_pion_refit.bestTrack(), pvIndex);
-        auto &pv_refit = fit_results.first;
-        auto &pv_refit_with_soft_pion = fit_results.second;
-
-        if (pv_refit_with_soft_pion.valid())
+        try
         {
-            auto pion_index = pv_refit_with_soft_pion.number_of_daughters() - 1;
-            auto soft_pion_refit_p3 = pv_refit_with_soft_pion.dau_p3(pion_index);
-            auto refit_p4(makeLorentzVectorFromPxPyPzM(soft_pion_refit_p3.x(),
-                                                       soft_pion_refit_p3.y(),
-                                                       soft_pion_refit_p3.z(),
-                                                       PionMass_));
-            dm_prompt = (refit_p4 + d0_p4).mass() - d0_p4.mass();
+            auto fit_results = refitWithVertexConstraint(*soft_pion_refit.bestTrack(), pvIndex);
+            auto &pv_refit = fit_results.first;
+            auto &pv_refit_with_soft_pion = fit_results.second;
 
-            pv_with_pion_prob = pv_refit_with_soft_pion.vtxProb();
+            if (pv_refit_with_soft_pion.valid())
+            {
+                auto pion_index = pv_refit_with_soft_pion.number_of_daughters() - 1;
+                auto soft_pion_refit_p3 = pv_refit_with_soft_pion.dau_p3(pion_index);
+                auto refit_p4(makeLorentzVectorFromPxPyPzM(soft_pion_refit_p3.x(),
+                                                           soft_pion_refit_p3.y(),
+                                                           soft_pion_refit_p3.z(),
+                                                           PionMass_));
+                dm_prompt = (refit_p4 + d0_p4).mass() - d0_p4.mass();
+
+                pv_with_pion_prob = pv_refit_with_soft_pion.vtxProb();
+                //cout << "pv_with_pion_prob = " << pv_with_pion_prob << endl;
+            }
+
+            if (pv_refit.valid())
+            {
+                pv_prob = pv_refit.vtxProb();
+                pv_sum_pt = pv_refit.sumPt();
+                pv_sum_pt2 = pv_refit.sumPt2();
+                pv_ntrks = pv_refit.number_of_daughters();
+            }
         }
-
-        if (pv_refit.valid())
+        catch (const std::exception &e)
         {
-            pv_prob = pv_refit.vtxProb();
-            pv_sum_pt = pv_refit.sumPt();
-            pv_sum_pt2 = pv_refit.sumPt2();
-            pv_ntrks = pv_refit.number_of_daughters();
         }
     }
 
@@ -2367,93 +2385,100 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
     if (had2.pt() < minDhhTrkPt_ || fabs(had2.eta()) > maxDhhTrkEta_)
         return;
     AddFourMomenta addP4;
-    auto nPFCands = trackHandle_->size();
+    auto nPFCands = tracks().size();
     for (unsigned int k = 0; k < nPFCands; ++k)
     {
-        bmm::Candidate soft_pion(tracks().at(k), k);
-
-        if (overlap(had1, soft_pion) || overlap(had2, soft_pion))
-            continue;
-
-        soft_pion.setMass(PionMass_);
-
-        bmm::Candidate pion1 = had1;
-        pion1.setType(PionMass_, "had", 211 * had1.charge());
-        bmm::Candidate pion2 = had2;
-        pion2.setType(PionMass_, "had", 211 * had2.charge());
-
-        bmm::Candidate kaon1 = had1;
-        kaon1.setType(KaonMass_, "had", 321 * had1.charge());
-        bmm::Candidate kaon2 = had2;
-        kaon2.setType(KaonMass_, "had", 321 * had2.charge());
-
-        // D0->pipi
-        if (recoD0pipi_)
+        try
         {
-            double d0_mass = (pion1.p4() + pion2.p4()).mass();
-            double dstar_mass = (pion1.p4() + pion2.p4() + soft_pion.p4()).mass();
+            if (tracks().at(k).charge() == 0 || tracks().at(k).pt() < 0.5 || abs(tracks().at(k).eta()) > 2.4)
+                continue;
+            bmm::Candidate soft_pion(tracks().at(k), k);
+            if (overlap(had1, soft_pion) || overlap(had2, soft_pion))
+                continue;
 
-            if (d0_mass > minD0Mass_ && d0_mass < maxD0Mass_ &&
-                (dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)
+            soft_pion.setMass(PionMass_);
+
+            bmm::Candidate pion1 = had1;
+            pion1.setType(PionMass_, "had", 211 * had1.charge());
+            bmm::Candidate pion2 = had2;
+            pion2.setType(PionMass_, "had", 211 * had2.charge());
+
+            bmm::Candidate kaon1 = had1;
+            kaon1.setType(KaonMass_, "had", 321 * had1.charge());
+            bmm::Candidate kaon2 = had2;
+            kaon2.setType(KaonMass_, "had", 321 * had2.charge());
+
+            // D0->pipi
+            if (recoD0pipi_)
             {
+                double d0_mass = (pion1.p4() + pion2.p4()).mass();
+                double dstar_mass = (pion1.p4() + pion2.p4() + soft_pion.p4()).mass();
 
-                pat::CompositeCandidate d0Cand(std::string("hh"));
-                d0Cand.addDaughter(pion1, "pion1");
-                d0Cand.addDaughter(pion2, "pion2");
-                addP4.set(d0Cand);
-
-                if (preprocess(d0Cand, iEvent, pion1, pion2))
+                if (d0_mass > minD0Mass_ && d0_mass < maxD0Mass_ &&
+                    (dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)
                 {
-                    // Kinematic Fits
-                    auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, pion1, pion2);
-                    int hh_index = hh_collection.size();
-                    hh_collection.push_back(d0Cand);
-                    fillDstarInfo(dstar_collection, iEvent, d0VertexFit, d0Cand, soft_pion,
-                                  -1, hh_index, pion1, pion2, 0);
+
+                    pat::CompositeCandidate d0Cand(std::string("hh"));
+                    d0Cand.addDaughter(pion1, "pion1");
+                    d0Cand.addDaughter(pion2, "pion2");
+                    addP4.set(d0Cand);
+
+                    if (preprocess(d0Cand, iEvent, pion1, pion2))
+                    {
+                        // Kinematic Fits
+                        auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, pion1, pion2);
+                        int hh_index = hh_collection.size();
+                        hh_collection.push_back(d0Cand);
+                        fillDstarInfo(dstar_collection, iEvent, d0VertexFit, d0Cand, soft_pion,
+                                      -1, hh_index, pion1, pion2, 0);
+                    }
+                }
+            }
+
+            // D0->Kpi
+            if (recoD0Kpi_)
+            {
+                const bmm::Candidate *daughter1(nullptr), *daughter2(nullptr);
+
+                if (pion2.charge() == soft_pion.charge())
+                {
+                    // Kpi case
+                    daughter1 = &kaon1;
+                    daughter2 = &pion2;
+                }
+                else
+                {
+                    // piK case
+                    daughter1 = &pion1;
+                    daughter2 = &kaon2;
+                }
+
+                double d0_mass = (daughter1->p4() + daughter2->p4()).mass();
+                double dstar_mass = (daughter1->p4() + daughter2->p4() + soft_pion.p4()).mass();
+
+                if (d0_mass > minD0Mass_ && d0_mass < maxD0Mass_ &&
+                    (dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)
+                {
+
+                    pat::CompositeCandidate d0Cand(std::string("hh"));
+                    d0Cand.addDaughter(*daughter1, "had1");
+                    d0Cand.addDaughter(*daughter2, "had2");
+                    addP4.set(d0Cand);
+
+                    if (preprocess(d0Cand, iEvent, *daughter1, *daughter2))
+                    {
+                        // Kinematic Fits
+                        auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, *daughter1, *daughter2);
+                        int hh_index = hh_collection.size();
+                        hh_collection.push_back(d0Cand);
+                        fillDstarInfo(dstar_collection, iEvent, d0VertexFit, d0Cand, soft_pion,
+                                      -1, hh_index, *daughter1, *daughter2, 1);
+                    }
                 }
             }
         }
-
-        // D0->Kpi
-        if (recoD0Kpi_)
+        catch (const std::exception &e)
         {
-            const bmm::Candidate *daughter1(nullptr), *daughter2(nullptr);
-
-            if (pion2.charge() == soft_pion.charge())
-            {
-                // Kpi case
-                daughter1 = &kaon1;
-                daughter2 = &pion2;
-            }
-            else
-            {
-                // piK case
-                daughter1 = &pion1;
-                daughter2 = &kaon2;
-            }
-
-            double d0_mass = (daughter1->p4() + daughter2->p4()).mass();
-            double dstar_mass = (daughter1->p4() + daughter2->p4() + soft_pion.p4()).mass();
-
-            if (d0_mass > minD0Mass_ && d0_mass < maxD0Mass_ &&
-                (dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)
-            {
-
-                pat::CompositeCandidate d0Cand(std::string("hh"));
-                d0Cand.addDaughter(*daughter1, "had1");
-                d0Cand.addDaughter(*daughter2, "had2");
-                addP4.set(d0Cand);
-
-                if (preprocess(d0Cand, iEvent, *daughter1, *daughter2))
-                {
-                    // Kinematic Fits
-                    auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, *daughter1, *daughter2);
-                    int hh_index = hh_collection.size();
-                    hh_collection.push_back(d0Cand);
-                    fillDstarInfo(dstar_collection, iEvent, d0VertexFit, d0Cand, soft_pion,
-                                  -1, hh_index, *daughter1, *daughter2, 1);
-                }
-            }
         }
     }
 }
@@ -2971,6 +2996,8 @@ const std::vector<reco::Track> &ScoutingDileptonPlusXProducer::tracks()
         tracks_.clear();
         for (const auto &track : *trackHandle_.product())
         {
+            if (not isGoodTrack(track))
+                continue;
             tracks_.push_back(bmm::makeRecoTrack(track));
         }
         tracks_initialized_ = true;
@@ -3054,7 +3081,7 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
     // auto nPhotons = photonHandle->size();
     // auto nConversions = conversionHandle->size();
     // auto nPFCands = trackHandle_->size();
-    auto nTracks = trackHandle_->size();
+    // auto nTracks = trackHandle_->size();
 
     // Output collection
     auto mm_collection = std::make_unique<pat::CompositeCandidateCollection>();
@@ -3333,13 +3360,13 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
     // }
 
     // Build BsTo4h  candidates
-    std::vector<bmm::PolarLorentzVector> kaon_p4s;
+    /*std::vector<bmm::PolarLorentzVector> kaon_p4s;
     for (const auto &track : *trackHandle_.product())
     {
         if (not isGoodTrack(track))
             continue;
         kaon_p4s.emplace_back(makePolarLorentzVector(track, KaonMass_));
-    }
+    }*/
     /*
     if (nTracks > 3)
     {
@@ -3407,44 +3434,37 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
     }*/
 
     // Buile D* -> D0 pi -> K+- pi-+ pi
-    std::vector<bmm::PolarLorentzVector> pion_p4s;
+    /*std::vector<bmm::PolarLorentzVector> pion_p4s;
     for (const auto &track : *trackHandle_.product())
     {
         if ( not isGoodTrack(track) )
             continue;
         pion_p4s.emplace_back(makePolarLorentzVector(track, PionMass_));
-    }
+    }*/
 
-    if (kaon_p4s.size() > 0 && pion_p4s.size() > 1)
+    if (tracks().size() > 2)
     {
         // 循环从 kaon_p4s 选取候选（使用 trackHandle_中对应轨迹，且满足 ptMinKaon_、etaMaxKaon_）
-        for (unsigned int i = 0; i < kaon_p4s.size(); ++i)
+        for (unsigned int i = 0; i < tracks().size() - 1; ++i)
         {
-            const auto &trkK = (*trackHandle_)[i];
-            if (trkK.tk_pt() < ptMinKaon_ || fabs(trkK.tk_eta()) > etaMaxKaon_)
-                continue;
             // 使用 trackHandle_ 的 i 号轨迹构造 K 候选
-            bmm::Candidate candidateKaon(tracks().at(i), i);
-            candidateKaon.setMass(KaonMass_);
-
-            // 循环从 pion_p4s中选取 D0 中用作 π 的候选（注意排除同一条轨迹）
-            for (unsigned int j = 0; j < pion_p4s.size(); ++j)
+            bmm::Candidate candidate1(tracks().at(i), i);
+            if (candidate1.pt() < ptMinKaon_ || fabs(candidate1.eta()) > etaMaxKaon_)
+                continue;
+            for (unsigned int j = i + 1; j < tracks().size(); ++j)
             {
-
-                if (j == i)
+                bmm::Candidate candidate2(tracks().at(j), j);
+                if (candidate2.pt() < ptMinKaon_ || fabs(candidate2.eta()) > etaMaxKaon_)
                     continue;
-                const auto &trkPi = (*trackHandle_)[j];
-                if (trkPi.tk_pt() < ptMinKaon_ || fabs(trkPi.tk_eta()) > etaMaxKaon_)
-                    continue;
-                bmm::Candidate candidatePion(tracks().at(j), j);
                 // 要求 D0 的 K 和 π 电荷相反
-                if (candidateKaon.charge() * candidatePion.charge() >= 0)
+                if (candidate1.charge() * candidate2.charge() >= 0)
                     continue;
-                if (fabs((kaon_p4s[i] + pion_p4s[j]).mass() - 1.864) > 0.2)
+                // Check deltaR
+                if (overlap(candidate1, candidate2))
                     continue;
 
-                buildDstarCandidates(*dstar_collection, *hh_collection, iEvent, candidateKaon, candidatePion);
-
+                buildDstarCandidates(*dstar_collection, *hh_collection, iEvent, candidate1, candidate2);
+                /*
                 candidatePion.setMass(PionMass_);
 
                 // 循环从 pion_p4s中选取额外的软 π 候选（必须与 π 电荷相同）
@@ -3467,12 +3487,13 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
                         continue;
                     // 调用新函数构造 D* 候选子
                     buildDstarTokpipiCandidates(*dstartokpipi_collection, iEvent, candidateKaon, candidatePion, candidateSoft);
-                }
+                }*/
             }
         }
     }
 
     // Build D* -> D0 pi -> pi pi pi
+    /*
     if (pion_p4s.size() > 2)
     {
         // 循环选取构成 D0的两个候选：candidatePion1 和 candidatePion2（要求电荷相反）
@@ -3515,7 +3536,7 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
                 }
             }
         }
-    }
+    }*/
 
     // // Build hh candidates
     // // - loop over all hh combinations
@@ -4636,8 +4657,9 @@ ScoutingDileptonPlusXProducer::getGoodTracksToRefitPV(int pvIndex, const reco::T
 
     for (const auto &track : *trackHandle_.product())
     {
-        // if (not isGoodTrack(track)) continue;
-        if (track.tk_pt() < 0.5)
+        if (not isGoodTrack(track))
+            continue;
+        if (track.tk_pt() < 0.5 || abs(track.tk_eta()) > 2.4)
             continue;
         if (track.tk_vtxInd() != pvIndex)
             continue;
