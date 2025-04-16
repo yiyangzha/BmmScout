@@ -42,9 +42,16 @@ process.MessageLogger = cms.Service("MessageLogger",
         KalmanVertexUpdator = cms.untracked.PSet(
             limit = cms.untracked.int32(0)  # 完全禁止该模块的警告输出
         ),
+        TriggerOutputBranches = cms.untracked.PSet(
+            limit = cms.untracked.int32(0)
+        ),
+        default = cms.untracked.PSet(
+            limit = cms.untracked.int32(10)
+        )
     ),
     suppressWarning = cms.untracked.vstring(
-        'KalmanVertexUpdator'
+        'KalmanVertexUpdator',
+        'TriggerOutputBranches'
     )
 )
 

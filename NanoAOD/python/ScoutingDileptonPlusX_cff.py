@@ -610,6 +610,48 @@ DileptonsDstarMcTable = cms.EDProducer("SimpleCompositeCandidateFlatTableProduce
     extension=cms.bool(False),
     variables = DileptonsDstarMcTableVariables
 )
+
+DileptonsDstarRawTableVariables =  merge_psets(
+    cms.PSet(
+        mm_index       = Var("userInt('mm_index')",          int,   doc = "Index of muon pair"),
+        hh_index       = Var("userInt('hh_index')",          int,   doc = "Index of hadron pair"),
+        pion_charge    = Var("userInt('pion_charge')",       int,   doc = "Pion charge"),
+        mass           = Var("userFloat('mass')",            float, doc = "Raw dstar mass"),
+        dm_raw         = Var("userFloat('dm_raw')",          float, doc = "Raw dm"),
+        dm_free        = Var("userFloat('dm_free')",         float, doc = "dm with vertexed d0 and raw soft pion"),
+        dm_pv          = Var("userFloat('dm_prompt')",       float, doc = "dm with vertexed d0 and refitted with primary vertex constraint soft pion"),
+        pion_pt        = Var("userFloat('pion_pt')",         float, doc = "Pion pt"),
+        pion_eta       = Var("userFloat('pion_eta')",        float, doc = "Pion eta"),
+        pion_phi       = Var("userFloat('pion_phi')",        float, doc = "Pion phi"),
+        pion_dxy_bs    = Var("userFloat('pion_dxy_bs')",     float, doc = "Pion impact parameter wrt the beam spot"),
+        pion_sdxy_bs   = Var("userFloat('pion_sdxy_bs')",    float, doc = "Pion impact parameter significance wrt the beam spot"),
+        pv_prob        = Var("userFloat('pv_prob')",         float, doc = "PV refit probability"),
+        pv_sum_pt      = Var("userFloat('pv_sum_pt')",       float, doc = "PV sum pt"),
+        pv_sum_pt2     = Var("userFloat('pv_sum_pt2')",      float, doc = "PV sum pt^2"),
+        pv_ntrks       = Var("userInt('pv_ntrks')",          int,   doc = "PV number of tracks"),
+        pv_with_pion_prob = Var("userFloat('pv_with_pion_prob')", float, doc = "PV refit probability with soft pion"),
+        fromKpi           = Var("userInt('fromKpi')",         int, doc = "Dstar from Kpi"),
+        # pion_l1_doca   = Var("userFloat('pion_l1_doca')",    float, doc = "Pion distance of closest approach to lepton1"),
+        # pion_l2_doca   = Var("userFloat('pion_l2_doca')",    float, doc = "Pion distance of closest approach to lepton2"),
+        # Kinematic Fit daugter info
+        # nomc_kaon1pt    = Var("userFloat('nomc_kaon1pt')",       float, doc = "Kinematic fit (no Jpsi mass constraint): refitted kaon 1 pt"),
+        # nomc_kaon1eta   = Var("userFloat('nomc_kaon1eta')",      float, doc = "Kinematic fit (no Jpsi mass constraint): refitted kaon 1 eta"),
+        # nomc_kaon1phi   = Var("userFloat('nomc_kaon1phi')",      float, doc = "Kinematic fit (no Jpsi mass constraint): refitted kaon 1 phi"),
+        # jpsimc_kaon1pt    = Var("userFloat('jpsimc_kaon1pt')",       float, doc = "Kinematic fit (with Jpsi mass constraint): refitted kaon 1 pt"),
+        # jpsimc_kaon1eta   = Var("userFloat('jpsimc_kaon1eta')",      float, doc = "Kinematic fit (with Jpsi mass constraint): refitted kaon 1 eta"),
+        # jpsimc_kaon1phi   = Var("userFloat('jpsimc_kaon1phi')",      float, doc = "Kinematic fit (with Jpsi mass constraint): refitted kaon 1 phi"),
+    )
+)
+
+DileptonsDstarTable = cms.EDProducer("SimpleCompositeCandidateFlatTableProducer", 
+    src=cms.InputTag("Dileptons","Dstar"),
+    cut=cms.string(""),
+    name=cms.string("dstar"),
+    doc=cms.string("Dstar Variables"),
+    singleton=cms.bool(False),
+    extension=cms.bool(False),
+    variables = DileptonsDstarRawTableVariables
+)
 ##################################################################################
 ###
 ###                              Kstar to Ks pi
@@ -1160,8 +1202,8 @@ ScoutingDileptonPlusXSequence   = cms.Sequence(Dileptons)
 ScoutingDileptonPlusXMcSequence = cms.Sequence(DileptonsMc)
 
 ScoutingDileptonPlusXTables     = cms.Sequence(DileptonsDiMuonTable   * DileptonsKmumuTable * 
-                                        DileptonsKKmumuTable   * BsToPhiPhiTable *
-                                        DileptonsDstarKpipiTable * DileptonsDstarpipipiTable)
+                                        DileptonsKKmumuTable   * BsToPhiPhiTable * DileptonsHHTable *
+                                        DileptonsDstarKpipiTable * DileptonsDstarpipipiTable * DileptonsDstarTable)
 
 ScoutingDileptonPlusXMcTables   = cms.Sequence(DileptonsDiMuonMcTable * DileptonsHHMcTable     * DileptonsElElMcTable *
                                         DileptonsElMuMcTable   * DileptonsKmumuMcTable  * DileptonsKeeMcTable  *

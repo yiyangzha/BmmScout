@@ -283,12 +283,11 @@ private:
     // template <typename T> std::vector<const reco::Track*>
     // getGoodTracksToRefitPV(int pvIndex, T track_to_ignore);
 
-    // template <typename T> std::vector<const reco::Track*>
-    // getGoodTracksToRefitPV(int pvIndex, std::vector<T> ignoreTracks);
+    std::vector<const reco::Track *> getGoodTracksToRefitPV(int pvIndex, const reco::Track &ignoreTracks);
 
-    // std::pair<KinematicFitResult, KinematicFitResult>
-    // refitWithVertexConstraint(const reco::Track& track,
-    // 			    int pvIndex);
+    std::pair<KinematicFitResult, KinematicFitResult>
+    refitWithVertexConstraint(const reco::Track &track,
+                              int pvIndex);
 
     KinematicFitResult
     fitBToKLL(const bmm::Candidate &lepton1,
@@ -2220,7 +2219,136 @@ void ScoutingDileptonPlusXProducer::buildLLXCandidates(pat::CompositeCandidateCo
     }
 }
 
-/*void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollection &dstar_collection,
+void ScoutingDileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollection &dstar_collection,
+                                                  const edm::Event &iEvent,
+                                                  const KinematicFitResult &d0VertexFit,
+                                                  const pat::CompositeCandidate &d0Cand,
+                                                  const bmm::Candidate &soft_pion,
+                                                  int mm_index,
+                                                  int hh_index,
+                                                  const bmm::Candidate &daughter1,
+                                                  const bmm::Candidate &daughter2,
+                                                  int fromKpi)
+{
+    pat::CompositeCandidate dstarCand;
+    dstarCand.addUserInt("mm_index", mm_index);
+    dstarCand.addUserInt("hh_index", hh_index);
+
+    // Dstar preselection is performed using original tracks. The best
+    // estimate of D0 parameters is achieved by vertexing its decay
+    // products. Dstar can be prompt and non-prompt. Therefore we can
+    // have the following dm estimates
+    // * dm_raw - dm computed without kinematic fits
+    // * dm_prompt - D0 vertexed and soft_pion is restricted to PV
+    // * dm_prompt2 - same as dm_prompt, but using second best PV
+    // * dm_free - D0 vertexed and soft_pion is not refit
+    //
+    // Dstar mass may have similiar to dm definitions, but since it's no
+    // expected to be used directly, we store only one mass varian: raw
+
+    // soft pion raw information
+    dstarCand.addUserFloat("pion_pt", soft_pion.pt());
+    dstarCand.addUserFloat("pion_eta", soft_pion.eta());
+    dstarCand.addUserFloat("pion_phi", soft_pion.phi());
+    dstarCand.addUserFloat("pion_dxy_bs", soft_pion.bestTrack()->dxy(*beamSpot_));
+    auto pion_sdxy_bs = 0;
+    if (soft_pion.bestTrack()->dxyError() > 0)
+        pion_sdxy_bs = fabs(soft_pion.bestTrack()->dxy(*beamSpot_)) / soft_pion.bestTrack()->dxyError();
+    dstarCand.addUserFloat("pion_sdxy_bs", pion_sdxy_bs);
+    dstarCand.addUserInt("pion_charge", soft_pion.charge());
+
+    // store mass information
+    auto d0_p4(makeLorentzVectorFromPxPyPzM(d0VertexFit.p3().x(),
+                                            d0VertexFit.p3().y(),
+                                            d0VertexFit.p3().z(),
+                                            d0VertexFit.mass()));
+    float dstar_mass_raw = (soft_pion.p4() + daughter1.p4() + daughter2.p4()).mass();
+    dstarCand.addUserFloat("mass", dstar_mass_raw);
+    dstarCand.addUserFloat("dm_raw", dstar_mass_raw - (daughter1.p4() + daughter2.p4()).mass());
+    dstarCand.addUserFloat("dm_free", (soft_pion.p4() + d0_p4).mass() - d0_p4.mass());
+    float dm_prompt = 0;
+
+    //const reco::Vertex *bestVertex(0);
+    int bestVertexIndex(-1);
+    // 得到与D0轨迹最接近的primary vertex
+    auto candTransientTrack = d0VertexFit.particle()->refittedTransientTrack();
+
+    // find best matching primary vertex
+    double minDistance(999.);
+    bool closestIn3D = true;
+    for (unsigned int i = 0; i < vertices().size(); ++i)
+    {
+        const auto &vertex = vertices().at(i);
+        if (closestIn3D)
+        {
+            auto impactParameter3D = IPTools::absoluteImpactParameter3D(candTransientTrack, vertex);
+            if (impactParameter3D.first and impactParameter3D.second.value() < minDistance)
+            {
+                minDistance = impactParameter3D.second.value();
+                //bestVertex = &vertex;
+                bestVertexIndex = i;
+            }
+        }
+        else
+        {
+            auto impactParameterZ = IPTools::signedDecayLength3D(candTransientTrack, GlobalVector(0, 0, 1), vertex);
+            double distance = fabs(impactParameterZ.second.value());
+            if (impactParameterZ.first and distance < minDistance)
+            {
+                minDistance = distance;
+                //bestVertex = &vertex;
+                bestVertexIndex = i;
+            }
+        }
+    }
+
+    // refit soft_pion with PV constraint
+    int pvIndex = bestVertexIndex;
+    //cout << "ScoutingDileptonPlusXProducer::fillDstarInfo: pvIndex = " << pvIndex << endl;
+
+    bmm::Candidate soft_pion_refit = soft_pion;
+    double pv_prob(0), pv_with_pion_prob(0), pv_sum_pt(0), pv_sum_pt2(0);
+    int pv_ntrks(0);
+    if (pvIndex >= 0)
+    {
+        auto fit_results = refitWithVertexConstraint(*soft_pion_refit.bestTrack(), pvIndex);
+        auto &pv_refit = fit_results.first;
+        auto &pv_refit_with_soft_pion = fit_results.second;
+
+        if (pv_refit_with_soft_pion.valid())
+        {
+            auto pion_index = pv_refit_with_soft_pion.number_of_daughters() - 1;
+            auto soft_pion_refit_p3 = pv_refit_with_soft_pion.dau_p3(pion_index);
+            auto refit_p4(makeLorentzVectorFromPxPyPzM(soft_pion_refit_p3.x(),
+                                                       soft_pion_refit_p3.y(),
+                                                       soft_pion_refit_p3.z(),
+                                                       PionMass_));
+            dm_prompt = (refit_p4 + d0_p4).mass() - d0_p4.mass();
+
+            pv_with_pion_prob = pv_refit_with_soft_pion.vtxProb();
+        }
+
+        if (pv_refit.valid())
+        {
+            pv_prob = pv_refit.vtxProb();
+            pv_sum_pt = pv_refit.sumPt();
+            pv_sum_pt2 = pv_refit.sumPt2();
+            pv_ntrks = pv_refit.number_of_daughters();
+        }
+    }
+
+    dstarCand.addUserFloat("dm_prompt", dm_prompt);
+    dstarCand.addUserFloat("pv_prob", pv_prob);
+    dstarCand.addUserFloat("pv_sum_pt", pv_sum_pt);
+    dstarCand.addUserFloat("pv_sum_pt2", pv_sum_pt2);
+    dstarCand.addUserFloat("pv_with_pion_prob", pv_with_pion_prob);
+    dstarCand.addUserInt("pv_ntrks", pv_ntrks);
+    dstarCand.addUserInt("fromKpi", fromKpi);
+
+    dstar_collection.push_back(dstarCand);
+}
+
+void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollection &dstar_collection,
                                                          pat::CompositeCandidateCollection &hh_collection,
                                                          const edm::Event &iEvent,
                                                          const bmm::Candidate &had1,
@@ -2231,7 +2359,7 @@ void ScoutingDileptonPlusXProducer::buildLLXCandidates(pat::CompositeCandidateCo
     if (had2.pt() < minDhhTrkPt_ || fabs(had2.eta()) > maxDhhTrkEta_)
         return;
     AddFourMomenta addP4;
-    auto nPFCands = pion_p4s.size();
+    auto nPFCands = trackHandle_->size();
     for (unsigned int k = 0; k < nPFCands; ++k)
     {
         bmm::Candidate soft_pion(tracks().at(k), k);
@@ -2320,7 +2448,7 @@ void ScoutingDileptonPlusXProducer::buildLLXCandidates(pat::CompositeCandidateCo
             }
         }
     }
-}*/
+}
 
 // void
 // ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollection& dstar_collection,
@@ -2538,9 +2666,8 @@ void ScoutingDileptonPlusXProducer::buildDstarTokpipiCandidates(pat::CompositeCa
     double doca_d0pi_soft = distanceOfClosestApproach(d0pion.track(), softPion.track());
     if (!(doca_K_d0pi < 0.05 && doca_K_soft < 0.05 && doca_d0pi_soft < 0.05))
         return; // 不满足DOCA要求，不构造该候选子
-    
+
     float raw_d0_mass = 0;
-    
 
     // ========= (1) 对D0候选子进行质量限制的拟合 =========
     std::vector<const reco::Track *> d0_tracks;
@@ -2555,14 +2682,14 @@ void ScoutingDileptonPlusXProducer::buildDstarTokpipiCandidates(pat::CompositeCa
         if (!tempFit.valid() || tempFit.vtxProb() < 0.01)
             return; // 如果拟合结果无效则不构造D*候选
         raw_d0_mass = tempFit.mass();
-        KinematicParticleFitter csFitter;
-        float mass_sigma = 1e-3;       // 质量误差设为一个很小的值
-        ParticleMass D0Mass = 1.86484; // D0质量
-        // 用D0Mass_作为质量约束（单位需与拟合一致）
-        KinematicConstraint *d0_constraint = new MassKinematicConstraint(D0Mass, mass_sigma);
-        tempFit.set_tree(csFitter.fit(d0_constraint, tempFit.tree()));
-        if (!tempFit.valid() || tempFit.vtxProb() < 0.01)
-            return; // 如果拟合结果无效则不构造D*候选
+        // KinematicParticleFitter csFitter;
+        // float mass_sigma = 1e-3;       // 质量误差设为一个很小的值
+        // ParticleMass D0Mass = 1.86484; // D0质量
+        //  用D0Mass_作为质量约束（单位需与拟合一致）
+        // KinematicConstraint *d0_constraint = new MassKinematicConstraint(D0Mass, mass_sigma);
+        // tempFit.set_tree(csFitter.fit(d0_constraint, tempFit.tree()));
+        // if (!tempFit.valid() || tempFit.vtxProb() < 0.01)
+        //     return; // 如果拟合结果无效则不构造D*候选
         tempFit.postprocess(*beamSpot_);
         d0Fit_mc = tempFit;
     }
@@ -2746,7 +2873,7 @@ void ScoutingDileptonPlusXProducer::buildDstarTopipipiCandidates(pat::CompositeC
     dstarFit.postprocess(*beamSpot_);
     if (!(dstarFit.valid() && dstarFit.vtxProb() > 0.01))
         return;
-    
+
     // Get softPion, kaon, d0pion info from vertex fit
     // 通过D*拟合树获取D*的三个子粒子
     dstarTree->movePointerToTheTop();
@@ -2977,7 +3104,7 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
     // }
 
     // Build dimuon candidates
-    if (false) //good_muon_candidates.size() > 1
+    if (false) // good_muon_candidates.size() > 1
     {
         for (unsigned int i = 0; i < good_muon_candidates.size(); ++i)
         {
@@ -3291,18 +3418,22 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
             // 循环从 pion_p4s中选取 D0 中用作 π 的候选（注意排除同一条轨迹）
             for (unsigned int j = 0; j < pion_p4s.size(); ++j)
             {
+
                 if (j == i)
                     continue;
                 const auto &trkPi = (*trackHandle_)[j];
                 if (trkPi.tk_pt() < ptMinKaon_ || fabs(trkPi.tk_eta()) > etaMaxKaon_)
                     continue;
                 bmm::Candidate candidatePion(tracks().at(j), j);
-                candidatePion.setMass(PionMass_);
                 // 要求 D0 的 K 和 π 电荷相反
                 if (candidateKaon.charge() * candidatePion.charge() >= 0)
                     continue;
-                if (fabs((kaon_p4s[i] + pion_p4s[j]).mass() - 1.864) > 0.5)
+                if (fabs((kaon_p4s[i] + pion_p4s[j]).mass() - 1.864) > 0.2)
                     continue;
+
+                buildDstarCandidates(*dstar_collection, *hh_collection, iEvent, candidateKaon, candidatePion);
+
+                candidatePion.setMass(PionMass_);
 
                 // 循环从 pion_p4s中选取额外的软 π 候选（必须与 π 电荷相同）
                 for (unsigned int k = 0; k < pion_p4s.size(); ++k)
@@ -3317,7 +3448,7 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
                     // 要求软 π 的电荷与 π 相同
                     if (candidateSoft.charge() != candidatePion.charge())
                         continue;
-                    
+
                     double d0_mass = (candidateKaon.p4() + candidatePion.p4()).mass();
                     double dstar_mass = (candidateKaon.p4() + candidatePion.p4() + candidateSoft.p4()).mass();
                     if (d0_mass <= minD0Mass_ || d0_mass >= maxD0Mass_ || (dstar_mass - d0_mass) <= min_dm_ || (dstar_mass - d0_mass) >= max_dm_)
@@ -3350,7 +3481,7 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
                 // 要求构成 D⁰ 的两个 daughter 电荷必须相反
                 if (candidatePion1.charge() * candidatePion2.charge() >= 0)
                     continue;
-                if (fabs((pion_p4s[i] + pion_p4s[j]).mass() - 1.864) > 0.5)
+                if (fabs((pion_p4s[i] + pion_p4s[j]).mass() - 1.864) > 0.2)
                     continue;
                 // 循环选取额外软 pion 候选，要求其电荷与 candidatePion1 相同
                 for (unsigned int k = 0; k < pion_p4s.size(); ++k)
@@ -3362,7 +3493,7 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
                         continue;
                     bmm::Candidate candidateSoft(tracks().at(k), k);
                     candidateSoft.setMass(PionMass_);
-                    
+
                     double d0_mass = (candidatePion1.p4() + candidatePion2.p4()).mass();
                     double dstar_mass = (candidatePion1.p4() + candidatePion2.p4() + candidateSoft.p4()).mass();
                     if (d0_mass <= minD0Mass_ || d0_mass >= maxD0Mass_ || (dstar_mass - d0_mass) <= min_dm_ || (dstar_mass - d0_mass) >= max_dm_)
@@ -4486,43 +4617,50 @@ ScoutingDileptonPlusXProducer::distanceOfClosestApproach(const reco::Track *trac
 //   return getGoodTracksToRefitPV(pvIndex, std::vector<T>(1,track_to_ignore));
 // }
 
-// template <typename T> std::vector<const reco::Track*>
-// ScoutingDileptonPlusXProducer::getGoodTracksToRefitPV(int pvIndex, std::vector<T> ignoreTracks)
-// {
-//   std::vector<const reco::Track*> tracks;
+std::vector<const reco::Track *>
+ScoutingDileptonPlusXProducer::getGoodTracksToRefitPV(int pvIndex, const reco::Track &ignoreTracks)
+{
+    std::vector<const reco::Track *> tracks;
 
-//   for (const auto& track: *trackHandle_.product()){
-//     if (not isGoodTrack(track)) continue;
-//     if (track.tk_vtxInd() != pvIndex) continue;
-//     bool keep_track = true;
-//     for (const auto& track: ignoreTracks){
-//       if (overlap(track, track)) {
-// 	keep_track = false;
-// 	break;
-//       }
-//     }
-//     if (keep_track)
-//       tracks.push_back(bmm::makeRecoTrack(track));
-//   }
-//   return tracks;
-// }
+    for (const auto &track : *trackHandle_.product())
+    {
+        // if (not isGoodTrack(track)) continue;
+        if (track.tk_pt() < 0.5)
+            continue;
+        if (track.tk_vtxInd() != pvIndex)
+            continue;
+        bool keep_track = true;
+        // 手动计算deltaR
+        if (ignoreTracks.charge() == track.tk_charge() and abs(ignoreTracks.eta() - track.tk_eta()) < 0.01 and abs(ignoreTracks.phi() - track.tk_phi()) < 0.01)
+        {
+            keep_track = false;
+            break;
+        }
+        if (keep_track)
+        {
+            reco::Track recotrack = bmm::makeRecoTrack(track);
+            tracks.push_back(&recotrack);
+        }
+    }
+    return tracks;
+}
 
-// std::pair<KinematicFitResult, KinematicFitResult>
-// ScoutingDileptonPlusXProducer::refitWithVertexConstraint(const reco::Track& track,
-// 						 int pvIndex)
-// {
-//   std::vector<const reco::Track*> tracks(getGoodTracksToRefitPV(pvIndex, &track));
-//   std::vector<float> masses(tracks.size(), PionMass_);
+std::pair<KinematicFitResult, KinematicFitResult>
+ScoutingDileptonPlusXProducer::refitWithVertexConstraint(const reco::Track &track,
+                                                         int pvIndex)
+{
+    std::vector<const reco::Track *> tracks(getGoodTracksToRefitPV(pvIndex, track));
+    std::vector<float> masses(tracks.size(), PionMass_);
 
-//   auto pv_refit = vertexWithKinematicFitter(tracks, masses);
+    auto pv_refit = vertexWithKinematicFitter(tracks, masses);
 
-//   // make sure the track is the last element
-//   tracks.push_back(&track);
-//   masses.push_back(PionMass_);
-//   auto pv_refit_with_track = vertexWithKinematicFitter(tracks, masses);
+    // make sure the track is the last element
+    tracks.push_back(&track);
+    masses.push_back(PionMass_);
+    auto pv_refit_with_track = vertexWithKinematicFitter(tracks, masses);
 
-//   return std::make_pair(pv_refit, pv_refit_with_track);
-// }
+    return std::make_pair(pv_refit, pv_refit_with_track);
+}
 
 bmm::Displacements
 ScoutingDileptonPlusXProducer::compute3dDisplacement(const KinematicFitResult &fit,
