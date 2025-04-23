@@ -703,7 +703,7 @@ bool ScoutingDileptonPlusXProducer::isGoodTrack(const Run3ScoutingTrack &track)
     // if (not cand.hasTrackDetails()) return false;
     // if (not cand.bestTrack()->quality(reco::Track::highPurity)) return false;
     // if (isnan(cand.pt())) return false;
-    if (track.tk_pt() < 0.5 || fabs(track.tk_eta()) > 2.4)
+    if (track.tk_pt() < 1 || fabs(track.tk_eta()) > 2.4)
         return false;
     if (track.tk_charge() == 0)
         return false;
@@ -2284,7 +2284,7 @@ void ScoutingDileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollect
     float dm_prompt = 0;
 
     // const reco::Vertex *bestVertex(0);
-    //int bestVertexIndex(-1);
+    // int bestVertexIndex(-1);
     // 得到与D0轨迹最接近的primary vertex
     // auto candTransientTrack = d0VertexFit.particle()->refittedTransientTrack();
 
@@ -2319,14 +2319,12 @@ void ScoutingDileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollect
     }*/
 
     // refit soft_pion with PV constraint
-    auto displacements = compute3dDisplacement(d0VertexFit);
-    int pvIndex = displacements.get("pv").pvIndex(); // d0Cand.userInt("kin_pvIndex");
-    // cout << "bestVertexIndex = " << bestVertexIndex << endl;
+    // auto displacements = compute3dDisplacement(d0VertexFit);
+    int pvIndex = d0Cand.userInt("kin_pvIndex");
     // cout << "pvIndex = " << pvIndex << endl;
-    // cout << "ScoutingDileptonPlusXProducer::fillDstarInfo: pvIndex = " << pvIndex << endl;
 
     bmm::Candidate soft_pion_refit = soft_pion;
-    double pv_prob(0), pv_with_pion_prob(0), pv_sum_pt(0), pv_sum_pt2(0);
+    float pv_prob(0), pv_with_pion_prob(0), pv_sum_pt(0), pv_sum_pt2(0);
     int pv_ntrks(0);
     if (pvIndex >= 0)
     {
@@ -2347,7 +2345,7 @@ void ScoutingDileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollect
                 dm_prompt = (refit_p4 + d0_p4).mass() - d0_p4.mass();
 
                 pv_with_pion_prob = pv_refit_with_soft_pion.vtxProb();
-                //cout << "pv_with_pion_prob = " << pv_with_pion_prob << endl;
+                // cout << "pv_with_pion_prob = " << pv_with_pion_prob << endl;
             }
 
             if (pv_refit.valid())
@@ -2370,6 +2368,7 @@ void ScoutingDileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollect
     dstarCand.addUserFloat("pv_with_pion_prob", pv_with_pion_prob);
     dstarCand.addUserInt("pv_ntrks", pv_ntrks);
     dstarCand.addUserInt("fromKpi", fromKpi);
+    //if (pv_ntrks > 0) cout << "pv_with_pion_prob = " << pv_with_pion_prob << " dm_prompt:" << dm_prompt << " dm_free:" << dstarCand.userFloat("dm_free") << " dm_raw:" << dstarCand.userFloat("dm_raw") << "pv_ntrks:" << pv_ntrks << " pv_prob:" << pv_prob << " pv_sum_pt:" << pv_sum_pt << " pv_sum_pt2:" << pv_sum_pt2 << endl;
 
     dstar_collection.push_back(dstarCand);
 }
@@ -2386,6 +2385,7 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
         return;
     AddFourMomenta addP4;
     auto nPFCands = tracks().size();
+    //cout << "ScoutingDileptonPlusXProducer::buildDstarCandidates: nPFCands = " << nPFCands << endl;
     for (unsigned int k = 0; k < nPFCands; ++k)
     {
         try
@@ -2395,6 +2395,12 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
             bmm::Candidate soft_pion(tracks().at(k), k);
             if (overlap(had1, soft_pion) || overlap(had2, soft_pion))
                 continue;
+            //if(k==12) 
+            //{
+            //    cout << k << " soft pion pt = " << soft_pion.pt() << " eta = " << soft_pion.eta() << " phi = " << soft_pion.phi() << " mass = " << soft_pion.mass() << endl;
+            //    cout << k << " had1 pt = " << had1.pt() << " eta = " << had1.eta() << " phi = " << had1.phi() << " mass = " << had1.mass() << endl;
+            //    cout << k << " had2 pt = " << had2.pt() << " eta = " << had2.eta() << " phi = " << had2.phi() << " mass = " << had2.mass() << endl;
+            //}
 
             soft_pion.setMass(PionMass_);
 
@@ -2411,11 +2417,18 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
             // D0->pipi
             if (recoD0pipi_)
             {
+                //if(k==12) 
+                //{
+                //    cout << k << " soft pion pt = " << soft_pion.pt() << " eta = " << soft_pion.eta() << " phi = " << soft_pion.phi() << " mass = " << soft_pion.mass() << endl;
+                //    cout << k << " had1 pt = " << pion1.pt() << " eta = " << pion1.eta() << " phi = " << pion1.phi() << " mass = " << pion1.mass() << endl;
+                //    cout << k << " had2 pt = " << pion2.pt() << " eta = " << pion2.eta() << " phi = " << pion2.phi() << " mass = " << pion2.mass() << endl;
+                //}
                 double d0_mass = (pion1.p4() + pion2.p4()).mass();
                 double dstar_mass = (pion1.p4() + pion2.p4() + soft_pion.p4()).mass();
+                //if(k==12) cout << "soft_pion pt = " << soft_pion.pt() << " raw d0_mass = " << d0_mass << " raw dstar_mass = " << dstar_mass << endl;
 
-                if (d0_mass > minD0Mass_ && d0_mass < maxD0Mass_ &&
-                    (dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)
+                if ((dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)//(d0_mass > minD0Mass_ && d0_mass < maxD0Mass_ &&
+                    //
                 {
 
                     pat::CompositeCandidate d0Cand(std::string("hh"));
@@ -2425,6 +2438,8 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
 
                     if (preprocess(d0Cand, iEvent, pion1, pion2))
                     {
+                        //cout << "4" << endl;
+                        //if(k==38) cout << "pipi d0 mass = " << d0_mass << endl;
                         // Kinematic Fits
                         auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, pion1, pion2);
                         int hh_index = hh_collection.size();
@@ -2455,9 +2470,9 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
 
                 double d0_mass = (daughter1->p4() + daughter2->p4()).mass();
                 double dstar_mass = (daughter1->p4() + daughter2->p4() + soft_pion.p4()).mass();
+                //cout << "soft_pion pt = " << soft_pion.pt() << "d0_mass = " << d0_mass << "dstar_mass = " << dstar_mass << endl;
 
-                if (d0_mass > minD0Mass_ && d0_mass < maxD0Mass_ &&
-                    (dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)
+                if ((dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)
                 {
 
                     pat::CompositeCandidate d0Cand(std::string("hh"));
@@ -3442,6 +3457,13 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
         pion_p4s.emplace_back(makePolarLorentzVector(track, PionMass_));
     }*/
 
+    // Print all tracks p4
+    //for (unsigned int i = 0; i < tracks().size(); ++i)
+    //{
+    //    const auto &track = tracks().at(i);
+    //    std::cout << "track index: " << i << " track charge: " << track.charge() << " track pt: " << track.pt() << " track eta: " << track.eta() << " track phi: " << track.phi() << std::endl;
+    //}
+
     if (tracks().size() > 2)
     {
         // 循环从 kaon_p4s 选取候选（使用 trackHandle_中对应轨迹，且满足 ptMinKaon_、etaMaxKaon_）
@@ -3462,12 +3484,12 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
                 // Check deltaR
                 if (overlap(candidate1, candidate2))
                     continue;
-
+                //cout << "i: " << i << " j: " << j << " charge: " << candidate1.charge() * candidate2.charge() << endl;
                 buildDstarCandidates(*dstar_collection, *hh_collection, iEvent, candidate1, candidate2);
                 /*
                 candidatePion.setMass(PionMass_);
 
-                // 循环从 pion_p4s中选取额外的软 π 候选（必须与 π 电荷相同）
+                // 循环从 pion_p4s中选取额外的软 π 候选（必须与 π 电荷相同)
                 for (unsigned int k = 0; k < pion_p4s.size(); ++k)
                 {
                     if (k == i || k == j)
@@ -4653,45 +4675,44 @@ ScoutingDileptonPlusXProducer::distanceOfClosestApproach(const reco::Track *trac
 std::vector<const reco::Track *>
 ScoutingDileptonPlusXProducer::getGoodTracksToRefitPV(int pvIndex, const reco::Track &ignoreTracks)
 {
-    std::vector<const reco::Track *> tracks;
+    std::vector<const reco::Track *> trackspv;
 
-    for (const auto &track : *trackHandle_.product())
+    for (const auto &track : *trackHandle_)
     {
-        if (not isGoodTrack(track))
+        if (!isGoodTrack(track))
             continue;
-        if (track.tk_pt() < 0.5 || abs(track.tk_eta()) > 2.4)
+        if (track.tk_pt() < 1 || abs(track.tk_eta()) > 2.4)
             continue;
         if (track.tk_vtxInd() != pvIndex)
             continue;
         bool keep_track = true;
         // 手动计算deltaR
         if (ignoreTracks.charge() == track.tk_charge() and abs(ignoreTracks.eta() - track.tk_eta()) < 0.01 and abs(ignoreTracks.phi() - track.tk_phi()) < 0.01)
-        {
-            keep_track = false;
-            break;
-        }
+            continue;
         if (keep_track)
         {
             reco::Track recotrack = bmm::makeRecoTrack(track);
-            tracks.push_back(&recotrack);
+            trackspv.push_back(&recotrack);
         }
     }
-    return tracks;
+    //cout << "track size: " << trackspv.size() << endl;
+    return trackspv;
 }
 
 std::pair<KinematicFitResult, KinematicFitResult>
 ScoutingDileptonPlusXProducer::refitWithVertexConstraint(const reco::Track &track,
                                                          int pvIndex)
 {
-    std::vector<const reco::Track *> tracks(getGoodTracksToRefitPV(pvIndex, track));
-    std::vector<float> masses(tracks.size(), PionMass_);
+    std::vector<const reco::Track *> trackspv(getGoodTracksToRefitPV(pvIndex, track));
+    std::vector<float> masses(trackspv.size(), PionMass_);
+    //cout << "refitWithVertexConstraint: trackspv.size() = " << trackspv.size() << endl;
 
-    auto pv_refit = vertexWithKinematicFitter(tracks, masses);
+    auto pv_refit = vertexWithKinematicFitter(trackspv, masses);
 
     // make sure the track is the last element
-    tracks.push_back(&track);
+    trackspv.push_back(&track);
     masses.push_back(PionMass_);
-    auto pv_refit_with_track = vertexWithKinematicFitter(tracks, masses);
+    auto pv_refit_with_track = vertexWithKinematicFitter(trackspv, masses);
 
     return std::make_pair(pv_refit, pv_refit_with_track);
 }

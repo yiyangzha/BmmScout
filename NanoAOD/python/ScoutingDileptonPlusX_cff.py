@@ -162,8 +162,8 @@ Dileptons = cms.EDProducer(
     maxKsMass = cms.double(0.55),
     minKstarMass  = cms.double(0.7),
     maxKstarMass  = cms.double(1.1),
-    minDm = cms.double(0.115),
-    maxDm = cms.double(0.175),
+    minDm = cms.double(0.04),
+    maxDm = cms.double(0.3),
 )
 
 DileptonsMc = Dileptons.clone( isMC = cms.bool(True) ) 

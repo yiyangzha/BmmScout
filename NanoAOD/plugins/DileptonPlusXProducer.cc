@@ -1458,7 +1458,7 @@ void DileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollection &dst
   int pvIndex = d0Cand.userInt("kin_pvIndex");
 
   pat::PackedCandidate soft_pion_refit(soft_pion);
-  double pv_prob(0), pv_with_pion_prob(0), pv_sum_pt(0), pv_sum_pt2(0);
+  float pv_prob(0), pv_with_pion_prob(0), pv_sum_pt(0), pv_sum_pt2(0);
   int pv_ntrks(0);
   if (pvIndex >= 0)
   {
