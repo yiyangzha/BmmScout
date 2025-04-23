@@ -37,21 +37,9 @@ process.source = cms.Source("PoolSource",
 
 process.MessageLogger = cms.Service("MessageLogger",
     cerr = cms.untracked.PSet(
+        threshold = cms.untracked.string('ERROR'),
         FwkSummary = cms.untracked.PSet(reportEvery = cms.untracked.int32(100000)),
         FwkReport = cms.untracked.PSet(reportEvery = cms.untracked.int32(100000)),
-        KalmanVertexUpdator = cms.untracked.PSet(
-            limit = cms.untracked.int32(0)  # 完全禁止该模块的警告输出
-        ),
-        TriggerOutputBranches = cms.untracked.PSet(
-            limit = cms.untracked.int32(0)
-        ),
-        default = cms.untracked.PSet(
-            limit = cms.untracked.int32(10)
-        )
-    ),
-    suppressWarning = cms.untracked.vstring(
-        'KalmanVertexUpdator',
-        'TriggerOutputBranches'
     )
 )
 
