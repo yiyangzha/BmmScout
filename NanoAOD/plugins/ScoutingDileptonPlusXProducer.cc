@@ -2428,7 +2428,6 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
                 //if(k==12) cout << "soft_pion pt = " << soft_pion.pt() << " raw d0_mass = " << d0_mass << " raw dstar_mass = " << dstar_mass << endl;
 
                 if ((dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)//(d0_mass > minD0Mass_ && d0_mass < maxD0Mass_ &&
-                    //
                 {
 
                     pat::CompositeCandidate d0Cand(std::string("hh"));
@@ -2442,10 +2441,15 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
                         //if(k==38) cout << "pipi d0 mass = " << d0_mass << endl;
                         // Kinematic Fits
                         auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, pion1, pion2);
-                        int hh_index = hh_collection.size();
-                        hh_collection.push_back(d0Cand);
-                        fillDstarInfo(dstar_collection, iEvent, d0VertexFit, d0Cand, soft_pion,
-                                      -1, hh_index, pion1, pion2, 0);
+                        //cout << "pipi valid:" << d0VertexFit.valid() << " kin_sl3d:" << d0Cand.userFloat("kin_sl3d") << " kin_alpha:" << d0Cand.userFloat("kin_alpha") << " prob: " << d0VertexFit.vtxProb() << endl;
+                        if (d0VertexFit.valid() && d0VertexFit.vtxProb() > 0.01 && d0Cand.userFloat("kin_sl3d") > 2 && d0Cand.userFloat("kin_alpha") < 0.15)
+                        {
+                            int hh_index = hh_collection.size();
+                            hh_collection.push_back(d0Cand);
+                            fillDstarInfo(dstar_collection, iEvent, d0VertexFit, d0Cand, soft_pion,
+                                        -1, hh_index, pion1, pion2, 0);
+                        }
+                        
                     }
                 }
             }
@@ -2484,10 +2488,14 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
                     {
                         // Kinematic Fits
                         auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, *daughter1, *daughter2);
-                        int hh_index = hh_collection.size();
-                        hh_collection.push_back(d0Cand);
-                        fillDstarInfo(dstar_collection, iEvent, d0VertexFit, d0Cand, soft_pion,
-                                      -1, hh_index, *daughter1, *daughter2, 1);
+                        //cout << "kpi valid:" << d0VertexFit.valid() << " kin_sl3d:" << d0Cand.userFloat("kin_sl3d") << " kin_alpha:" << d0Cand.userFloat("kin_alpha") << " prob: " << d0VertexFit.vtxProb() << endl;
+                        if (d0VertexFit.valid() && d0VertexFit.vtxProb() > 0.01 && d0Cand.userFloat("kin_sl3d") > 2 && d0Cand.userFloat("kin_alpha") < 0.15)
+                        {
+                            int hh_index = hh_collection.size();
+                            hh_collection.push_back(d0Cand);
+                            fillDstarInfo(dstar_collection, iEvent, d0VertexFit, d0Cand, soft_pion,
+                                        -1, hh_index, *daughter1, *daughter2, 1);
+                        }
                     }
                 }
             }
