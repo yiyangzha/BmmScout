@@ -223,7 +223,9 @@ private:
                          pat::CompositeCandidateCollection &hh_collection,
                          const edm::Event &iEvent,
                          const bmm::Candidate &had1,
-                         const bmm::Candidate &had2);
+                         const bmm::Candidate &had2,
+                         int had1_index,
+                         int had2_index);
 
     const pat::CompositeCandidate *
     buildKsCandidates(pat::CompositeCandidateCollection &hh_collection,
@@ -2281,7 +2283,6 @@ void ScoutingDileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollect
     dstarCand.addUserFloat("mass", dstar_mass_raw);
     dstarCand.addUserFloat("dm_raw", dstar_mass_raw - (daughter1.p4() + daughter2.p4()).mass());
     dstarCand.addUserFloat("dm_free", (soft_pion.p4() + d0_p4).mass() - d0_p4.mass());
-    float dm_prompt = 0;
 
     // const reco::Vertex *bestVertex(0);
     // int bestVertexIndex(-1);
@@ -2320,14 +2321,81 @@ void ScoutingDileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollect
 
     // refit soft_pion with PV constraint
     // auto displacements = compute3dDisplacement(d0VertexFit);
-    int pvIndex = d0Cand.userInt("kin_pvIndex");
+    // int pvIndex = d0Cand.userInt("kin_pvIndex");
     // cout << "pvIndex = " << pvIndex << endl;
 
-    bmm::Candidate soft_pion_refit = soft_pion;
-    float pv_prob(0), pv_with_pion_prob(0), pv_sum_pt(0), pv_sum_pt2(0);
+    // Fit soft pion to transient track of the D0
+    KinematicFitResult d0Fit;
+    d0Fit = d0VertexFit;
+    d0Fit.tree()->movePointerToTheTop();
+    RefCountedKinematicParticle fittedD0 = d0Fit.tree()->currentParticle();
+    reco::TransientTrack softPionTT = (*theTTBuilder_).build(soft_pion.track());
+    KinematicParticleFactoryFromTransientTrack particleFactory;
+    double chi = 0., ndf = 0.;
+    float pionMassErr(PionMassErr_);
+    RefCountedKinematicParticle kpSoftPion = particleFactory.particle(softPionTT, PionMass_, chi, ndf, pionMassErr);
+    //float dm_prompt = 0;
+
+    try
+    {
+        std::vector<RefCountedKinematicParticle> daughterParticles;
+        daughterParticles.push_back(fittedD0);
+        daughterParticles.push_back(kpSoftPion);
+        KinematicParticleVertexFitter vertexFitter;
+        RefCountedKinematicTree dstarTree;
+
+        dstarTree = vertexFitter.fit(daughterParticles);
+
+        if (!dstarTree && !dstarTree->isValid())
+            return;
+        KinematicFitResult dstarFit;
+        dstarFit.set_tree(dstarTree);
+
+        if (!dstarFit.valid() || dstarFit.vtxProb() <= 0.0)
+            return;
+        //cout << "Mass " << daughter1.pt() << " " << daughter1.eta() << " " << daughter1.phi() << " " << daughter2.pt() << " " << daughter2.eta() << " " << daughter2.phi() << " " << soft_pion.pt() << " " << soft_pion.eta() << " " << soft_pion.phi() << endl;
+
+        dstarFit.postprocess(*beamSpot_);
+        
+        dstarTree->movePointerToTheTop();
+        dstarTree->movePointerToTheFirstChild();
+        RefCountedKinematicParticle d0 = dstarTree->currentParticle();
+        dstarTree->movePointerToTheNextChild();
+        RefCountedKinematicParticle softPionFit = dstarTree->currentParticle();
+
+        // Get softPion, d0 p4 from RefCountedKinematicParticle d0 and softPionFit
+        GlobalVector d0P3 = d0->currentState().kinematicParameters().momentum();
+        GlobalVector softPionP3 = softPionFit->currentState().kinematicParameters().momentum();
+        TLorentzVector d0P4(d0P3.x(), d0P3.y(), d0P3.z(), sqrt(d0->currentState().mass() * d0->currentState().mass() + d0P3.mag2()));
+        TLorentzVector softPionP4(softPionP3.x(), softPionP3.y(), softPionP3.z(), sqrt(softPionFit->currentState().mass() * softPionFit->currentState().mass() + softPionP3.mag2()));
+        //dm_prompt = (softPionP4 + d0P4).M() - d0P4.M();
+
+        //if (dm_prompt > 0.14 && dm_prompt < 0.155 && fromKpi == 1)
+        //{
+        //    cout << "Found " << daughter1.pt() << " " << daughter1.eta() << " " << daughter1.phi() << " " << daughter2.pt() << " " << daughter2.eta() << " " << daughter2.phi() << " " << soft_pion.pt() << " " << soft_pion.eta() << " " << soft_pion.phi() << endl;
+        //}
+        
+        dstarCand.addUserFloat("dm_fit", (softPionP4 + d0P4).M() - d0P4.M());
+        dstarCand.addUserFloat("dstar_prob", dstarFit.vtxProb());
+        dstarCand.addUserInt("fromKpi", fromKpi);
+        dstar_collection.push_back(dstarCand);
+
+        
+    }
+    catch (const std::exception &e)
+    {
+        return;
+        //cout << "Exception in refitting soft pion: " << e.what() << endl;
+    }
+
+
+
+    /* float pv_prob(0), pv_with_pion_prob(0), pv_sum_pt(0), pv_sum_pt2(0);
     int pv_ntrks(0);
     if (pvIndex >= 0)
     {
+
+        if (fromKpi) cout << "PV " << daughter1.pt() << " " << daughter1.eta() << " " << daughter1.phi() << " " << daughter2.pt() << " " << daughter2.eta() << " " << daughter2.phi() << " " << soft_pion.pt() << " " << soft_pion.eta() << " " << soft_pion.phi() << endl;
         try
         {
             auto fit_results = refitWithVertexConstraint(*soft_pion_refit.bestTrack(), pvIndex);
@@ -2346,6 +2414,14 @@ void ScoutingDileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollect
 
                 pv_with_pion_prob = pv_refit_with_soft_pion.vtxProb();
                 // cout << "pv_with_pion_prob = " << pv_with_pion_prob << endl;
+                if (pv_with_pion_prob > 0.01 && fromKpi == 1)
+                {
+                    cout << "Mass " << daughter1.pt() << " " << daughter1.eta() << " " << daughter1.phi() << " " << daughter2.pt() << " " << daughter2.eta() << " " << daughter2.phi() << " " << soft_pion.pt() << " " << soft_pion.eta() << " " << soft_pion.phi() << endl;
+                    if (dm_prompt < 0.3 && dm_prompt > 0.1 && fromKpi == 1)
+                    {
+                        cout << "Found " << daughter1.pt() << " " << daughter1.eta() << " " << daughter1.phi() << " " << daughter2.pt() << " " << daughter2.eta() << " " << daughter2.phi() << " " << soft_pion.pt() << " " << soft_pion.eta() << " " << soft_pion.phi() << endl;
+                    }
+                }
             }
 
             if (pv_refit.valid())
@@ -2366,18 +2442,17 @@ void ScoutingDileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollect
     dstarCand.addUserFloat("pv_sum_pt", pv_sum_pt);
     dstarCand.addUserFloat("pv_sum_pt2", pv_sum_pt2);
     dstarCand.addUserFloat("pv_with_pion_prob", pv_with_pion_prob);
-    dstarCand.addUserInt("pv_ntrks", pv_ntrks);
-    dstarCand.addUserInt("fromKpi", fromKpi);
-    //if (pv_ntrks > 0) cout << "pv_with_pion_prob = " << pv_with_pion_prob << " dm_prompt:" << dm_prompt << " dm_free:" << dstarCand.userFloat("dm_free") << " dm_raw:" << dstarCand.userFloat("dm_raw") << "pv_ntrks:" << pv_ntrks << " pv_prob:" << pv_prob << " pv_sum_pt:" << pv_sum_pt << " pv_sum_pt2:" << pv_sum_pt2 << endl;
-
-    dstar_collection.push_back(dstarCand);
+    dstarCand.addUserInt("pv_ntrks", pv_ntrks);*/
+    
 }
 
 void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollection &dstar_collection,
                                                          pat::CompositeCandidateCollection &hh_collection,
                                                          const edm::Event &iEvent,
                                                          const bmm::Candidate &had1,
-                                                         const bmm::Candidate &had2)
+                                                         const bmm::Candidate &had2,
+                                                         int had1_index,
+                                                         int had2_index)
 {
     if (had1.pt() < minDhhTrkPt_ || fabs(had1.eta()) > maxDhhTrkEta_)
         return;
@@ -2415,7 +2490,7 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
             kaon2.setType(KaonMass_, "had", 321 * had2.charge());
 
             // D0->pipi
-            if (recoD0pipi_)
+            if (recoD0pipi_ && false)
             {
                 //if(k==12) 
                 //{
@@ -2427,7 +2502,8 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
                 double dstar_mass = (pion1.p4() + pion2.p4() + soft_pion.p4()).mass();
                 //if(k==12) cout << "soft_pion pt = " << soft_pion.pt() << " raw d0_mass = " << d0_mass << " raw dstar_mass = " << dstar_mass << endl;
 
-                if ((dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)//(d0_mass > minD0Mass_ && d0_mass < maxD0Mass_ &&
+                if (d0_mass > minD0Mass_ && d0_mass < maxD0Mass_ &&
+                    (dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)//(d0_mass > minD0Mass_ && d0_mass < maxD0Mass_ &&
                 {
 
                     pat::CompositeCandidate d0Cand(std::string("hh"));
@@ -2442,7 +2518,7 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
                         // Kinematic Fits
                         auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, pion1, pion2);
                         //cout << "pipi valid:" << d0VertexFit.valid() << " kin_sl3d:" << d0Cand.userFloat("kin_sl3d") << " kin_alpha:" << d0Cand.userFloat("kin_alpha") << " prob: " << d0VertexFit.vtxProb() << endl;
-                        if (d0VertexFit.valid() && d0VertexFit.vtxProb() > 0.01 && d0Cand.userFloat("kin_sl3d") > 2 && d0Cand.userFloat("kin_alpha") < 0.15)
+                        if (d0VertexFit.valid() && d0VertexFit.vtxProb() > 0.01)
                         {
                             int hh_index = hh_collection.size();
                             hh_collection.push_back(d0Cand);
@@ -2476,7 +2552,8 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
                 double dstar_mass = (daughter1->p4() + daughter2->p4() + soft_pion.p4()).mass();
                 //cout << "soft_pion pt = " << soft_pion.pt() << "d0_mass = " << d0_mass << "dstar_mass = " << dstar_mass << endl;
 
-                if ((dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)
+                if (d0_mass > minD0Mass_ && d0_mass < maxD0Mass_ &&
+                    (dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)
                 {
 
                     pat::CompositeCandidate d0Cand(std::string("hh"));
@@ -2486,11 +2563,13 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
 
                     if (preprocess(d0Cand, iEvent, *daughter1, *daughter2))
                     {
+                        //cout << "Pre " << had1.pt() << " " << had1.eta() << " " << had1.phi() << " " << had2.pt() << " " << had2.eta() << " " << had2.phi() << " " << soft_pion.pt() << " " << soft_pion.eta() << " " << soft_pion.phi() << endl;
                         // Kinematic Fits
                         auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, *daughter1, *daughter2);
                         //cout << "kpi valid:" << d0VertexFit.valid() << " kin_sl3d:" << d0Cand.userFloat("kin_sl3d") << " kin_alpha:" << d0Cand.userFloat("kin_alpha") << " prob: " << d0VertexFit.vtxProb() << endl;
-                        if (d0VertexFit.valid() && d0VertexFit.vtxProb() > 0.01 && d0Cand.userFloat("kin_sl3d") > 2 && d0Cand.userFloat("kin_alpha") < 0.15)
+                        if (d0VertexFit.valid() && d0VertexFit.vtxProb() > 0.0)
                         {
+                            //cout << "Fit " << had1.pt() << " " << had1.eta() << " " << had1.phi() << " " << had2.pt() << " " << had2.eta() << " " << had2.phi() << " " << soft_pion.pt() << " " << soft_pion.eta() << " " << soft_pion.phi() << endl;
                             int hh_index = hh_collection.size();
                             hh_collection.push_back(d0Cand);
                             fillDstarInfo(dstar_collection, iEvent, d0VertexFit, d0Cand, soft_pion,
@@ -3466,11 +3545,14 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
     }*/
 
     // Print all tracks p4
-    //for (unsigned int i = 0; i < tracks().size(); ++i)
-    //{
-    //    const auto &track = tracks().at(i);
-    //    std::cout << "track index: " << i << " track charge: " << track.charge() << " track pt: " << track.pt() << " track eta: " << track.eta() << " track phi: " << track.phi() << std::endl;
-    //}
+    /*cout << "Event " << iEvent.id().run() << " " << iEvent.id().luminosityBlock() << " " << iEvent.id().event() << endl;
+    for (unsigned int i = 0; i < trackHandle_->size(); ++i)
+    {
+        const auto &track = (*trackHandle_)[i];
+        if (not isGoodTrack(track))
+            continue;
+        cout << i << " " << track.tk_pt() << " " << track.tk_eta() << " " << track.tk_phi() << " " << track.tk_vtxInd() << " " << track.tk_charge() << endl;
+    }*/
 
     if (tracks().size() > 2)
     {
@@ -3493,7 +3575,7 @@ void ScoutingDileptonPlusXProducer::produce(edm::Event &iEvent, const edm::Event
                 if (overlap(candidate1, candidate2))
                     continue;
                 //cout << "i: " << i << " j: " << j << " charge: " << candidate1.charge() * candidate2.charge() << endl;
-                buildDstarCandidates(*dstar_collection, *hh_collection, iEvent, candidate1, candidate2);
+                buildDstarCandidates(*dstar_collection, *hh_collection, iEvent, candidate1, candidate2, i, j);
                 /*
                 candidatePion.setMass(PionMass_);
 
