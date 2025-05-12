@@ -704,7 +704,7 @@ bool DileptonPlusXProducer::isGoodTrack(const pat::PackedCandidate &cand)
   //  return false;
   if (isnan(cand.pt()))
     return false;
-  if (cand.pt() < 1 || abs(cand.eta()) > 2.4)
+  if (cand.pt() < 0.5 || abs(cand.eta()) > 2.4)
     return false;
   return true;
 }
@@ -3618,6 +3618,8 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
       {
         const auto &had2 = pfCandHandle_->at(j);
         if (not isGoodHadron(had2))
+          continue;
+        if (had1.pt() < 1 || had2.pt() < 1)
           continue;
 
         if (had1.charge() * had2.charge() >= 0)
