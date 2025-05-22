@@ -2755,7 +2755,7 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
                         auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, *daughter1, *daughter2);
                         if (d0VertexFit.valid() && d0VertexFit.vtxProb() > 0.0)
                         {
-                            int hh_index = hh_collection.size();
+                            int hh_index = hhm_collection.size();
                             hhm_collection.push_back(d0Cand);
                             fillBInfo(bhhm_collection, iEvent, d0VertexFit, d0Cand, muon,
                                         -1, hh_index, *daughter1, *daughter2, 1);
