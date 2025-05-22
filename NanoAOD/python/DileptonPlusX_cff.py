@@ -487,6 +487,7 @@ DileptonIsoMcTable=cms.EDProducer("SimpleCompositeCandidateFlatTableProducer",
 ### hh
 
 DileptonsHHTableVariables = copy_pset(DileptonsDiMuonTableVariables, {"mu1_":"had1_", "mu2_":"had2_"})
+DileptonsHHMTableVariables = copy_pset(DileptonsDiMuonTableVariables, {"mu1_":"had1_", "mu2_":"had2_"})
 DileptonsHHMcTableVariables = copy_pset(DileptonsDiMuonMcTableVariables, {"mu1_":"had1_", "mu2_":"had2_"})
 
 DileptonsHHTable=cms.EDProducer("SimpleCompositeCandidateFlatTableProducer", 
@@ -497,6 +498,16 @@ DileptonsHHTable=cms.EDProducer("SimpleCompositeCandidateFlatTableProducer",
     singleton=cms.bool(False),
     extension=cms.bool(False),
     variables = DileptonsHHTableVariables
+)
+
+DileptonsHHMTable=cms.EDProducer("SimpleCompositeCandidateFlatTableProducer", 
+    src=cms.InputTag("Dileptons","HHM"),
+    cut=cms.string(""),
+    name=cms.string("hhm"),
+    doc=cms.string("hhm Variables"),
+    singleton=cms.bool(False),
+    extension=cms.bool(False),
+    variables = DileptonsHHMTableVariables
 )
 
 DileptonsHHMcTable=cms.EDProducer("SimpleCompositeCandidateFlatTableProducer", 
@@ -1361,7 +1372,7 @@ DileptonPlusXTables     = cms.Sequence(DileptonsDiMuonTable   * DileptonsHHTable
                                        DileptonsElMuTable     * DileptonsKmumuTable * DileptonsKeeTable      *
                                        DileptonsKKmumuTable   * DileptonsKKeeTable  * DileptonsDstarTable    * 
                                        Dileptons3MuTable      * DileptonsKstarTable * DileptonTrackTable     *
-                                       DileptonIsoTable       * BsToPhiPhiTable * DileptonsBhhmTable *
+                                       DileptonIsoTable       * BsToPhiPhiTable * DileptonsBhhmTable * DileptonsHHMTable *
                                        DileptonsMuMuGammaTable * PrimaryVertexInfoTable * prescaleTable)
 
 DileptonPlusXMcTables   = cms.Sequence(DileptonsDiMuonMcTable * DileptonsHHMcTable     * DileptonsElElMcTable *
