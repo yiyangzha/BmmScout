@@ -189,6 +189,17 @@ private:
                      const bmm::Candidate &daughter2,
                      int fromKpi);
 
+  void fillBInfo(pat::CompositeCandidateCollection &bhhm_collection,
+                     const edm::Event &iEvent,
+                     const KinematicFitResult &d0VertexFit,
+                     const pat::CompositeCandidate &d0Cand,
+                     const bmm::Candidate &muon,
+                     int mm_index,
+                     int hh_index,
+                     const bmm::Candidate &daughter1,
+                     const bmm::Candidate &daughter2,
+                     int fromKpi);
+
   void
   fillKstarInfo(pat::CompositeCandidateCollection &kstar_collection,
                 const edm::Event &iEvent,
@@ -201,10 +212,13 @@ private:
 
   void
   buildDstarCandidates(pat::CompositeCandidateCollection &dstar_collection,
+                       pat::CompositeCandidateCollection &bhhm_collection,
                        pat::CompositeCandidateCollection &hh_collection,
+                       pat::CompositeCandidateCollection &hhm_collection,
                        const edm::Event &iEvent,
                        const pat::PackedCandidate &had1,
-                       const pat::PackedCandidate &had2);
+                       const pat::PackedCandidate &had2,
+                       const std::vector<bmm::Candidate> & good_muon_candidates);
 
   void
   buildBsToPhiPhiCandidates(pat::CompositeCandidateCollection &bs_collection,
@@ -653,12 +667,14 @@ DileptonPlusXProducer::DileptonPlusXProducer(const edm::ParameterSet &iConfig) :
   produces<pat::CompositeCandidateCollection>("ElEl");
   produces<pat::CompositeCandidateCollection>("ElMu");
   produces<pat::CompositeCandidateCollection>("HH");
+  produces<pat::CompositeCandidateCollection>("HHM");
   produces<pat::CompositeCandidateCollection>("BToKmumu");
   produces<pat::CompositeCandidateCollection>("BToKee");
   produces<pat::CompositeCandidateCollection>("BToKKmumu");
   produces<pat::CompositeCandidateCollection>("BToKKee");
   produces<pat::CompositeCandidateCollection>("BToMuMuGamma");
   produces<pat::CompositeCandidateCollection>("Dstar");
+  produces<pat::CompositeCandidateCollection>("BHHM");
   produces<pat::CompositeCandidateCollection>("Kstar");
   produces<pat::CompositeCandidateCollection>("BsToPhiPhi");
   produces<pat::CompositeCandidateCollection>("DstarToKpipi");
@@ -687,8 +703,8 @@ bool DileptonPlusXProducer::isGoodMuon(const pat::Muon &muon)
     return false;
   if (not muon.isTrackerMuon())
     return false;
-  if (not muon.innerTrack()->quality(reco::Track::highPurity))
-    return false;
+  //if (not muon.innerTrack()->quality(reco::Track::highPurity))
+  //  return false;
   if (muon.pt() < ptMinMu_ || fabs(muon.eta()) > etaMaxMu_)
     return false;
   return true;
@@ -1554,6 +1570,99 @@ void DileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollection &dst
   dstarCand.addUserInt("fromKpi", fromKpi);
 
   dstar_collection.push_back(dstarCand);*/
+}
+
+void DileptonPlusXProducer::fillBInfo(pat::CompositeCandidateCollection &bhhm_collection,
+                                          const edm::Event &iEvent,
+                                          const KinematicFitResult &d0VertexFit,
+                                          const pat::CompositeCandidate &d0Cand,
+                                          const bmm::Candidate &muon,
+                                          int mm_index,
+                                          int hh_index,
+                                          const bmm::Candidate &daughter1,
+                                          const bmm::Candidate &daughter2,
+                                          int fromKpi)
+{
+  pat::CompositeCandidate dstarCand;
+  dstarCand.addUserInt("mm_index", mm_index);
+  dstarCand.addUserInt("hh_index", hh_index);
+
+  // soft pion raw information
+  dstarCand.addUserFloat("pion_pt", muon.pt());
+  dstarCand.addUserFloat("pion_eta", muon.eta());
+  dstarCand.addUserFloat("pion_phi", muon.phi());
+  dstarCand.addUserFloat("pion_dxy_bs", muon.bestTrack()->dxy(*beamSpot_));
+  auto pion_sdxy_bs = 0;
+  if (muon.bestTrack()->dxyError() > 0)
+    pion_sdxy_bs = fabs(muon.bestTrack()->dxy(*beamSpot_)) / muon.bestTrack()->dxyError();
+  dstarCand.addUserFloat("pion_sdxy_bs", pion_sdxy_bs);
+  dstarCand.addUserInt("pion_charge", muon.charge());
+
+  // store mass information
+  auto d0_p4(makeLorentzVectorFromPxPyPzM(d0VertexFit.p3().x(),
+                                          d0VertexFit.p3().y(),
+                                          d0VertexFit.p3().z(),
+                                          d0VertexFit.mass()));
+  float dstar_mass_raw = (muon.p4() + daughter1.p4() + daughter2.p4()).mass();
+  dstarCand.addUserFloat("mass", dstar_mass_raw);
+  dstarCand.addUserFloat("dm_raw", dstar_mass_raw - (daughter1.p4() + daughter2.p4()).mass());
+  dstarCand.addUserFloat("dm_free", (muon.p4() + d0_p4).mass() - d0_p4.mass());
+
+  // Fit soft pion to transient track of the D0
+  KinematicFitResult d0Fit;
+  d0Fit = d0VertexFit;
+  d0Fit.tree()->movePointerToTheTop();
+  RefCountedKinematicParticle fittedD0 = d0Fit.tree()->currentParticle();
+  reco::TransientTrack softPionTT = (*theTTBuilder_).build(muon.bestTrack());
+  KinematicParticleFactoryFromTransientTrack particleFactory;
+  double chi = 0., ndf = 0.;
+  float pionMassErr(PionMassErr_);
+  RefCountedKinematicParticle kpSoftPion = particleFactory.particle(softPionTT, PionMass_, chi, ndf, pionMassErr);
+
+  try
+  {
+      std::vector<RefCountedKinematicParticle> daughterParticles;
+      daughterParticles.push_back(fittedD0);
+      daughterParticles.push_back(kpSoftPion);
+      KinematicParticleVertexFitter vertexFitter;
+      RefCountedKinematicTree dstarTree;
+
+      dstarTree = vertexFitter.fit(daughterParticles);
+
+      if (!dstarTree && !dstarTree->isValid())
+          return;
+      KinematicFitResult dstarFit;
+      dstarFit.set_tree(dstarTree);
+
+      if (!dstarFit.valid() || dstarFit.vtxProb() <= 0.0)
+          return;
+
+      dstarFit.postprocess(*beamSpot_);
+      
+      dstarTree->movePointerToTheTop();
+      dstarTree->movePointerToTheFirstChild();
+      RefCountedKinematicParticle d0 = dstarTree->currentParticle();
+      dstarTree->movePointerToTheNextChild();
+      RefCountedKinematicParticle softPionFit = dstarTree->currentParticle();
+
+      // Get softPion, d0 p4 from RefCountedKinematicParticle d0 and softPionFit
+      GlobalVector d0P3 = d0->currentState().kinematicParameters().momentum();
+      GlobalVector softPionP3 = softPionFit->currentState().kinematicParameters().momentum();
+      TLorentzVector d0P4(d0P3.x(), d0P3.y(), d0P3.z(), sqrt(d0->currentState().mass() * d0->currentState().mass() + d0P3.mag2()));
+      TLorentzVector softPionP4(softPionP3.x(), softPionP3.y(), softPionP3.z(), sqrt(softPionFit->currentState().mass() * softPionFit->currentState().mass() + softPionP3.mag2()));
+      //cout << "d0 mass: " << d0P4.M() << endl;
+      //cout << "soft pion mass: " << softPionP4.M() << endl;
+      dstarCand.addUserFloat("dm_fit", (softPionP4 + d0P4).M() - d0P4.M());
+      //cout << "dm_fit: " << dstarCand.userFloat("dm_fit") << endl; 
+      dstarCand.addUserFloat("dstar_prob", dstarFit.vtxProb());
+      dstarCand.addUserInt("fromKpi", fromKpi);
+      bhhm_collection.push_back(dstarCand);
+  }
+  catch (const std::exception &e)
+  {
+      return;
+      //cout << "Exception in refitting soft pion: " << e.what() << endl;
+  }
 }
 
 void DileptonPlusXProducer::fillKstarInfo(pat::CompositeCandidateCollection &kstar_collection,
@@ -2717,10 +2826,13 @@ void DileptonPlusXProducer::buildLLXCandidates(pat::CompositeCandidateCollection
 }
 
 void DileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollection &dstar_collection,
+                                                 pat::CompositeCandidateCollection &bhhm_collection,
                                                  pat::CompositeCandidateCollection &hh_collection,
+                                                 pat::CompositeCandidateCollection &hhm_collection,
                                                  const edm::Event &iEvent,
                                                  const pat::PackedCandidate &had1,
-                                                 const pat::PackedCandidate &had2)
+                                                 const pat::PackedCandidate &had2, 
+                                                 const std::vector<bmm::Candidate> & good_muon_candidates)
 {
   if (had1.pt() < minDhhTrkPt_ || fabs(had1.eta()) > maxDhhTrkEta_)
     return;
@@ -2823,6 +2935,74 @@ void DileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollecti
         }
       }
     }
+  }
+
+  for (unsigned int k = 0; k < good_muon_candidates.size(); ++k)
+  {
+    try{
+    auto muon = good_muon_candidates[k];
+    if (overlap(had1, muon) || overlap(had2, muon))
+      continue;
+
+    bmm::Candidate pion1(had1);
+    pion1.setType(PionMass_, "had", 211 * had1.charge());
+    bmm::Candidate pion2(had2);
+    pion2.setType(PionMass_, "had", 211 * had2.charge());
+
+    bmm::Candidate kaon1(had1);
+    kaon1.setType(KaonMass_, "had", 321 * had1.charge());
+    bmm::Candidate kaon2(had2);
+    kaon2.setType(KaonMass_, "had", 321 * had2.charge());
+
+    // D0->Kpi
+    if (recoD0Kpi_)
+    {
+      const bmm::Candidate *daughter1(nullptr), *daughter2(nullptr);
+
+      if (pion2.charge() == muon.charge())
+      {
+        // Kpi case
+        daughter1 = &kaon1;
+        daughter2 = &pion2;
+      }
+      else
+      {
+        // piK case
+        daughter1 = &pion1;
+        daughter2 = &kaon2;
+      }
+
+      double d0_mass = (daughter1->p4() + daughter2->p4()).mass();
+      //double dstar_mass = (daughter1->p4() + daughter2->p4() + muon.p4()).mass();
+
+      if (d0_mass > minD0Mass_ && d0_mass < maxD0Mass_)
+        //&& (dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)
+      {
+
+        pat::CompositeCandidate d0Cand(std::string("hhm"));
+        d0Cand.addDaughter(*daughter1, "had1");
+        d0Cand.addDaughter(*daughter2, "had2");
+        addP4.set(d0Cand);
+
+        if (preprocess(d0Cand, iEvent, *daughter1, *daughter2))
+        {
+          // Kinematic Fits
+          auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, *daughter1, *daughter2);
+          if (d0VertexFit.valid() && d0VertexFit.vtxProb() >= 0.0)
+          {
+            int hh_index = hhm_collection.size();
+            hhm_collection.push_back(d0Cand);
+            fillBInfo(bhhm_collection, iEvent, d0VertexFit, d0Cand, muon,
+                          -1, hh_index, *daughter1, *daughter2, 1);
+          }
+        }
+      }
+    }
+  }
+  catch (const std::exception &e)
+        {
+        }
+
   }
 }
 
@@ -3293,12 +3473,14 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
   auto ee_collection = std::make_unique<pat::CompositeCandidateCollection>();
   auto em_collection = std::make_unique<pat::CompositeCandidateCollection>();
   auto hh_collection = std::make_unique<pat::CompositeCandidateCollection>();
+  auto hhm_collection = std::make_unique<pat::CompositeCandidateCollection>();
   auto btokmm = std::make_unique<pat::CompositeCandidateCollection>();
   auto btokee = std::make_unique<pat::CompositeCandidateCollection>();
   auto btokkmm = std::make_unique<pat::CompositeCandidateCollection>();
   auto btokkee = std::make_unique<pat::CompositeCandidateCollection>();
   auto btommg = std::make_unique<pat::CompositeCandidateCollection>();
   auto dstar_collection = std::make_unique<pat::CompositeCandidateCollection>();
+  auto bhhm_collection = std::make_unique<pat::CompositeCandidateCollection>();
   auto kstar_collection = std::make_unique<pat::CompositeCandidateCollection>();
   auto mmm_collection = std::make_unique<pat::CompositeCandidateCollection>();
   auto phiphi_collection = std::make_unique<pat::CompositeCandidateCollection>();
@@ -3630,7 +3812,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
         if (fabs((had1.p4() + had2.p4()).mass() - 1.86484) > 0.2)
           continue;
 
-        buildDstarCandidates(*dstar_collection, *hh_collection, iEvent, had1, had2);
+        buildDstarCandidates(*dstar_collection, *bhhm_collection, *hh_collection, *hhm_collection, iEvent, had1, had2, good_muon_candidates);
 
         //const auto *ksCand = buildKsCandidates(*hh_collection, *iso_collection, interestingTracks,
         //                                       iEvent, had1, had2);
@@ -3821,12 +4003,14 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
   iEvent.put(std::move(ee_collection), "ElEl");
   iEvent.put(std::move(em_collection), "ElMu");
   iEvent.put(std::move(hh_collection), "HH");
+  iEvent.put(std::move(hhm_collection), "HHM");
   iEvent.put(std::move(btokmm), "BToKmumu");
   iEvent.put(std::move(btokee), "BToKee");
   iEvent.put(std::move(btokkmm), "BToKKmumu");
   iEvent.put(std::move(btokkee), "BToKKee");
   iEvent.put(std::move(btommg), "BToMuMuGamma");
   iEvent.put(std::move(dstar_collection), "Dstar");
+  iEvent.put(std::move(bhhm_collection), "BHHM");
   iEvent.put(std::move(kstar_collection), "Kstar");
   iEvent.put(std::move(phiphi_collection), "BsToPhiPhi");
   iEvent.put(std::move(dstartokpipi_collection), "DstarToKpipi");
