@@ -2975,8 +2975,8 @@ void DileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollecti
       double d0_mass = (daughter1->p4() + daughter2->p4()).mass();
       //double dstar_mass = (daughter1->p4() + daughter2->p4() + muon.p4()).mass();
 
-      if (d0_mass > minD0Mass_ && d0_mass < maxD0Mass_)
-        //&& (dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)
+      if (d0_mass > 1.65 && d0_mass < 2.06
+        && (dstar_mass - d0_mass) > 0 && (dstar_mass - d0_mass) < 4.5)
       {
 
         pat::CompositeCandidate d0Cand(std::string("hhm"));
@@ -3809,8 +3809,8 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
         if (overlap(had1, had2))
           continue;
         // Check mass of the two hadrons
-        if (fabs((had1.p4() + had2.p4()).mass() - 1.86484) > 0.2)
-          continue;
+        //if (fabs((had1.p4() + had2.p4()).mass() - 1.86484) > 0.2)
+      //  continue;
 
         buildDstarCandidates(*dstar_collection, *bhhm_collection, *hh_collection, *hhm_collection, iEvent, had1, had2, good_muon_candidates);
 

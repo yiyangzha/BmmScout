@@ -2741,8 +2741,8 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
                 double d0_mass = (daughter1->p4() + daughter2->p4()).mass();
                 //double dstar_mass = (daughter1->p4() + daughter2->p4() + muon.p4()).mass();
 
-                if (d0_mass > minD0Mass_ && d0_mass < maxD0Mass_)
-                    //&& (dstar_mass - d0_mass) > min_dm_ && (dstar_mass - d0_mass) < max_dm_)
+                if (d0_mass > 1.65 && d0_mass < 2.06
+                && (dstar_mass - d0_mass) > 0 && (dstar_mass - d0_mass) < 4.5)
                 {
 
                     pat::CompositeCandidate d0Cand(std::string("hhm"));
