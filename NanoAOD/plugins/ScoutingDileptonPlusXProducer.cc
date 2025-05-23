@@ -2507,8 +2507,8 @@ void ScoutingDileptonPlusXProducer::fillBInfo(pat::CompositeCandidateCollection 
     reco::TransientTrack softPionTT = (*theTTBuilder_).build(muon.track());
     KinematicParticleFactoryFromTransientTrack particleFactory;
     double chi = 0., ndf = 0.;
-    float pionMassErr(PionMassErr_);
-    RefCountedKinematicParticle kpSoftPion = particleFactory.particle(softPionTT, PionMass_, chi, ndf, pionMassErr);
+    float pionMassErr(MuonMassErr_);
+    RefCountedKinematicParticle kpSoftPion = particleFactory.particle(softPionTT, MuonMass_, chi, ndf, pionMassErr);
     //float dm_prompt = 0;
 
     try
@@ -2704,8 +2704,6 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
     {
         try
         {
-            if (tracks().at(k).charge() == 0 || tracks().at(k).pt() < 0.5 || abs(tracks().at(k).eta()) > 2.4)
-                continue;
             bmm::Candidate muon = good_muon_candidates.at(k);
             if (overlap(had1, muon) || overlap(had2, muon))
                 continue;

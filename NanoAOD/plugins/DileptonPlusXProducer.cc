@@ -190,15 +190,15 @@ private:
                      int fromKpi);
 
   void fillBInfo(pat::CompositeCandidateCollection &bhhm_collection,
-                     const edm::Event &iEvent,
-                     const KinematicFitResult &d0VertexFit,
-                     const pat::CompositeCandidate &d0Cand,
-                     const bmm::Candidate &muon,
-                     int mm_index,
-                     int hh_index,
-                     const bmm::Candidate &daughter1,
-                     const bmm::Candidate &daughter2,
-                     int fromKpi);
+                 const edm::Event &iEvent,
+                 const KinematicFitResult &d0VertexFit,
+                 const pat::CompositeCandidate &d0Cand,
+                 const bmm::Candidate &muon,
+                 int mm_index,
+                 int hh_index,
+                 const bmm::Candidate &daughter1,
+                 const bmm::Candidate &daughter2,
+                 int fromKpi);
 
   void
   fillKstarInfo(pat::CompositeCandidateCollection &kstar_collection,
@@ -218,7 +218,7 @@ private:
                        const edm::Event &iEvent,
                        const pat::PackedCandidate &had1,
                        const pat::PackedCandidate &had2,
-                       const std::vector<bmm::Candidate> & good_muon_candidates);
+                       const std::vector<bmm::Candidate> &good_muon_candidates);
 
   void
   buildBsToPhiPhiCandidates(pat::CompositeCandidateCollection &bs_collection,
@@ -703,8 +703,8 @@ bool DileptonPlusXProducer::isGoodMuon(const pat::Muon &muon)
     return false;
   if (not muon.isTrackerMuon())
     return false;
-  //if (not muon.innerTrack()->quality(reco::Track::highPurity))
-  //  return false;
+  // if (not muon.innerTrack()->quality(reco::Track::highPurity))
+  //   return false;
   if (muon.pt() < ptMinMu_ || fabs(muon.eta()) > etaMaxMu_)
     return false;
   return true;
@@ -716,8 +716,8 @@ bool DileptonPlusXProducer::isGoodTrack(const pat::PackedCandidate &cand)
     return false;
   if (not cand.hasTrackDetails())
     return false;
-  //if (not cand.bestTrack()->quality(reco::Track::highPurity))
-  //  return false;
+  // if (not cand.bestTrack()->quality(reco::Track::highPurity))
+  //   return false;
   if (isnan(cand.pt()))
     return false;
   if (cand.pt() < 0.5 || abs(cand.eta()) > 2.4)
@@ -1482,49 +1482,47 @@ void DileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollection &dst
 
   try
   {
-      std::vector<RefCountedKinematicParticle> daughterParticles;
-      daughterParticles.push_back(fittedD0);
-      daughterParticles.push_back(kpSoftPion);
-      KinematicParticleVertexFitter vertexFitter;
-      RefCountedKinematicTree dstarTree;
+    std::vector<RefCountedKinematicParticle> daughterParticles;
+    daughterParticles.push_back(fittedD0);
+    daughterParticles.push_back(kpSoftPion);
+    KinematicParticleVertexFitter vertexFitter;
+    RefCountedKinematicTree dstarTree;
 
-      dstarTree = vertexFitter.fit(daughterParticles);
+    dstarTree = vertexFitter.fit(daughterParticles);
 
-      if (!dstarTree && !dstarTree->isValid())
-          return;
-      KinematicFitResult dstarFit;
-      dstarFit.set_tree(dstarTree);
+    if (!dstarTree && !dstarTree->isValid())
+      return;
+    KinematicFitResult dstarFit;
+    dstarFit.set_tree(dstarTree);
 
-      if (!dstarFit.valid() || dstarFit.vtxProb() <= 0.0)
-          return;
+    if (!dstarFit.valid() || dstarFit.vtxProb() <= 0.0)
+      return;
 
-      dstarFit.postprocess(*beamSpot_);
-      
-      dstarTree->movePointerToTheTop();
-      dstarTree->movePointerToTheFirstChild();
-      RefCountedKinematicParticle d0 = dstarTree->currentParticle();
-      dstarTree->movePointerToTheNextChild();
-      RefCountedKinematicParticle softPionFit = dstarTree->currentParticle();
+    dstarFit.postprocess(*beamSpot_);
 
-      // Get softPion, d0 p4 from RefCountedKinematicParticle d0 and softPionFit
-      GlobalVector d0P3 = d0->currentState().kinematicParameters().momentum();
-      GlobalVector softPionP3 = softPionFit->currentState().kinematicParameters().momentum();
-      TLorentzVector d0P4(d0P3.x(), d0P3.y(), d0P3.z(), sqrt(d0->currentState().mass() * d0->currentState().mass() + d0P3.mag2()));
-      TLorentzVector softPionP4(softPionP3.x(), softPionP3.y(), softPionP3.z(), sqrt(softPionFit->currentState().mass() * softPionFit->currentState().mass() + softPionP3.mag2()));
-      //cout << "d0 mass: " << d0P4.M() << endl;
-      //cout << "soft pion mass: " << softPionP4.M() << endl;
-      dstarCand.addUserFloat("dm_fit", (softPionP4 + d0P4).M() - d0P4.M());
-      //cout << "dm_fit: " << dstarCand.userFloat("dm_fit") << endl; 
-      dstarCand.addUserFloat("dstar_prob", dstarFit.vtxProb());
-      dstarCand.addUserInt("fromKpi", fromKpi);
-      dstar_collection.push_back(dstarCand);
+    dstarTree->movePointerToTheTop();
+    dstarTree->movePointerToTheFirstChild();
+    RefCountedKinematicParticle d0 = dstarTree->currentParticle();
+    dstarTree->movePointerToTheNextChild();
+    RefCountedKinematicParticle softPionFit = dstarTree->currentParticle();
 
-      
+    // Get softPion, d0 p4 from RefCountedKinematicParticle d0 and softPionFit
+    GlobalVector d0P3 = d0->currentState().kinematicParameters().momentum();
+    GlobalVector softPionP3 = softPionFit->currentState().kinematicParameters().momentum();
+    TLorentzVector d0P4(d0P3.x(), d0P3.y(), d0P3.z(), sqrt(d0->currentState().mass() * d0->currentState().mass() + d0P3.mag2()));
+    TLorentzVector softPionP4(softPionP3.x(), softPionP3.y(), softPionP3.z(), sqrt(softPionFit->currentState().mass() * softPionFit->currentState().mass() + softPionP3.mag2()));
+    // cout << "d0 mass: " << d0P4.M() << endl;
+    // cout << "soft pion mass: " << softPionP4.M() << endl;
+    dstarCand.addUserFloat("dm_fit", (softPionP4 + d0P4).M() - d0P4.M());
+    // cout << "dm_fit: " << dstarCand.userFloat("dm_fit") << endl;
+    dstarCand.addUserFloat("dstar_prob", dstarFit.vtxProb());
+    dstarCand.addUserInt("fromKpi", fromKpi);
+    dstar_collection.push_back(dstarCand);
   }
   catch (const std::exception &e)
   {
-      return;
-      //cout << "Exception in refitting soft pion: " << e.what() << endl;
+    return;
+    // cout << "Exception in refitting soft pion: " << e.what() << endl;
   }
 
   // refit soft_pion with PV constraint
@@ -1573,15 +1571,15 @@ void DileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollection &dst
 }
 
 void DileptonPlusXProducer::fillBInfo(pat::CompositeCandidateCollection &bhhm_collection,
-                                          const edm::Event &iEvent,
-                                          const KinematicFitResult &d0VertexFit,
-                                          const pat::CompositeCandidate &d0Cand,
-                                          const bmm::Candidate &muon,
-                                          int mm_index,
-                                          int hh_index,
-                                          const bmm::Candidate &daughter1,
-                                          const bmm::Candidate &daughter2,
-                                          int fromKpi)
+                                      const edm::Event &iEvent,
+                                      const KinematicFitResult &d0VertexFit,
+                                      const pat::CompositeCandidate &d0Cand,
+                                      const bmm::Candidate &muon,
+                                      int mm_index,
+                                      int hh_index,
+                                      const bmm::Candidate &daughter1,
+                                      const bmm::Candidate &daughter2,
+                                      int fromKpi)
 {
   pat::CompositeCandidate dstarCand;
   dstarCand.addUserInt("mm_index", mm_index);
@@ -1616,52 +1614,52 @@ void DileptonPlusXProducer::fillBInfo(pat::CompositeCandidateCollection &bhhm_co
   reco::TransientTrack softPionTT = (*theTTBuilder_).build(muon.bestTrack());
   KinematicParticleFactoryFromTransientTrack particleFactory;
   double chi = 0., ndf = 0.;
-  float pionMassErr(PionMassErr_);
-  RefCountedKinematicParticle kpSoftPion = particleFactory.particle(softPionTT, PionMass_, chi, ndf, pionMassErr);
+  float pionMassErr(MuonMassErr_);
+  RefCountedKinematicParticle kpSoftPion = particleFactory.particle(softPionTT, MuonMass_, chi, ndf, pionMassErr);
 
   try
   {
-      std::vector<RefCountedKinematicParticle> daughterParticles;
-      daughterParticles.push_back(fittedD0);
-      daughterParticles.push_back(kpSoftPion);
-      KinematicParticleVertexFitter vertexFitter;
-      RefCountedKinematicTree dstarTree;
+    std::vector<RefCountedKinematicParticle> daughterParticles;
+    daughterParticles.push_back(fittedD0);
+    daughterParticles.push_back(kpSoftPion);
+    KinematicParticleVertexFitter vertexFitter;
+    RefCountedKinematicTree dstarTree;
 
-      dstarTree = vertexFitter.fit(daughterParticles);
+    dstarTree = vertexFitter.fit(daughterParticles);
 
-      if (!dstarTree && !dstarTree->isValid())
-          return;
-      KinematicFitResult dstarFit;
-      dstarFit.set_tree(dstarTree);
+    if (!dstarTree && !dstarTree->isValid())
+      return;
+    KinematicFitResult dstarFit;
+    dstarFit.set_tree(dstarTree);
 
-      if (!dstarFit.valid() || dstarFit.vtxProb() <= 0.0)
-          return;
+    if (!dstarFit.valid() || dstarFit.vtxProb() <= 0.0)
+      return;
 
-      dstarFit.postprocess(*beamSpot_);
-      
-      dstarTree->movePointerToTheTop();
-      dstarTree->movePointerToTheFirstChild();
-      RefCountedKinematicParticle d0 = dstarTree->currentParticle();
-      dstarTree->movePointerToTheNextChild();
-      RefCountedKinematicParticle softPionFit = dstarTree->currentParticle();
+    dstarFit.postprocess(*beamSpot_);
 
-      // Get softPion, d0 p4 from RefCountedKinematicParticle d0 and softPionFit
-      GlobalVector d0P3 = d0->currentState().kinematicParameters().momentum();
-      GlobalVector softPionP3 = softPionFit->currentState().kinematicParameters().momentum();
-      TLorentzVector d0P4(d0P3.x(), d0P3.y(), d0P3.z(), sqrt(d0->currentState().mass() * d0->currentState().mass() + d0P3.mag2()));
-      TLorentzVector softPionP4(softPionP3.x(), softPionP3.y(), softPionP3.z(), sqrt(softPionFit->currentState().mass() * softPionFit->currentState().mass() + softPionP3.mag2()));
-      //cout << "d0 mass: " << d0P4.M() << endl;
-      //cout << "soft pion mass: " << softPionP4.M() << endl;
-      dstarCand.addUserFloat("dm_fit", (softPionP4 + d0P4).M() - d0P4.M());
-      //cout << "dm_fit: " << dstarCand.userFloat("dm_fit") << endl; 
-      dstarCand.addUserFloat("dstar_prob", dstarFit.vtxProb());
-      dstarCand.addUserInt("fromKpi", fromKpi);
-      bhhm_collection.push_back(dstarCand);
+    dstarTree->movePointerToTheTop();
+    dstarTree->movePointerToTheFirstChild();
+    RefCountedKinematicParticle d0 = dstarTree->currentParticle();
+    dstarTree->movePointerToTheNextChild();
+    RefCountedKinematicParticle softPionFit = dstarTree->currentParticle();
+
+    // Get softPion, d0 p4 from RefCountedKinematicParticle d0 and softPionFit
+    GlobalVector d0P3 = d0->currentState().kinematicParameters().momentum();
+    GlobalVector softPionP3 = softPionFit->currentState().kinematicParameters().momentum();
+    TLorentzVector d0P4(d0P3.x(), d0P3.y(), d0P3.z(), sqrt(d0->currentState().mass() * d0->currentState().mass() + d0P3.mag2()));
+    TLorentzVector softPionP4(softPionP3.x(), softPionP3.y(), softPionP3.z(), sqrt(softPionFit->currentState().mass() * softPionFit->currentState().mass() + softPionP3.mag2()));
+    // cout << "d0 mass: " << d0P4.M() << endl;
+    // cout << "soft pion mass: " << softPionP4.M() << endl;
+    dstarCand.addUserFloat("dm_fit", (softPionP4 + d0P4).M() - d0P4.M());
+    // cout << "dm_fit: " << dstarCand.userFloat("dm_fit") << endl;
+    dstarCand.addUserFloat("dstar_prob", dstarFit.vtxProb());
+    dstarCand.addUserInt("fromKpi", fromKpi);
+    bhhm_collection.push_back(dstarCand);
   }
   catch (const std::exception &e)
   {
-      return;
-      //cout << "Exception in refitting soft pion: " << e.what() << endl;
+    return;
+    // cout << "Exception in refitting soft pion: " << e.what() << endl;
   }
 }
 
@@ -2831,8 +2829,8 @@ void DileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollecti
                                                  pat::CompositeCandidateCollection &hhm_collection,
                                                  const edm::Event &iEvent,
                                                  const pat::PackedCandidate &had1,
-                                                 const pat::PackedCandidate &had2, 
-                                                 const std::vector<bmm::Candidate> & good_muon_candidates)
+                                                 const pat::PackedCandidate &had2,
+                                                 const std::vector<bmm::Candidate> &good_muon_candidates)
 {
   if (had1.pt() < minDhhTrkPt_ || fabs(had1.eta()) > maxDhhTrkEta_)
     return;
@@ -2939,70 +2937,69 @@ void DileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollecti
 
   for (unsigned int k = 0; k < good_muon_candidates.size(); ++k)
   {
-    try{
-    auto muon = good_muon_candidates[k];
-    if (overlap(had1, muon) || overlap(had2, muon))
-      continue;
-
-    bmm::Candidate pion1(had1);
-    pion1.setType(PionMass_, "had", 211 * had1.charge());
-    bmm::Candidate pion2(had2);
-    pion2.setType(PionMass_, "had", 211 * had2.charge());
-
-    bmm::Candidate kaon1(had1);
-    kaon1.setType(KaonMass_, "had", 321 * had1.charge());
-    bmm::Candidate kaon2(had2);
-    kaon2.setType(KaonMass_, "had", 321 * had2.charge());
-
-    // D0->Kpi
-    if (recoD0Kpi_)
+    try
     {
-      const bmm::Candidate *daughter1(nullptr), *daughter2(nullptr);
+      auto muon = good_muon_candidates.at(k);
+      if (overlap(had1, muon) || overlap(had2, muon))
+        continue;
 
-      if (pion2.charge() == muon.charge())
+      bmm::Candidate pion1(had1);
+      pion1.setType(PionMass_, "had", 211 * had1.charge());
+      bmm::Candidate pion2(had2);
+      pion2.setType(PionMass_, "had", 211 * had2.charge());
+
+      bmm::Candidate kaon1(had1);
+      kaon1.setType(KaonMass_, "had", 321 * had1.charge());
+      bmm::Candidate kaon2(had2);
+      kaon2.setType(KaonMass_, "had", 321 * had2.charge());
+
+      // D0->Kpi
+      if (recoD0Kpi_)
       {
-        // Kpi case
-        daughter1 = &kaon1;
-        daughter2 = &pion2;
-      }
-      else
-      {
-        // piK case
-        daughter1 = &pion1;
-        daughter2 = &kaon2;
-      }
+        const bmm::Candidate *daughter1(nullptr), *daughter2(nullptr);
 
-      double d0_mass = (daughter1->p4() + daughter2->p4()).mass();
-      double dstar_mass = (daughter1->p4() + daughter2->p4() + muon.p4()).mass();
-
-      if (d0_mass > 1.65 && d0_mass < 2.06
-        && (dstar_mass - d0_mass) > 0 && (dstar_mass - d0_mass) < 4.5)
-      {
-
-        pat::CompositeCandidate d0Cand(std::string("hhm"));
-        d0Cand.addDaughter(*daughter1, "had1");
-        d0Cand.addDaughter(*daughter2, "had2");
-        addP4.set(d0Cand);
-
-        if (preprocess(d0Cand, iEvent, *daughter1, *daughter2))
+        if (pion2.charge() == muon.charge())
         {
-          // Kinematic Fits
-          auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, *daughter1, *daughter2);
-          if (d0VertexFit.valid() && d0VertexFit.vtxProb() >= 0.0)
+          // Kpi case
+          daughter1 = &kaon1;
+          daughter2 = &pion2;
+        }
+        else
+        {
+          // piK case
+          daughter1 = &pion1;
+          daughter2 = &kaon2;
+        }
+
+        double d0_mass = (daughter1->p4() + daughter2->p4()).mass();
+        double dstar_mass = (daughter1->p4() + daughter2->p4() + muon.p4()).mass();
+
+        if (d0_mass > 1.65 && d0_mass < 2.06 && (dstar_mass - d0_mass) > 0 && (dstar_mass - d0_mass) < 4.5)
+        {
+
+          pat::CompositeCandidate d0Cand(std::string("hhm"));
+          d0Cand.addDaughter(*daughter1, "had1");
+          d0Cand.addDaughter(*daughter2, "had2");
+          addP4.set(d0Cand);
+
+          if (preprocess(d0Cand, iEvent, *daughter1, *daughter2))
           {
-            int hh_index = hhm_collection.size();
-            hhm_collection.push_back(d0Cand);
-            fillBInfo(bhhm_collection, iEvent, d0VertexFit, d0Cand, muon,
-                          -1, hh_index, *daughter1, *daughter2, 1);
+            // Kinematic Fits
+            auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, *daughter1, *daughter2);
+            if (d0VertexFit.valid() && d0VertexFit.vtxProb() >= 0.0)
+            {
+              int hh_index = hhm_collection.size();
+              hhm_collection.push_back(d0Cand);
+              fillBInfo(bhhm_collection, iEvent, d0VertexFit, d0Cand, muon,
+                        -1, hh_index, *daughter1, *daughter2, 1);
+            }
           }
         }
       }
     }
-  }
-  catch (const std::exception &e)
-        {
-        }
-
+    catch (const std::exception &e)
+    {
+    }
   }
 }
 
@@ -3545,7 +3542,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
   // }
 
   // Build dimuon candidates
-  if (false) //good_muon_candidates.size() > 1
+  if (false) // good_muon_candidates.size() > 1
   {
     for (unsigned int i = 0; i < good_muon_candidates.size(); ++i)
     {
@@ -3809,13 +3806,13 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
         if (overlap(had1, had2))
           continue;
         // Check mass of the two hadrons
-        //if (fabs((had1.p4() + had2.p4()).mass() - 1.86484) > 0.2)
-      //  continue;
+        // if (fabs((had1.p4() + had2.p4()).mass() - 1.86484) > 0.2)
+        //  continue;
 
         buildDstarCandidates(*dstar_collection, *bhhm_collection, *hh_collection, *hhm_collection, iEvent, had1, had2, good_muon_candidates);
 
-        //const auto *ksCand = buildKsCandidates(*hh_collection, *iso_collection, interestingTracks,
-        //                                       iEvent, had1, had2);
+        // const auto *ksCand = buildKsCandidates(*hh_collection, *iso_collection, interestingTracks,
+        //                                        iEvent, had1, had2);
 
         // Kstar->Kspi->mmpi
         /*if (recoKstar_)
