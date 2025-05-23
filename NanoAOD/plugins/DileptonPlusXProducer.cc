@@ -2973,7 +2973,7 @@ void DileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollecti
       }
 
       double d0_mass = (daughter1->p4() + daughter2->p4()).mass();
-      //double dstar_mass = (daughter1->p4() + daughter2->p4() + muon.p4()).mass();
+      double dstar_mass = (daughter1->p4() + daughter2->p4() + muon.p4()).mass();
 
       if (d0_mass > 1.65 && d0_mass < 2.06
         && (dstar_mass - d0_mass) > 0 && (dstar_mass - d0_mass) < 4.5)
