@@ -2700,6 +2700,8 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
         }
     }
 
+    /*
+    AddFourMomenta addP4m;
     for (unsigned int k = 0; k < good_muon_candidates.size(); ++k)
     {
         try
@@ -2707,6 +2709,12 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
             bmm::Candidate muon = good_muon_candidates.at(k);
             if (overlap(had1, muon) || overlap(had2, muon))
                 continue;
+
+            //cout << "ScoutingDileptonPlusXProducer::buildDstarCandidates: muon pt = " << muon.pt() << " eta = " << muon.eta() << " phi = " << muon.phi() << " mass = " << muon.mass() << endl;
+            //cout << "had1 pt = " << had1.pt() << " eta = " << had1.eta() << " phi = " << had1.phi() << " mass = " << had1.mass() << endl;
+            //cout << "had2 pt = " << had2.pt() << " eta = " << had2.eta() << " phi = " << had2.phi() << " mass = " << had2.mass() << endl;
+            
+            muon.setMass(MuonMass_);
 
             bmm::Candidate pion1 = had1;
             pion1.setType(PionMass_, "had", 211 * had1.charge());
@@ -2746,7 +2754,7 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
                     pat::CompositeCandidate d0Cand(std::string("hhm"));
                     d0Cand.addDaughter(*daughter1, "had1");
                     d0Cand.addDaughter(*daughter2, "had2");
-                    addP4.set(d0Cand);
+                    addP4m.set(d0Cand);
 
                     if (preprocess(d0Cand, iEvent, *daughter1, *daughter2))
                     {
@@ -2765,7 +2773,7 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
         catch (const std::exception &e)
         {
         }
-    }
+    }/*
     
 }
 

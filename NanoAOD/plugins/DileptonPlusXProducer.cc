@@ -2935,6 +2935,7 @@ void DileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollecti
     }
   }
 
+  /*
   for (unsigned int k = 0; k < good_muon_candidates.size(); ++k)
   {
     try
@@ -3001,6 +3002,7 @@ void DileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollecti
     {
     }
   }
+  */
 }
 
 void DileptonPlusXProducer::buildBsToPhiPhiCandidates(pat::CompositeCandidateCollection &bs_collection,
