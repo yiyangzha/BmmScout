@@ -720,7 +720,7 @@ bool DileptonPlusXProducer::isGoodTrack(const pat::PackedCandidate &cand)
   //   return false;
   if (isnan(cand.pt()))
     return false;
-  if (cand.pt() < 0.5 || abs(cand.eta()) > 2.4)
+  if (cand.pt() < 1 || abs(cand.eta()) > 2.4)
     return false;
   return true;
 }
