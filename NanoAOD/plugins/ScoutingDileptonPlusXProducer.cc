@@ -2368,7 +2368,7 @@ void ScoutingDileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollect
         KinematicFitResult dstarFit;
         dstarFit.set_tree(dstarTree);
 
-        if (!dstarFit.valid() || dstarFit.vtxProb() <= 0.0)
+        if (!dstarFit.valid() || dstarFit.vtxProb() <= 0.01)
             return;
         //cout << "Mass " << daughter1.pt() << " " << daughter1.eta() << " " << daughter1.phi() << " " << daughter2.pt() << " " << daughter2.eta() << " " << daughter2.phi() << " " << soft_pion.pt() << " " << soft_pion.eta() << " " << soft_pion.phi() << endl;
 
@@ -2683,7 +2683,7 @@ void ScoutingDileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidate
                         // Kinematic Fits
                         auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, *daughter1, *daughter2);
                         //cout << "kpi valid:" << d0VertexFit.valid() << " kin_sl3d:" << d0Cand.userFloat("kin_sl3d") << " kin_alpha:" << d0Cand.userFloat("kin_alpha") << " prob: " << d0VertexFit.vtxProb() << endl;
-                        if (d0VertexFit.valid() && d0VertexFit.vtxProb() > 0.0)
+                        if (d0VertexFit.valid() && d0VertexFit.vtxProb() > 0.01)
                         {
                             //cout << "Fit " << had1.pt() << " " << had1.eta() << " " << had1.phi() << " " << had2.pt() << " " << had2.eta() << " " << had2.phi() << " " << soft_pion.pt() << " " << soft_pion.eta() << " " << soft_pion.phi() << endl;
                             int hh_index = hh_collection.size();

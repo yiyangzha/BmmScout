@@ -1495,7 +1495,7 @@ void DileptonPlusXProducer::fillDstarInfo(pat::CompositeCandidateCollection &dst
     KinematicFitResult dstarFit;
     dstarFit.set_tree(dstarTree);
 
-    if (!dstarFit.valid() || dstarFit.vtxProb() <= 0.0)
+    if (!dstarFit.valid() || dstarFit.vtxProb() <= 0.01)
       return;
 
     dstarFit.postprocess(*beamSpot_);
@@ -2923,7 +2923,7 @@ void DileptonPlusXProducer::buildDstarCandidates(pat::CompositeCandidateCollecti
         {
           // Kinematic Fits
           auto d0VertexFit = fillDileptonInfo(d0Cand, iEvent, *daughter1, *daughter2);
-          if (d0VertexFit.valid() && d0VertexFit.vtxProb() >= 0.0)
+          if (d0VertexFit.valid() && d0VertexFit.vtxProb() > 0.01)
           {
             int hh_index = hh_collection.size();
             hh_collection.push_back(d0Cand);
