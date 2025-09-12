@@ -3544,7 +3544,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
   // }
 
   // Build dimuon candidates
-  if (false) // good_muon_candidates.size() > 1
+  if (good_muon_candidates.size() > 1) // 
   {
     for (unsigned int i = 0; i < good_muon_candidates.size(); ++i)
     {
@@ -3578,7 +3578,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
                                                     kinematicLLVertexFit.p3().z(),
                                                     kinematicLLVertexFit.mass()));
         // MuMuGamma
-        if (recoMuMuGamma_ && kinematicLLVertexFit.valid())
+        if (recoMuMuGamma_ && kinematicLLVertexFit.valid() && false)
         {
           for (unsigned int k = 0; k < nPhotons; ++k)
           {
@@ -3605,7 +3605,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
         }
 
         // MuMuGamma with photon conversion
-        if (recoMuMuGammaConv_ && kinematicLLVertexFit.valid())
+        if (recoMuMuGammaConv_ && kinematicLLVertexFit.valid() && false)
         {
           for (unsigned int k = 0; k < nConversions; ++k)
           {
@@ -3661,7 +3661,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
         }*/
 
         // Kstar->Kspi->mmpi
-        if (recoKstar_)
+        if (recoKstar_ && false)
         {
           for (unsigned int k = 0; k < nPFCands; ++k)
           {
@@ -3788,7 +3788,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
   // - loop over all hh combinations
   // - let individual studies fill hh_collection
   // - no check for duplicate entries
-  if (nPFCands > 1)
+  if (nPFCands > 1 && false)
   {
     for (unsigned int i = 0; i < nPFCands - 1; ++i)
     {
