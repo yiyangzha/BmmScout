@@ -3788,7 +3788,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
   // - loop over all hh combinations
   // - let individual studies fill hh_collection
   // - no check for duplicate entries
-  if (nPFCands > 1 && false)
+  if (nPFCands > 1)
   {
     for (unsigned int i = 0; i < nPFCands - 1; ++i)
     {
