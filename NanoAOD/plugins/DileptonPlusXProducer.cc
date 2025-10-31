@@ -3544,7 +3544,7 @@ void DileptonPlusXProducer::produce(edm::Event &iEvent, const edm::EventSetup &i
   // }
 
   // Build dimuon candidates
-  if (good_muon_candidates.size() > 1) // 
+  if (good_muon_candidates.size() > 1 && false) // 
   {
     for (unsigned int i = 0; i < good_muon_candidates.size(); ++i)
     {
